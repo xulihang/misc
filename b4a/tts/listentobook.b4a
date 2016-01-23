@@ -1,0 +1,269 @@
+﻿Version=3
+IconFile=
+NumberOfModules=0
+Package=org.xulihang.listentobook
+DoNotOverwriteManifest=False
+ManifestCode='This code will be applied to the manifest file during compilation.~\n~'You do not need to modify it in most cases.~\n~'See this link for for more information: http://www.basic4ppc.com/forum/showthread.php?p=78136~\n~AddManifestText(~\n~<uses-sdk android:minSdkVersion="4" android:targetSdkVersion="14"/>~\n~<supports-screens android:largeScreens="true" ~\n~    android:normalScreens="true" ~\n~    android:smallScreens="true" ~\n~    android:anyDensity="true"/>)~\n~SetApplicationAttribute(android:icon, "@drawable/icon")~\n~SetApplicationAttribute(android:label, "$LABEL$")~\n~AddApplicationText(<activity android:name="anywheresoftware.b4a.objects.preferenceactivity"/>)~\n~'End of default text.~\n~
+UserTypesHint=
+NumberOfFiles=1
+File1=1.bal
+NumberOfLibraries=5
+Library1=core
+Library2=phone
+Library3=preferenceactivity
+Library4=stringutils
+Library5=tts
+@EndOfDesignText@
+#Region  Project Attributes 
+	#ApplicationLabel: 力航听书
+	#VersionCode: 1
+	#VersionName: 
+	'SupportedOrientations possible values: unspecified, landscape or portrait.
+	#SupportedOrientations: unspecified
+	#CanInstallToExternalStorage: False
+#End Region
+
+#Region  Activity Attributes 
+	#FullScreen: False
+	#IncludeTitle: True
+#End Region
+
+Sub Process_Globals
+    Dim TTS1 As TTS
+	Dim CC As ContentChooser
+	Dim manager As PreferenceManager
+	Dim screen As PreferenceScreen
+End Sub
+
+Sub Globals
+    Dim barPitch As SeekBar
+    Dim barSpeechRate As SeekBar
+    'Dim btnSpeak As Button
+    Dim EditText1 As EditText
+    Dim spnrLanguages As Spinner
+	Dim reader As TextReader
+	Dim ScrollView1 As ScrollView
+	Dim Label1 As Label
+	Dim Label2 As Label
+	Dim Label3 As Label
+	Dim Panel1 As Panel
+	Dim TextLabel As Label
+	Dim Su As StringUtils
+	Dim Button1 As Button
+	Dim Button2 As Button
+	Dim currentpage=1 As Long
+	Dim textfilename As String
+	Dim textfiledir="None" As String
+	Dim lines As Int
+End Sub
+
+Sub Activity_Create(FirstTime As Boolean)
+	If FirstTime Then
+		CreatePreferenceScreen
+		If manager.GetAll.Size = 0 Then SetDefaults
+	End If
+    Activity.LoadLayout("1")
+	Activity.AddMenuItem("朗读","read")
+	Activity.AddMenuItem("暂停","stop")
+	Activity.AddMenuItem("可编辑模式","editmode")
+	Activity.AddMenuItem("阅读模式","readmode")
+	Activity.AddMenuItem("选择文本","choose")
+	Activity.AddMenuItem("设置","settings")
+	Activity.AddMenuItem("退出","quit")
+    spnrLanguages.AddAll(Array As String("en", "fr", "de","zh"))
+	ScrollView1.Visible=False
+	TextLabel.Initialize("")
+	TextLabel.TextColor=Colors.ARGB(255,245,245,245)
+	TextLabel.TextSize=16
+	TextLabel.Gravity=Bit.OR(Gravity.LEFT,Gravity.TOP)
+    ScrollView1.Panel.AddView(TextLabel,0,0,100%x,ScrollView1.Height)
+End Sub
+Sub TTS1_Ready (Success As Boolean)
+    If Success Then
+        'enable all views
+        For i = 0 To Activity.NumberOfViews - 1
+            Activity.GetView(i).Enabled = True
+        Next
+        'read_click 'play first sentence
+    Else
+        Msgbox("Error initializing TTS engine.", "")
+    End If
+End Sub
+Sub Activity_Resume
+    If TTS1.IsInitialized = False Then
+        TTS1.Initialize("TTS1")
+    End If
+	HandleSettings
+End Sub
+
+Sub Activity_Pause (UserClosed As Boolean)
+    TTS1.Release
+End Sub
+
+'Sub btnSpeak_Click
+
+'End Sub
+Sub barSpeechRate_ValueChanged (Value As Int, UserChanged As Boolean)
+    If UserChanged Then
+        TTS1.SpeechRate = Value / 10
+    End If
+End Sub
+Sub barPitch_ValueChanged (Value As Int, UserChanged As Boolean)
+    If UserChanged Then
+        TTS1.Pitch = Value / 10
+    End If
+End Sub
+Sub spnrLanguages_ItemClick (Position As Int, Value As Object)
+    If TTS1.SetLanguage(Value, "") = False Then
+        ToastMessageShow("Language data not found.", True)
+        Return
+    End If
+End Sub
+
+Sub read_click
+    Dim TextToRead As String
+    If ScrollView1.Visible=True Then
+        TextToRead=EditText1.text.SubString(Ceil(ScrollView1.ScrollPosition/ScrollView1.Panel.Height*EditText1.text.Length))
+    Else
+	    TextToRead=EditText1.text
+	End If
+	If TextToRead.Length > 0 Then
+        TTS1.Speak(TextToRead, True)
+        EditText1.SelectAll
+    End If
+	Log(ScrollView1.Height)
+	Log(ScrollView1.Panel.Height)
+	Log(ScrollView1.ScrollPosition)
+	Log(ScrollView1.ScrollPosition/ScrollView1.Panel.Height)
+End Sub
+
+Sub stop_click
+    TTS1.Stop
+End Sub
+
+Sub choose_click
+
+    CC.Initialize("CC") 
+	CC.Show("text/*", "Choose txt")
+End Sub
+
+Sub editmode_click
+    TTS1.Stop
+	EditText1.Visible=True
+	ScrollView1.Visible=False
+End Sub
+
+Sub readmode_click
+	EditText1.Visible=False
+	ScrollView1.Visible=True
+    
+End Sub
+
+Sub settings_click
+    StartActivity(screen.CreateIntent)
+End Sub
+
+Sub quit_click
+    ExitApplication
+End Sub
+
+'选取后加载十行
+Sub CC_Result(Success As Boolean, Dir As String, FileName As String)
+    If Success Then
+	    textfiledir=Dir
+		textfilename=FileName
+        currentpage=1 '重置
+		loadtext(1)
+	End If	
+End Sub
+
+
+
+'加载lines行
+Sub loadtext(page As Int)
+	reader.Initialize(File.OpenInput(textfiledir, textfilename))
+	Dim text As String
+	Dim line As String
+	line = reader.ReadLine
+    For j=1 To page
+	    For i=1 To lines
+	        If line<>Null AND j=page Then
+		        text=text&line&CRLF
+		    End If	
+		    line = reader.ReadLine
+            Log(line)
+	    Next
+	Next	
+	'Text=reader.ReadAll
+	reader.Close
+	Log(text)
+	EditText1.text=text
+    TextLabel.text=EditText1.text
+	ScrollView1.Panel.Height=Su.MeasureMultilineTextHeight(TextLabel,EditText1.text)
+	TextLabel.Height=ScrollView1.Panel.Height
+End Sub
+
+Sub ScrollView1_ScrollChanged(Position As Int)
+	'到底了
+	If ScrollView1.Height=ScrollView1.Panel.Height-Position Then
+		ScrollView1.ScrollPosition=Position+50dip
+    End If
+End Sub
+Sub Button2_Click
+    If textfiledir="None" Then
+	    ToastMessageShow("请先选择文本。",False)
+	Else
+        currentpage=currentpage+1
+	    loadtext(currentpage)
+	    Dim title As String
+	    title="力航听书-第"&currentpage&"页"
+	    Activity.title=title
+	End If
+End Sub
+Sub Button1_Click
+    If textfiledir="None" Then
+	    ToastMessageShow("请先选择文本。",False)
+	Else
+        If currentpage=1 Then
+	        ToastMessageShow("已经是第一页了",False)
+		    loadtext(currentpage)
+	    Else	
+	        currentpage=currentpage-1
+	        loadtext(currentpage)
+	    End If
+	    Dim title As String
+	    title="力航听书-第"&currentpage&"页"
+	    Activity.title=title
+	End If
+End Sub
+
+Sub SetDefaults
+	'defaults are only set on the first run.
+	manager.SetString("list1","10")
+End Sub
+
+Sub CreatePreferenceScreen
+	screen.Initialize("设置", "")
+	'create two categories
+	Dim cat1 As PreferenceCategory
+	cat1.Initialize("读取")
+	cat1.AddList("list1", "每页读取行数", "设置每页读取行数", "", _
+        Array As String("5", "10", "15", "20", "30"))
+	'add the categories to the main screen
+	screen.AddPreferenceCategory(cat1)
+End Sub
+
+Sub HandleSettings
+	Select manager.GetString("list1")
+	    Case "5"
+		    lines=5
+		Case "10"
+		    lines=10
+		Case "15"
+		    lines=15
+		Case "20"
+		    lines=20
+		Case "30"
+		    lines=30
+	End Select
+End Sub

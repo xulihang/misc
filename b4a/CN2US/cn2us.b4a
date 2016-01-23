@@ -1,0 +1,77 @@
+﻿Version=5.2
+NumberOfModules=5
+Module1=Starter
+Module2=length
+Module3=volume
+Module4=temp
+Module5=mass
+Build1=Default,b4a.example
+ManifestCode='This code will be applied to the manifest file during compilation.~\n~'You do not need to modify it in most cases.~\n~'See this link for for more information: http://www.b4x.com/forum/showthread.php?p=78136~\n~AddManifestText(~\n~<uses-sdk android:minSdkVersion="5" android:targetSdkVersion="14"/>~\n~<supports-screens android:largeScreens="true" ~\n~    android:normalScreens="true" ~\n~    android:smallScreens="true" ~\n~    android:anyDensity="true"/>)~\n~SetApplicationAttribute(android:icon, "@drawable/icon")~\n~SetApplicationAttribute(android:label, "$LABEL$")~\n~SetApplicationAttribute(android:theme, "@android:style/Theme.Holo")~\n~'End of default text.~\n~
+IconFile=
+NumberOfFiles=5
+File1=length.bal
+File2=main.bal
+File3=mass.bal
+File4=temp.bal
+File5=volume.bal
+NumberOfLibraries=1
+Library1=core
+@EndOfDesignText@
+#Region  Project Attributes 
+	#ApplicationLabel: 中美单位转换
+	#VersionCode: 1
+	#VersionName: 
+	'SupportedOrientations possible values: unspecified, landscape or portrait.
+	#SupportedOrientations: unspecified
+	#CanInstallToExternalStorage: False
+#End Region
+
+#Region  Activity Attributes 
+	#FullScreen: False
+	#IncludeTitle: True
+#End Region
+
+Sub Process_Globals
+	'These global variables will be declared once when the application starts.
+	'These variables can be accessed from all modules.
+
+End Sub
+
+Sub Globals
+	'These global variables will be redeclared each time the activity is created.
+	'These variables can only be accessed from this module.
+
+	Private Button1 As Button
+	Private Button2 As Button
+	Private Button3 As Button
+	Private Button4 As Button
+End Sub
+
+Sub Activity_Create(FirstTime As Boolean)
+	'Do not forget to load the layout file created with the visual designer. For example:
+	Activity.LoadLayout("main")
+    Activity.Title="CH2US"
+End Sub
+
+Sub Activity_Resume
+
+End Sub
+
+Sub Activity_Pause (UserClosed As Boolean)
+
+End Sub
+
+
+
+Sub Button4_Click
+	StartActivity(volume)
+End Sub
+Sub Button3_Click
+	StartActivity(mass)
+End Sub
+Sub Button2_Click
+	StartActivity(temp)
+End Sub
+Sub Button1_Click
+	StartActivity(length)
+End Sub
