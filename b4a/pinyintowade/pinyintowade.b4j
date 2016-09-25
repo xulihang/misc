@@ -1,0 +1,113 @@
+﻿Version=3.7
+AppType=JavaFX
+NumberOfModules=0
+Build1=Default,b4j.example
+NumberOfFiles=2
+File1=conversion-table.txt
+File2=main.bjl
+NumberOfLibraries=2
+Library1=jcore
+Library2=jfx
+@EndOfDesignText@
+#Region  Project Attributes 
+	#MainFormWidth: 600
+	#MainFormHeight: 400 
+#End Region
+
+Sub Process_Globals
+	Private fx As JFX
+	Private MainForm As Form
+	Private Button1 As Button
+	Private TextArea1 As TextArea
+	Private TextArea2 As TextArea
+	Private MenuBar1 As MenuBar
+End Sub
+
+Sub AppStart (Form1 As Form, Args() As String)
+	MainForm = Form1
+	MainForm.SetFormStyle("UNIFIED")
+	MainForm.RootPane.LoadLayout("main") 'Load the layout file.
+	MainForm.Show
+End Sub
+Sub Button1_MouseClicked (EventData As MouseEvent)
+	
+	Dim originaltext As String
+	Dim line,pinyin,wade As String
+	originaltext=TextArea1.Text
+	TextArea2.Text=TextArea1.Text
+	
+	Dim list1 As List
+	list1.Initialize
+	list1=File.ReadList(File.DirAssets,"conversion-table.txt")
+	
+	Dim pinyinlist,wadelist As List
+	pinyinlist.Initialize
+	wadelist.Initialize
+	
+	Do While originaltext<>""
+		pinyinlist.Clear
+		For i =0 To list1.Size-1
+
+			line=list1.Get(i)
+			pinyin=line.SubString2(0,line.IndexOf(","))
+
+			'wade=line.SubString2(line.IndexOf(",")+1,line.Length-1)
+
+	        
+			If originaltext.StartsWith(pinyin) Then
+                Log("Yes")
+				pinyinlist.Add(line)
+
+			End If
+			
+		Next
+		
+		If pinyinlist.Size<>0 Then
+			Dim previousPinyin As String
+			Dim nextPinyin As String
+		    Log(pinyinlist.Size&"Size")
+			previousPinyin=pinyinlist.Get(0)
+			For i=1 To pinyinlist.Size-1
+				'Log(pinyinlist.Get(i))
+				nextPinyin=pinyinlist.Get(i)
+				If previousPinyin.CompareTo(nextPinyin)<0 Then
+					previousPinyin=nextPinyin
+				End If
+			Next
+			Log("previousPinyin:"&previousPinyin)
+			
+
+			wade=previousPinyin.SubString2(previousPinyin.IndexOf(",")+1,previousPinyin.Length)
+			pinyin=previousPinyin.SubString2(0,previousPinyin.IndexOf(","))
+			Log("previousWade:"&wade)
+			Log("pinyin:"&pinyin)
+			originaltext=originaltext.Replace(pinyin,"")
+
+			Log("origin:"&originaltext)
+			TextArea2.Text=TextArea2.Text.Replace(pinyin,wade)
+		Else
+			pinyin=originaltext.SubString2(0,1)
+			originaltext=originaltext.Replace(pinyin,"")
+			Log(originaltext)
+		End If
+		
+
+	Loop
+	
+	
+
+End Sub
+Sub MenuBar1_Action
+	Dim mi As MenuItem = Sender
+	Log(mi.Text)
+	If mi.Text="_批量转换" Then
+		
+	else if mi.Text="_关闭" Then
+	    ExitApplication
+	Else
+		
+	End If
+End Sub
+Sub MenuBar1_SelectionChanged
+	Log("changes")
+End Sub
