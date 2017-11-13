@@ -2,10 +2,21 @@
 import sys
 import os
 
+lemmadict={}
+
+f=open("lemma.dat","r",encoding="utf-8")
+for line in f.readlines():
+    line=line.replace("\n","")
+    lemma=line.split("   ")
+    for i in range(1,len(lemma)):
+        wd=lemma[i].strip()
+        lemmadict[wd]=lemma[0]
+f.close()
+
 def getNewWords(filename):
     wordlist=[]
     newWordlist=[]
-    f=open("WordList.txt","r")
+    f=open("WordList.dat","r")
     for word in f.readlines():
         word=word.replace("\n","")
         word=word.strip()
@@ -31,6 +42,7 @@ def getNewWords(filename):
             word=word.replace("’","")
             word=word.replace("'s","")
             word=word.replace("'","")
+            word=lemmatizeWord(word)
             if word not in wordlist:
                 newWordlist.append(word)
     f.close()
@@ -38,33 +50,29 @@ def getNewWords(filename):
         newWordlist.remove('')
 
     
-    lemmatize(newWordlist)
+    #lemmatize(newWordlist)
     newFilename=filename.replace(".txt","_newwordlist.txt")
     f=open(newFilename,"w",encoding="utf-8")
     for word in newWordlist:
         f.write(word+"\n")
     f.close()
 
-def lemmatize(newWordlist):
-    lemmadict={}
-
-    f=open("lemma.txt","r",encoding="utf-8")
-    for line in f.readlines():
-        line=line.replace("\n","")
-        lemma=line.split("   ")
-        for i in range(1,len(lemma)):
-            wd=lemma[i].strip()
-            lemmadict[wd]=lemma[0]
-    f.close()
-
-
+def lemmatizeList(newWordlist):
     for word in newWordlist[:]:
         if word in lemmadict:
             if lemmadict[word]!=word:
                 newWordlist.remove(word)
                 newWordlist.append(lemmadict[word])
 
-    return newWordlist    
+    return newWordlist
+
+def lemmatizeWord(word):
+
+    if word in lemmadict:
+        if lemmadict[word]!=word:
+            word=lemmadict[word]
+
+    return word   
         
 if __name__ == '__main__':
     if sys.argv[1].find("*.txt")!=-1:
