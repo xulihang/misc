@@ -31,7 +31,7 @@ for line in f.readlines():
         explaination=longmandict[word[0:1]][word]
     except:
         explaination="Null"
-    fw.write(word+" "+explaination+"\n")
+    fw.write(word+"\t"+explaination+"\n")
 fw.close()
 f.close()
 
