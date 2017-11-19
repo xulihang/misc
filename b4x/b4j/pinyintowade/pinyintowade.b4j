@@ -1,4 +1,4 @@
-﻿Version=3.7
+﻿Version=5.9
 AppType=JavaFX
 NumberOfModules=0
 Build1=Default,b4j.example
@@ -36,7 +36,7 @@ Sub Button1_MouseClicked (EventData As MouseEvent)
 	originaltext=TextArea1.Text
 	TextArea2.Text=TextArea1.Text
 	
-	Dim list1 As List
+	Dim list1 As List '韦氏拼音转换表
 	list1.Initialize
 	list1=File.ReadList(File.DirAssets,"conversion-table.txt")
 	
@@ -44,19 +44,19 @@ Sub Button1_MouseClicked (EventData As MouseEvent)
 	pinyinlist.Initialize
 	wadelist.Initialize
 	
-	Do While originaltext<>""
+	Do While originaltext<>"" '因为处理好一个拼音会删除这部分拼音，为""就说明处理完了
 		pinyinlist.Clear
 		For i =0 To list1.Size-1
 
 			line=list1.Get(i)
-			pinyin=line.SubString2(0,line.IndexOf(","))
+			pinyin=line.SubString2(0,line.IndexOf(",")) '获取转换表的拼音
 
 			'wade=line.SubString2(line.IndexOf(",")+1,line.Length-1)
 
 	        
-			If originaltext.StartsWith(pinyin) Then
+			If originaltext.StartsWith(pinyin) Then '以该拼音开头的可能有很多
                 Log("Yes")
-				pinyinlist.Add(line)
+				pinyinlist.Add(line) '拼音list里是包含拼音，韦氏拼音这样的内容的
 
 			End If
 			
@@ -70,14 +70,14 @@ Sub Button1_MouseClicked (EventData As MouseEvent)
 			For i=1 To pinyinlist.Size-1
 				'Log(pinyinlist.Get(i))
 				nextPinyin=pinyinlist.Get(i)
-				If previousPinyin.CompareTo(nextPinyin)<0 Then
+				If previousPinyin.CompareTo(nextPinyin)<0 Then '这个拼音比后面的拼音短，说明应该用后面的
 					previousPinyin=nextPinyin
 				End If
 			Next
 			Log("previousPinyin:"&previousPinyin)
 			
 
-			wade=previousPinyin.SubString2(previousPinyin.IndexOf(",")+1,previousPinyin.Length)
+			wade=previousPinyin.SubString2(previousPinyin.IndexOf(",")+1,previousPinyin.Length) '15年的时候不知道写split函数
 			pinyin=previousPinyin.SubString2(0,previousPinyin.IndexOf(","))
 			Log("previousWade:"&wade)
 			Log("pinyin:"&pinyin)
