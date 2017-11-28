@@ -1,4 +1,5 @@
 #coding=utf-8
+#根据未标注文件生成只有句子分类的列表
 import sys
 category=[]
 
