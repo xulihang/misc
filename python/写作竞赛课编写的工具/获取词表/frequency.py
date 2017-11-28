@@ -11,8 +11,8 @@ for file in os.listdir("./"):
 
             if word.isalpha() or word.find("-")!=-1:
                 if len(word)!=1 and word.find("http")==-1:
-                    if word in wordDict:
-                        wordDict[word]+=1
+                    if word in wordDict: #如果单词已经在dict里了，那就增加频数
+                        wordDict[word]+=1 
                     else:
                         wordDict[word]=1
         f.close()

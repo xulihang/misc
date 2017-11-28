@@ -1,4 +1,5 @@
 #coding=utf-8
+#给英文词表增加朗道词典的中文释义
 import sys
 longmandict={}
 

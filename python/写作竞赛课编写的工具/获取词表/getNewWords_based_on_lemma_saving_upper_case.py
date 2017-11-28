@@ -4,7 +4,7 @@ import os
 
 lemmadict={}
 
-f=open("lemma.dat","r",encoding="utf-8")
+f=open("lemma.dat","r",encoding="utf-8") #加载lemma词典。词的原型是value，而屈折变化后的是key。
 for line in f.readlines():
     line=line.replace("\n","")
     lemma=line.split("   ")
@@ -48,7 +48,7 @@ def getNewWords(filename):
                 word=originalWord
             else:
                 word=lemmatizedWord                
-            if word not in wordlist:
+            if word not in wordlist: #去掉大学四级级别的简单词
                 newWordlist.append(word)
     f.close()
     while '' in newWordlist:
