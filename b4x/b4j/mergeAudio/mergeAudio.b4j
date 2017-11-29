@@ -1,0 +1,118 @@
+﻿Version=5.9
+AppType=JavaFX
+NumberOfModules=0
+Build1=Default,b4j.example
+NumberOfFiles=1
+File1=main.bjl
+NumberOfLibraries=3
+Library1=jcore
+Library2=jfx
+Library3=jshell
+@EndOfDesignText@
+#Region Project Attributes 
+	#MainFormWidth: 600
+	#MainFormHeight: 600 
+#End Region
+
+Sub Process_Globals
+	Private fx As JFX
+	Private MainForm As Form
+	Private Button1 As Button
+	Private Button2 As Button
+	Private ListView1 As ListView
+	Private ListView2 As ListView
+	Private Button3 As Button
+End Sub
+
+Sub AppStart (Form1 As Form, Args() As String)
+	MainForm = Form1
+	MainForm.RootPane.LoadLayout("main") 'Load the layout file.
+	MainForm.Show
+End Sub
+
+'Return true to allow the default exceptions handler to handle the uncaught exception.
+Sub Application_Error (Error As Exception, StackTrace As String) As Boolean
+	Return True
+End Sub
+
+Sub Button2_MouseClicked (EventData As MouseEvent)
+	If ListView1.Items.Size=0 Then
+		fx.Msgbox(MainForm,"请选择campaign文件夹","")
+		Return
+	End If
+	For Each lbl As Label In ListView1.Items
+	    If File.Exists(File.Combine(File.Combine(lbl.Tag,lbl.Text),"staredit"),"wav") Then
+			makeFileList(File.Combine(lbl.Tag,lbl.Text))
+		End If
+	Next
+	fx.Msgbox(MainForm,"任务完成","")
+End Sub
+
+Sub Button1_MouseClicked (EventData As MouseEvent)
+	Dim path As String
+	Dim dc As DirectoryChooser
+	dc.Initialize
+	path=dc.Show(MainForm)'campaign
+    If path.Contains("campaign")=False Then
+	    fx.Msgbox(MainForm,"请选择campaign文件夹","")
+		Return	
+    End If
+	If File.IsDirectory(path,"") Then
+		For Each dir As String In File.ListFiles(path) 'races
+			Log(dir)
+			If File.IsDirectory(path,dir) Then
+				For Each subdir As String In File.ListFiles(File.Combine(path,dir)) 'missions
+					Log(subdir)
+					Dim lbl As Label
+					lbl.Initialize("lbl")
+					lbl.Tag=File.Combine(path,dir)
+					lbl.Text=subdir
+					ListView1.Items.Add(lbl)
+				Next
+			End If
+		Next
+	End If
+	
+End Sub
+
+Sub RunProcess(dir As String)
+	Dim shl As Shell
+	shl.Initialize("shl", "ffmpeg", Array("-f","concat","-y","-i","filelist.txt","-c","copy",File.GetName(dir)&".wav"))
+	shl.WorkingDirectory=File.Combine(File.Combine(dir,"staredit"),"wav")
+	shl.Run(-1)
+	Wait For (shl) shl_ProcessCompleted (Success As Boolean, ExitCode As Int, StdOut As String, StdErr As String)
+	Log(StdOut)
+	If Success Then
+		ListView2.Items.Add(dir)
+	End If
+End Sub
+
+Sub makeFileList(dir As String)
+	Dim fullpath As String
+	fullpath=File.Combine(File.Combine(dir,"staredit"),"wav")
+	Dim filelist As List
+	filelist.Initialize
+	For Each filename  As String In File.ListFiles(fullpath)
+		If filename.Contains("wav") And filename.Contains(File.GetName(dir))=False Then
+			filelist.Add("file '"&filename&"'")
+		End If
+	Next
+	File.WriteList(fullpath,"filelist.txt",filelist)
+	RunProcess(dir)
+End Sub
+
+Sub Button3_MouseClicked (EventData As MouseEvent)
+	If ListView2.Items.Size=0 Then
+		fx.Msgbox(MainForm,"请选择campaign文件夹后进行处理","")
+		Return
+	End If
+	
+	For Each dir As String In ListView2.Items
+		Dim fullpath As String
+		fullpath=File.Combine(File.Combine(File.Combine(dir,"staredit"),"wav"),File.GetName(dir)&".wav")
+		File.Copy(fullpath,"",File.DirApp,File.GetName(fullpath))
+		File.Delete(fullpath,"")
+	Next
+	ListView2.Items.Clear
+	fx.Msgbox(MainForm,"任务完成","")
+End Sub
