@@ -1,0 +1,6 @@
+f=open("normal.txt","r")
+content=f.read()
+f.close()
+fw=open("upper.txt","w")
+fw.write(content.upper())
+fw.close()
