@@ -1,0 +1,91 @@
+﻿Version=5.9
+AppType=JavaFX
+NumberOfModules=0
+Build1=Default,b4j.example
+NumberOfFiles=1
+File1=main.bjl
+NumberOfLibraries=4
+Library1=jcore
+Library2=jfx
+Library3=jokhttputils2
+Library4=apachestringutilsb4j
+@EndOfDesignText@
+#Region Project Attributes 
+	#MainFormWidth: 600
+	#MainFormHeight: 600 
+#End Region
+
+Sub Process_Globals
+	Private fx As JFX
+	Private MainForm As Form
+	Private Button1 As Button
+	Private TextArea1 As TextArea
+	Private ListView1 As ListView
+	Private TextField1 As TextField
+	Private TextField2 As TextField
+End Sub
+
+Sub AppStart (Form1 As Form, Args() As String)
+	MainForm = Form1
+	MainForm.RootPane.LoadLayout("main") 'Load the layout file.
+	MainForm.Show
+	TextArea1.Text="http://cnnios-f.akamaihd.net/i/cnn/big/us/2017/10/19/caption/walker-jennifer-lawrence-sexual-harassment-metoo-campaign.cnn_1681650_ios_,440,650,840,1240,3000,5500,.mp4.csmil/segment1_4_av.ts?null=0"
+End Sub
+
+'Return true to allow the default exceptions handler to handle the uncaught exception.
+Sub Application_Error (Error As Exception, StackTrace As String) As Boolean
+	Return True
+End Sub
+
+Sub Button1_MouseClicked (EventData As MouseEvent)
+	If ListView1.Items.Size<>0 Then
+		For Each link As String In ListView1.Items
+			Log(link)
+			download(link)
+		Next
+		
+	End If
+End Sub
+
+Sub download(link As String)
+	Dim job As HttpJob
+	job.Initialize("job",Me)
+	job.Download(link)
+	Wait For (job) JobDone (job As HttpJob)
+	If job.Success Then
+		ListView1.Items.RemoveAt(ListView1.Items.IndexOf(link))
+        Dim filename As String
+		filename=getFilenameFromLink(link)
+		Dim out As OutputStream
+		Log(job.Tag)
+		Log(filename)
+		out=File.OpenOutput(File.DirApp,filename,False) 'replace with iv.Bitmap = job.GetBitmap in B4A / B4i
+		File.Copy2(job.GetInputStream, out)
+		out.Close
+	Else
+		Log(job.ErrorMessage)
+	End If
+	job.Release
+	
+End Sub
+
+Sub TextArea1_TextChanged (Old As String, New As String)
+	ListView1.Items.Clear
+	If New.Contains("*") And TextField1.Text<>"" And TextField2.Text<>"" Then
+		For i=TextField1.Text To TextField2.Text
+			ListView1.Items.Add(TextArea1.Text.Replace("*",i))
+		Next
+	End If
+End Sub
+
+Sub getFilenameFromLink(link As String) As String
+	Dim filename As String
+	Dim parts As List
+	Dim su As ApacheSU
+	parts=su.SplitWithSeparator(link,"/")
+	filename=parts.Get(parts.Size-1)
+	If filename.Contains("?") Then
+		filename=su.SplitWithSeparator(filename,"?")(0)
+	End If
+	Return filename
+End Sub

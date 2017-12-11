@@ -1,0 +1,120 @@
+﻿Version=5.51
+AppType=JavaFX
+NumberOfModules=0
+Build1=Default,b4j.example
+NumberOfFiles=1
+File1=main.bjl
+NumberOfLibraries=2
+Library1=jcore
+Library2=jfx
+@EndOfDesignText@
+#Region Project Attributes 
+	#MainFormWidth: 600
+	#MainFormHeight: 600 
+#End Region
+
+Sub Process_Globals
+	Private fx As JFX
+	Private MainForm As Form
+	Private Button1 As Button
+	Private TextField1 As TextField
+	Private TextField2 As TextField
+	Private dicList As List
+End Sub
+
+Sub AppStart (Form1 As Form, Args() As String)
+	MainForm = Form1
+	MainForm.Initialize("mainForm",350dip,200dip)
+	MainForm.RootPane.LoadLayout("main") 'Load the layout file.
+	MainForm.Show
+	dicList=File.ReadList(File.DirAssets,"en.dic")
+End Sub
+
+'Return true to allow the default exceptions handler to handle the uncaught exception.
+Sub Application_Error (Error As Exception, StackTrace As String) As Boolean
+	Return True
+End Sub
+
+Sub Button1_MouseClicked (EventData As MouseEvent)
+	Dim isEnglishValue As Boolean
+	Dim anagramText As String
+	anagramText=anagram(TextField1.Text)
+	isEnglishValue=isEnglish(anagramText)
+	Do Until isEnglishValue=True
+		anagramText=anagram(TextField1.Text)
+		isEnglishValue=isEnglish(anagramText)
+    Loop
+	TextField2.Text=anagramText
+End Sub
+
+Sub anagram(inputText As String) As String
+	Dim newStringList As List
+	newStringList.Initialize
+    Dim inputTextList As List
+	inputTextList=stringToList(inputText)
+	For Each index As Int In randomList(inputText)
+		newStringList.Add(inputTextList.Get(index))
+	Next
+	Log(newStringList)
+	Return listToString(newStringList)
+End Sub
+
+Sub stringToList(inputString As String) As List
+	Dim list1 As List
+	list1.Initialize
+	For i=0 To inputString.Length-1
+		list1.Add(inputString.CharAt(i))
+	Next
+	Return list1
+End Sub
+
+Sub randomList(inputText As String) As List
+	Dim length As Int
+	length=inputText.Length
+	Dim list1 As List
+	list1.Initialize
+	Do	While list1.Size<length
+		Dim ranNum As Int
+		ranNum=Rnd(0,length)
+		If list1.IndexOf(ranNum)=-1 Then
+			list1.Add(ranNum)
+		End If
+	Loop
+	Return list1
+End Sub
+
+Sub listToString(inputList As List) As String
+	Dim outputString As String
+	For Each item As String In inputList
+		outputString=outputString&item
+	Next
+	Log(outputString)
+	Return outputString
+End Sub
+
+Sub isEnglish(word As String) As Boolean
+
+	If dicList.IndexOf(word)=-1 Then
+		Return False
+	Else
+		Return True
+	End If
+End Sub
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
