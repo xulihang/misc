@@ -1,0 +1,3 @@
+﻿淘（湯/飯）	（淘（汤/饭））	dau223	/main/index.php?s=/Dic/Index/index/accent/101/inputs/%E6%B7%98%EF%BC%88%E6%B9%AF%2F%E9%A3%AF%EF%BC%89/word/1/traditional/1.html
+糖醋大蒜	（糖醋大蒜）	daon tshou da soe	/main/index.php?s=/Dic/Index/index/accent/101/inputs/%E7%B3%96%E9%86%8B%E5%A4%A7%E8%92%9C/word/1/traditional/1.html
+尺板	（尺板）	tshaq pe	/main/index.php?s=/Dic/Index/index/accent/101/inputs/%E5%B0%BA%E6%9D%BF/word/1/traditional/1.html
