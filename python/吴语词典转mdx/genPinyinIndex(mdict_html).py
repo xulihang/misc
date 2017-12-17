@@ -15,6 +15,7 @@ f.close()
 
 f=open("zi.txt","r",encoding="utf-8")
 for line in f.readlines():
+    line=line.replace("\n","")
     pinyin=line.split("\t")[2]
     traWords=line.split("\t")[0]
     simWords=line.split("\t")[1]
