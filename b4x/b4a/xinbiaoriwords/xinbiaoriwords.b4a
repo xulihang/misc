@@ -1,0 +1,119 @@
+﻿Version=5.2
+NumberOfModules=10
+Module1=Starter
+Module2=chooselesson
+Module3=content
+Module4=CustomListView
+Module5=setting
+Module6=search
+Module7=guide
+Module8=about
+Module9=Intro
+Module10=favourite
+Build1=Default,com.xulihang.xinbiaoriwords
+ManifestCode='This code will be applied to the manifest file during compilation.~\n~'You do not need to modify it in most cases.~\n~'See this link for for more information: http://www.b4x.com/forum/showthread.php?p=78136~\n~AddManifestText(~\n~<uses-sdk android:minSdkVersion="5" android:targetSdkVersion="14"/>~\n~<supports-screens android:largeScreens="true" ~\n~    android:normalScreens="true" ~\n~    android:smallScreens="true" ~\n~    android:anyDensity="true"/>)~\n~SetApplicationAttribute(android:icon, "@drawable/icon")~\n~SetApplicationAttribute(android:label, "$LABEL$")~\n~SetApplicationAttribute(android:theme, "@android:style/Theme.Holo.Light")~\n~'End of default text.~\n~
+IconFile=
+NumberOfFiles=11
+File1=about.bal
+File2=chooselesson.bal
+File3=content.bal
+File4=dict.db
+File5=favourite.bal
+File6=guide.bal
+File7=Intro.bal
+File8=item.bal
+File9=ItemWithStar.bal
+File10=main.bal
+File11=search.bal
+NumberOfLibraries=5
+Library1=core
+Library2=stringutils
+Library3=reflection
+Library4=sql
+Library5=tts
+@EndOfDesignText@
+#Region  Project Attributes 
+	#ApplicationLabel: 初级标日单词
+	#VersionCode: 1
+	#VersionName: 
+	'SupportedOrientations possible values: unspecified, landscape or portrait.
+	#SupportedOrientations: unspecified
+	#CanInstallToExternalStorage: False
+#End Region
+
+#Region  Activity Attributes 
+	#FullScreen: False
+	#IncludeTitle: False
+#End Region
+
+Sub Process_Globals
+	'These global variables will be declared once when the application starts.
+	'These variables can be accessed from all modules.
+    Dim book As Int
+End Sub
+
+Sub Globals
+	'These global variables will be redeclared each time the activity is created.
+	'These variables can only be accessed from this module.
+
+	Private ListView1 As ListView
+End Sub
+
+Sub Activity_Create(FirstTime As Boolean)
+	'Do not forget to load the layout file created with the visual designer. For example:
+	Activity.LoadLayout("main")
+	Dim lbl As Label
+	lbl=ListView1.SingleLineLayout.Label
+	lbl.TextColor=Colors.Black
+    ListView1.AddSingleLine2("☀标日初级上册",0)
+	ListView1.AddSingleLine2("☀标日初级下册",1)
+	ListView1.AddSingleLine2("🔍查单词",2)
+	ListView1.AddSingleLine2("⭐收藏",3)
+	ListView1.AddSingleLine2("👀说明",4)
+	ListView1.AddSingleLine2("🏃退出",5)
+	Activity.AddMenuItem("查单词","lookup")
+	Activity.AddMenuItem("说明","guide")
+	Activity.AddMenuItem("退出","quit")
+	Activity.Color=Colors.ARGB(255,215,218,192)
+	If File.Exists(File.DirInternal,"dict.db")=False Then
+		File.Copy(File.DirAssets,"dict.db",File.DirInternal,"dict.db")
+	End If
+End Sub
+
+Sub Activity_Resume
+
+End Sub
+
+Sub Activity_Pause (UserClosed As Boolean)
+
+End Sub
+
+Sub quit_click
+	ExitApplication
+End Sub
+Sub lookup_click
+	StartActivity(search)
+End Sub
+
+Sub guide_click
+	StartActivity(guide)
+End Sub
+
+Sub ListView1_ItemClick (Position As Int, Value As Object)
+	Select Value
+		Case 0
+			book=1
+			StartActivity(chooselesson)
+		Case 1
+		    book=2
+			StartActivity(chooselesson)
+		Case 2
+			StartActivity(search)
+		Case 3 			
+			StartActivity(favourite)
+		Case 4
+			StartActivity(guide)
+		Case 5
+			ExitApplication
+	End Select
+End Sub

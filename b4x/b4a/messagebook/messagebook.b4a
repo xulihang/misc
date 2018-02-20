@@ -1,0 +1,146 @@
+﻿Version=5.2
+NumberOfModules=11
+Module1=Starter
+Module2=building
+Module3=room
+Module4=kebiao
+Module5=login
+Module6=message
+Module7=CustomListView
+Module8=ImageDownloader
+Module9=userinfo
+Module10=notification
+Module11=about
+Build1=Default,com.xulihang.messagebook
+ManifestCode='This code will be applied to the manifest file during compilation.~\n~'You do not need to modify it in most cases.~\n~'See this link for for more information: http://www.b4x.com/forum/showthread.php?p=78136~\n~AddManifestText(~\n~<uses-sdk android:minSdkVersion="5" android:targetSdkVersion="14"/>~\n~<supports-screens android:largeScreens="true" ~\n~    android:normalScreens="true" ~\n~    android:smallScreens="true" ~\n~    android:anyDensity="true"/>)~\n~SetApplicationAttribute(android:icon, "@drawable/icon")~\n~SetApplicationAttribute(android:label, "$LABEL$")~\n~SetApplicationAttribute(android:theme, "@android:style/Theme.Holo")~\n~'End of default text.~\n~AddApplicationText(<service android:name="com.baidu.location.f" android:enabled="true" android:process=":remote">~\n~</service>)~\n~
+IconFile=
+NumberOfFiles=9
+File1=about.bal
+File2=avatar.png
+File3=comment.bal
+File4=item.bal
+File5=kebiao.bal
+File6=login.bal
+File7=main.bal
+File8=userinfo.bal
+File9=usernotif.bal
+NumberOfLibraries=9
+Library1=core
+Library2=sql
+Library3=httputils2
+Library4=stringutils
+Library5=reflection
+Library6=id
+Library7=ime
+Library8=json
+Library9=baidulocation
+@EndOfDesignText@
+#Region  Project Attributes 
+	#ApplicationLabel: 江大教室留言板
+	#VersionCode: 1
+	#VersionName: 1.0.2
+	'SupportedOrientations possible values: unspecified, landscape or portrait.
+	#SupportedOrientations: unspecified
+	#CanInstallToExternalStorage: False
+#End Region
+
+#Region  Activity Attributes 
+	#FullScreen: False
+	#IncludeTitle: True
+#End Region
+
+Sub Process_Globals
+	'These global variables will be declared once when the application starts.
+	'These variables can be accessed from all modules.
+    Public buildingNum As Int
+End Sub
+
+Sub Globals
+	'These global variables will be redeclared each time the activity is created.
+	'These variables can only be accessed from this module.
+	Dim timeend As Int
+	Dim timebegin As Int
+	Dim minutes As Int
+	Dim seconds As Int
+    Dim now As Long
+	Dim mm=1 As Int
+	Dim nn=1 As Int
+	Dim duration=4 As Int
+		
+	Private ListView1 As ListView
+End Sub
+
+Sub Activity_Create(FirstTime As Boolean)
+	'Do not forget to load the layout file created with the visual designer. For example:
+	Activity.LoadLayout("main")
+    ListView1.AddSingleLine2("一教",1)
+	ListView1.AddSingleLine2("二教",2)
+	If File.Exists(File.DirInternal,"list.db")=False Then
+		File.Copy(File.DirAssets,"list.db",File.DirInternal,"list.db")
+	End If	
+	Activity.AddMenuItem("账号管理","userinfo")
+	Activity.AddMenuItem("消息","notification")
+	Activity.AddMenuItem("关于","about")
+	Activity.AddMenuItem("退出","quit")
+End Sub
+
+Sub Activity_Resume
+
+End Sub
+
+Sub Activity_Pause (UserClosed As Boolean)
+
+End Sub
+
+
+
+Sub ListView1_ItemClick (Position As Int, Value As Object)
+	buildingNum=Value
+	StartActivity(building)
+End Sub
+
+Sub quit_click
+	ExitApplication
+End Sub
+
+Sub userinfo_click
+	StartActivity(userinfo)
+End Sub
+
+Sub notification_click
+	StartActivity(notification)
+End Sub
+
+Sub about_click
+	StartActivity(about)
+End Sub
+
+Sub Activity_KeyPress (KeyCode As Int) As Boolean 'Return True to consume the event
+    If KeyCode = KeyCodes.KEYCODE_BACK Then
+	    now = DateTime.now
+	    minutes=DateTime.Getminute(now)
+        seconds=DateTime.GetSecond(now)
+		
+		If nn=0 Then
+		  timeend=minutes*60+seconds
+		  duration=timeend-timebegin
+		End If
+		
+		If duration<3 Then
+		  ExitApplication
+		Else  'time out,reset.
+		  mm=1
+		  nn=1
+		End If
+		
+        If mm=1 Then  
+		  ToastMessageShow("再按一次退出",False)
+		  timebegin=minutes*60+seconds
+		  nn=0 'start counting duration.
+		End If
+		
+        Return True
+    Else
+        Return False
+    End If	
+End Sub
