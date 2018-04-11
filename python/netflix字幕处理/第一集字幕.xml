@@ -1,3 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<tt xmlns:tt="http://www.w3.org/ns/ttml" xmlns:ttm="http://www.w3.org/ns/ttml#metadata" xmlns:ttp="http://www.w3.org/ns/ttml#parameter" xmlns:tts="http://www.w3.org/ns/ttml#styling" ttp:tickRate="10000000" ttp:timeBase="media" xmlns="http://www.w3.org/ns/ttml">
+<head>
+<ttp:profile use="http://netflix.com/ttml/profile/dfxp-ls-sdh"/>
+<styling>
+<style tts:color="white" tts:fontSize="100%" tts:fontWeight="normal" xml:id="s1"/>
+<style tts:color="white" tts:fontSize="100%" tts:fontStyle="italic" tts:fontWeight="normal" xml:id="s1_1"/>
+</styling>
+<layout>
+<region tts:displayAlign="after" tts:extent="80.00% 80.00%" tts:origin="10.00% 10.00%" tts:textAlign="center" xml:id="bottomCenter"/>
+<region tts:displayAlign="before" tts:extent="80.00% 80.00%" tts:origin="10.00% 10.00%" tts:textAlign="center" xml:id="topCenter"/>
+</layout>
+</head>
+<body>
+<div xml:space="preserve">
 <p begin="1547600000t" end="1567600000t" region="bottomCenter" style="s1" xml:id="subtitle0">In the year of 1722,</p>
 <p begin="1568400000t" end="1593600000t" region="bottomCenter" style="s1" xml:id="subtitle1">the Kangxi Emperor<br/>of the Qing Dynasty passed away.</p>
 <p begin="1594400000t" end="1616800000t" region="bottomCenter" style="s1" xml:id="subtitle2">Nian Gengyao,<br/>Governor-General of Chuan-Shan,</p>
@@ -1251,3 +1266,6 @@
 <p begin="52552000000t" end="52570800000t" region="bottomCenter" style="s1" xml:id="subtitle1250"><span style="s1_1">Then how should we live our life?</span></p>
 <p begin="52576800000t" end="52608000000t" region="bottomCenter" style="s1" xml:id="subtitle1251"><span style="s1_1">At this age, I finally understand.</span></p>
 <p begin="52614000000t" end="52656000000t" region="bottomCenter" style="s1" xml:id="subtitle1252"><span style="s1_1">One must believe in destiny,</span><br/><span style="s1_1">but never resign oneself to it.</span></p>
+</div>
+</body>
+</tt>

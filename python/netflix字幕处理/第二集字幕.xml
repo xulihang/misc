@@ -1,0 +1,1337 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<tt xmlns:tt="http://www.w3.org/ns/ttml" xmlns:ttm="http://www.w3.org/ns/ttml#metadata" xmlns:ttp="http://www.w3.org/ns/ttml#parameter" xmlns:tts="http://www.w3.org/ns/ttml#styling" ttp:tickRate="10000000" ttp:timeBase="media" xmlns="http://www.w3.org/ns/ttml">
+<head>
+<ttp:profile use="http://netflix.com/ttml/profile/dfxp-ls-sdh"/>
+<styling>
+<style tts:color="white" tts:fontSize="100%" tts:fontWeight="normal" xml:id="s1"/>
+<style tts:color="white" tts:fontSize="100%" tts:fontStyle="italic" tts:fontWeight="normal" xml:id="s1_1"/>
+</styling>
+<layout>
+<region tts:displayAlign="after" tts:extent="80.00% 80.00%" tts:origin="10.00% 10.00%" tts:textAlign="center" xml:id="bottomCenter"/>
+<region tts:displayAlign="before" tts:extent="80.00% 80.00%" tts:origin="10.00% 10.00%" tts:textAlign="center" xml:id="topCenter"/>
+</layout>
+</head>
+<body>
+<div xml:space="preserve">
+<p begin="1352800000t" end="1390000000t" region="bottomCenter" style="s1" xml:id="subtitle0"><span style="s1_1">It was here that Mei was pushed</span><br/><span style="s1_1">and fell into the water.</span></p>
+<p begin="1396000000t" end="1431600000t" region="bottomCenter" style="s1" xml:id="subtitle1"><span style="s1_1">I believed that by remaining</span><br/><span style="s1_1">in His Majesty’s favor</span></p>
+<p begin="1432400000t" end="1453200000t" region="bottomCenter" style="s1" xml:id="subtitle2"><span style="s1_1">and having true friends by my side,</span></p>
+<p begin="1454000000t" end="1505200000t" region="bottomCenter" style="s1" xml:id="subtitle3"><span style="s1_1">I could live out an imperial life</span><br/><span style="s1_1">as Lady Wan free from worries.</span></p>
+<p begin="1519200000t" end="1549600000t" region="bottomCenter" style="s1" xml:id="subtitle4"><span style="s1_1">I was wrong and overly naive.</span></p>
+<p begin="1552000000t" end="1575200000t" region="bottomCenter" style="s1" xml:id="subtitle5"><span style="s1_1">I hardly realized that the state</span><br/><span style="s1_1">and the harem</span></p>
+<p begin="1576000000t" end="1594400000t" region="bottomCenter" style="s1" xml:id="subtitle6"><span style="s1_1">were driven by the same forces.</span></p>
+<p begin="1595200000t" end="1654800000t" region="bottomCenter" style="s1" xml:id="subtitle7"><span style="s1_1">It is a ruthless world</span><br/><span style="s1_1">filled with bloody contests.</span></p>
+<p begin="1655600000t" end="1696400000t" region="bottomCenter" style="s1" xml:id="subtitle8"><span style="s1_1">The concubines of the harem vied</span><br/><span style="s1_1">for His Majesty’s favor by every means.</span></p>
+<p begin="1697200000t" end="1729200000t" region="bottomCenter" style="s1" xml:id="subtitle9"><span style="s1_1">Mei was entrapped by the others</span><br/><span style="s1_1">and nearly died.</span></p>
+<p begin="1730000000t" end="1768400000t" region="bottomCenter" style="s1" xml:id="subtitle10"><span style="s1_1">It was a walk across thin ice. Many times</span><br/><span style="s1_1">I barely escaped the clutches of peril.</span></p>
+<p begin="1780000000t" end="1816400000t" region="bottomCenter" style="s1" xml:id="subtitle11"><span style="s1_1">It was impossible for me</span><br/><span style="s1_1">to stay above the fray.</span></p>
+<p begin="1817200000t" end="1859600000t" region="bottomCenter" style="s1" xml:id="subtitle12"><span style="s1_1">Before I realized it,</span><br/><span style="s1_1">I’d already been drawn into the strife.</span></p>
+<p begin="1894400000t" end="1922800000t" region="bottomCenter" style="s1" xml:id="subtitle13">Now the Imperial Household Department<br/>always gives us the finest goods.</p>
+<p begin="1929200000t" end="1958400000t" region="bottomCenter" style="s1" xml:id="subtitle14">They also allow Doctor Wen<br/>to send his medicinal tonic every day.</p>
+<p begin="1959200000t" end="1987600000t" region="bottomCenter" style="s1" xml:id="subtitle15">Do you think it is good?<br/>The medicine tasted very bitter.</p>
+<p begin="2011600000t" end="2045200000t" region="bottomCenter" style="s1" xml:id="subtitle16">There’s something else,<br/>Yu has really gone too far.</p>
+<p begin="2046000000t" end="2078800000t" region="bottomCenter" style="s1" xml:id="subtitle17">It is said she curses you constantly<br/>since moving out of Zhongcui Palace.</p>
+<p begin="2090000000t" end="2106000000t" region="bottomCenter" style="s1" xml:id="subtitle18">Let her.</p>
+<p begin="2106800000t" end="2123600000t" region="bottomCenter" style="s1" xml:id="subtitle19">My conscience is clear.</p>
+<p begin="2130000000t" end="2146000000t" region="bottomCenter" style="s1" xml:id="subtitle20">We’ll forgive her when it’s right.</p>
+<p begin="2146800000t" end="2164800000t" region="bottomCenter" style="s1" xml:id="subtitle21">She has lost much. Her anger is natural.</p>
+<p begin="2170800000t" end="2188800000t" region="bottomCenter" style="s1" xml:id="subtitle22">With time, she will calm.</p>
+<p begin="2195600000t" end="2215600000t" region="bottomCenter" style="s1" xml:id="subtitle23">Young mistress, you are very kind.</p>
+<p begin="2229600000t" end="2248400000t" region="bottomCenter" style="s1" xml:id="subtitle24">Young mistress, your tonic is ready.</p>
+<p begin="2328400000t" end="2346000000t" region="bottomCenter" style="s1" xml:id="subtitle25">Recently, the tonic tastes quite sour.</p>
+<p begin="2354800000t" end="2377600000t" region="bottomCenter" style="s1" xml:id="subtitle26">Perhaps it’s a new prescription<br/>from Doctor Wen.</p>
+<p begin="2416800000t" end="2446400000t" region="bottomCenter" style="s1" xml:id="subtitle27">I’ve only been up a short while,<br/>yet now I grow weary again.</p>
+<p begin="2452400000t" end="2489600000t" region="bottomCenter" style="s1" xml:id="subtitle28">Lately you’re always getting drowsy<br/>soon after rising.</p>
+<p begin="2502000000t" end="2518000000t" region="bottomCenter" style="s1" xml:id="subtitle29">Help me inside for some sleep.</p>
+<p begin="2576400000t" end="2586400000t" region="bottomCenter" style="s1" xml:id="subtitle30">Huanbi.</p>
+<p begin="2600800000t" end="2619600000t" region="bottomCenter" style="s1" xml:id="subtitle31">When did I become so lethargic?</p>
+<p begin="2634400000t" end="2658400000t" region="bottomCenter" style="s1" xml:id="subtitle32">For three or five days,<br/>you’ve been continually tired.</p>
+<p begin="2659200000t" end="2688800000t" region="bottomCenter" style="s1" xml:id="subtitle33">Of the day’s 24 hours,<br/>you’ve spent 10 to 12 asleep.</p>
+<p begin="2689600000t" end="2721200000t" region="bottomCenter" style="s1" xml:id="subtitle34">Two days ago, it was late morning<br/>when His Majesty visited.</p>
+<p begin="2727200000t" end="2745200000t" region="bottomCenter" style="s1" xml:id="subtitle35">And you were still asleep in bed.</p>
+<p begin="2756400000t" end="2777600000t" region="bottomCenter" style="s1" xml:id="subtitle36">Do you also sense that something is amiss?</p>
+<p begin="2778400000t" end="2804000000t" region="bottomCenter" style="s1" xml:id="subtitle37">Young mistress, please stay awake.<br/>I’ll ask Doctor Wen to come.</p>
+<p begin="2824400000t" end="2844800000t" region="bottomCenter" style="s1" xml:id="subtitle38">This acupuncture point<br/>is called the Hegu point.</p>
+<p begin="2845600000t" end="2867600000t" region="bottomCenter" style="s1" xml:id="subtitle39">If your somnolence is an ordinary symptom,</p>
+<p begin="2873600000t" end="2892800000t" region="bottomCenter" style="s1" xml:id="subtitle40">then acupuncture at this point will help.</p>
+<p begin="2893600000t" end="2924000000t" region="bottomCenter" style="s1" xml:id="subtitle41">If it was caused by a drug,<br/>the color of the needle may change.</p>
+<p begin="2984000000t" end="3010800000t" region="bottomCenter" style="s1" xml:id="subtitle42">As I expected,<br/>someone has tampered with my medicine.</p>
+<p begin="3035200000t" end="3074000000t" region="bottomCenter" style="s1" xml:id="subtitle43">Please look, young mistress.<br/>The needle tip has turned light green.</p>
+<p begin="3084000000t" end="3106000000t" region="bottomCenter" style="s1" xml:id="subtitle44">What is it? Poison?</p>
+<p begin="3106800000t" end="3120000000t" region="bottomCenter" style="s1" xml:id="subtitle45">No, it isn’t.</p>
+<p begin="3126400000t" end="3162000000t" region="bottomCenter" style="s1" xml:id="subtitle46">Someone has changed<br/>the dosage of my prescription.</p>
+<p begin="3162800000t" end="3192800000t" region="bottomCenter" style="s1" xml:id="subtitle47">It was done carefully,<br/>by adding a very small amount.</p>
+<p begin="3193600000t" end="3228800000t" region="bottomCenter" style="s1" xml:id="subtitle48">Even though I check on you daily,<br/>it is hard to detect.</p>
+<p begin="3236000000t" end="3279200000t" region="bottomCenter" style="s1" xml:id="subtitle49">But if you take this medicine<br/>over a long period of time,</p>
+<p begin="3280000000t" end="3314800000t" region="bottomCenter" style="s1" xml:id="subtitle50">you will experience<br/>fatigue and lethargy at first.</p>
+<p begin="3315600000t" end="3352400000t" region="bottomCenter" style="s1" xml:id="subtitle51">Within six months, you will grow deranged,<br/>finally ending in complete delirium.</p>
+<p begin="3358400000t" end="3384000000t" region="bottomCenter" style="s1" xml:id="subtitle52">The perpetrator<br/>must hold me in high regard</p>
+<p begin="3384800000t" end="3411200000t" region="bottomCenter" style="s1" xml:id="subtitle53">to attempt to remove me<br/>in such an ingenious fashion.</p>
+<p begin="3412000000t" end="3425600000t" region="bottomCenter" style="s1" xml:id="subtitle54">It’s fortunate we discovered it.</p>
+<p begin="3433200000t" end="3463600000t" region="bottomCenter" style="s1" xml:id="subtitle55">Young mistress,<br/>you will recover with treatment.</p>
+<p begin="3471200000t" end="3486400000t" region="bottomCenter" style="s1" xml:id="subtitle56">All medicine is dispensed<br/>by your prescription</p>
+<p begin="3487200000t" end="3499600000t" region="bottomCenter" style="s1" xml:id="subtitle57">and prepared in my palace.</p>
+<p begin="3505600000t" end="3560400000t" region="bottomCenter" style="s1" xml:id="subtitle58">It seems the new maids and eunuchs<br/>are highly suspect. We must take caution.</p>
+<p begin="3566400000t" end="3588400000t" region="bottomCenter" style="s1" xml:id="subtitle59">Young mistress, what is your plan?</p>
+<p begin="3626800000t" end="3639600000t" region="bottomCenter" style="s1" xml:id="subtitle60">I’ve made inquiries.</p>
+<p begin="3640400000t" end="3659200000t" region="bottomCenter" style="s1" xml:id="subtitle61">Huasui was formerly<br/>Attendant Yu’s servant.</p>
+<p begin="3660000000t" end="3690800000t" region="bottomCenter" style="s1" xml:id="subtitle62">After her demotion,<br/>several of her maids were sent away.</p>
+<p begin="3691600000t" end="3721200000t" region="bottomCenter" style="s1" xml:id="subtitle63">Huasui was among them.<br/>She was then reassigned as your servant.</p>
+<p begin="3730800000t" end="3756000000t" region="bottomCenter" style="s1" xml:id="subtitle64">I’m sure the wench planned<br/>to take revenge for Yu.</p>
+<p begin="3770800000t" end="3796400000t" region="bottomCenter" style="s1" xml:id="subtitle65">What loyalty.</p>
+<p begin="3797200000t" end="3824800000t" region="bottomCenter" style="s1" xml:id="subtitle66">Please spare me!</p>
+<p begin="3837200000t" end="3855200000t" region="bottomCenter" style="s1" xml:id="subtitle67">Tell the truth.</p>
+<p begin="3856000000t" end="3877600000t" region="bottomCenter" style="s1" xml:id="subtitle68">If you dare lie or conceal the truth,</p>
+<p begin="3878400000t" end="3900800000t" region="bottomCenter" style="s1" xml:id="subtitle69">you’ll be dragged away<br/>and beaten to death.</p>
+<p begin="3901600000t" end="3929200000t" region="bottomCenter" style="s1" xml:id="subtitle70">After becoming your servant,</p>
+<p begin="3930000000t" end="3960400000t" region="bottomCenter" style="s1" xml:id="subtitle71">Yu summoned me to her residence one day.</p>
+<p begin="3961200000t" end="3982000000t" region="bottomCenter" style="s1" xml:id="subtitle72">She gave me a great sum as reward.</p>
+<p begin="3988000000t" end="4029200000t" region="bottomCenter" style="s1" xml:id="subtitle73">Miss Yu said I wouldn’t<br/>have to worry about anything.</p>
+<p begin="4030000000t" end="4057600000t" region="bottomCenter" style="s1" xml:id="subtitle74">My only mission was to put something<br/>in your tonic and your meals.</p>
+<p begin="4073600000t" end="4112000000t" region="bottomCenter" style="s1" xml:id="subtitle75">I dug a hole at the corner of the wall<br/>upon her instruction.</p>
+<p begin="4112800000t" end="4145600000t" region="bottomCenter" style="s1" xml:id="subtitle76">When Miss Yu needs to pass along<br/>a message or a drug,</p>
+<p begin="4152800000t" end="4197200000t" region="bottomCenter" style="s1" xml:id="subtitle77">someone places a note in that hole,<br/>and I go there to retrieve it.</p>
+<p begin="4198000000t" end="4214800000t" region="bottomCenter" style="s1" xml:id="subtitle78">When is the note placed there?</p>
+<p begin="4223600000t" end="4270000000t" region="bottomCenter" style="s1" xml:id="subtitle79">Miss Yu has someone place the drug<br/>in that hole every other day.</p>
+<p begin="4270800000t" end="4292400000t" region="bottomCenter" style="s1" xml:id="subtitle80">Then I must go and retrieve it.</p>
+<p begin="4293200000t" end="4309600000t" region="bottomCenter" style="s1" xml:id="subtitle81">Every other day.</p>
+<p begin="4316800000t" end="4334800000t" region="bottomCenter" style="s1" xml:id="subtitle82">Then it’s tonight.</p>
+<p begin="4342400000t" end="4371200000t" region="bottomCenter" style="s1" xml:id="subtitle83">When do you retrieve the drug?<br/>Is there a password?</p>
+<p begin="4372000000t" end="4427200000t" region="bottomCenter" style="s1" xml:id="subtitle84">Between the seventh and the ninth hour,<br/>birdcall signals are heard from outside.</p>
+<p begin="4428000000t" end="4450000000t" region="bottomCenter" style="s1" xml:id="subtitle85">Then I must make the same<br/>signals in response.</p>
+<p begin="4462800000t" end="4478800000t" region="bottomCenter" style="s1" xml:id="subtitle86">Xiao Yunzi.</p>
+<p begin="4484800000t" end="4519600000t" region="bottomCenter" style="s1" xml:id="subtitle87">Tie her up in the warehouse.<br/>Don’t let her take her own life.</p>
+<p begin="4520400000t" end="4533200000t" region="bottomCenter" style="s1" xml:id="subtitle88">Yes, mistress.</p>
+<p begin="4534000000t" end="4546400000t" region="bottomCenter" style="s1" xml:id="subtitle89">Let’s go.</p>
+<p begin="4589600000t" end="4627600000t" region="bottomCenter" style="s1" xml:id="subtitle90">I must tell Mei about what has happened.</p>
+<p begin="4628400000t" end="4652800000t" region="bottomCenter" style="s1" xml:id="subtitle91">Yes, we must let Lady Shen know</p>
+<p begin="4653600000t" end="4674800000t" region="bottomCenter" style="s1" xml:id="subtitle92">so you may formulate a response together.</p>
+<p begin="4675600000t" end="4702800000t" region="bottomCenter" style="s1" xml:id="subtitle93">- And Second Attendant An?<br/>- Lingrong is timid.</p>
+<p begin="4708800000t" end="4730000000t" region="bottomCenter" style="s1" xml:id="subtitle94">We will not tell her.<br/>She would become frightened.</p>
+<p begin="5048400000t" end="5061200000t" region="bottomCenter" style="s1" xml:id="subtitle95">Catch him.</p>
+<p begin="5062000000t" end="5094800000t" region="bottomCenter" style="s1" xml:id="subtitle96">Xiao Yunzi, we have him.<br/>Hurry, go outside now!</p>
+<p begin="5095600000t" end="5115600000t" region="bottomCenter" style="s1" xml:id="subtitle97">Come on. Let’s catch him.</p>
+<p begin="5162000000t" end="5186000000t" region="bottomCenter" style="s1" xml:id="subtitle98">- Let me go.<br/>- Don’t resist!</p>
+<p begin="5194000000t" end="5211600000t" region="bottomCenter" style="s1" xml:id="subtitle99">- Please let me go.<br/>- Kneel!</p>
+<p begin="5212400000t" end="5225600000t" region="bottomCenter" style="s1" xml:id="subtitle100">Young mistress, please.</p>
+<p begin="5226400000t" end="5253600000t" region="bottomCenter" style="s1" xml:id="subtitle101">Lift his head.<br/>I’m afraid he is not a stranger.</p>
+<p begin="5272400000t" end="5290400000t" region="bottomCenter" style="s1" xml:id="subtitle102">Xiao Yinzi?</p>
+<p begin="5297600000t" end="5316400000t" region="bottomCenter" style="s1" xml:id="subtitle103">Eunuch Yin, are you well?</p>
+<p begin="5325200000t" end="5341200000t" region="bottomCenter" style="s1" xml:id="subtitle104">Lady Wan, I greet you.</p>
+<p begin="5342000000t" end="5380800000t" region="bottomCenter" style="s1" xml:id="subtitle105">Though we have not met for some time,<br/>we once were master and servant.</p>
+<p begin="5381600000t" end="5398800000t" region="bottomCenter" style="s1" xml:id="subtitle106">Just answer my questions.</p>
+<p begin="5414800000t" end="5455200000t" region="bottomCenter" style="s1" xml:id="subtitle107">Why were you sneaking around<br/>the palace after dark?</p>
+<p begin="5461200000t" end="5475600000t" region="bottomCenter" style="s1" xml:id="subtitle108">I–</p>
+<p begin="5496400000t" end="5511600000t" region="bottomCenter" style="s1" xml:id="subtitle109">- Xiao Yunzi.<br/>- Yes, mistress.</p>
+<p begin="5512400000t" end="5536800000t" region="bottomCenter" style="s1" xml:id="subtitle110">Strike this ungrateful traitor for me.</p>
+<p begin="5547200000t" end="5571200000t" region="bottomCenter" style="s1" xml:id="subtitle111">- Beat him until he speaks.<br/>- Yes, mistress.</p>
+<p begin="5578000000t" end="5605200000t" region="bottomCenter" style="s1" xml:id="subtitle112">Lady, please spare me!</p>
+<p begin="5637200000t" end="5648400000t" region="bottomCenter" style="s1" xml:id="subtitle113">Spare me!</p>
+<p begin="5649200000t" end="5677600000t" region="bottomCenter" style="s1" xml:id="subtitle114">- My lady.<br/>- Why have you come in such haste?</p>
+<p begin="5678400000t" end="5697600000t" region="bottomCenter" style="s1" xml:id="subtitle115">Xiao Yinzi did not return<br/>to Yu’s residence.</p>
+<p begin="5698400000t" end="5728800000t" region="bottomCenter" style="s1" xml:id="subtitle116">This morning, I was told he entered<br/>but did not leave Suiyu Pavilion.</p>
+<p begin="5739200000t" end="5751200000t" region="bottomCenter" style="s1" xml:id="subtitle117">The wretch.</p>
+<p begin="5752000000t" end="5797600000t" region="bottomCenter" style="s1" xml:id="subtitle118">My lady, eunuchs are weak.<br/>I’m certain he will confess under torture.</p>
+<p begin="5804000000t" end="5842000000t" region="bottomCenter" style="s1" xml:id="subtitle119">Yu is surely done for.<br/>My lady, will she betray you?</p>
+<p begin="5842800000t" end="5871200000t" region="bottomCenter" style="s1" xml:id="subtitle120">- What do you advise?<br/>- You must eliminate that possibility.</p>
+<p begin="5872000000t" end="5884800000t" region="bottomCenter" style="s1" xml:id="subtitle121">No.</p>
+<p begin="5885600000t" end="5911200000t" region="bottomCenter" style="s1" xml:id="subtitle122">My lady, if you take action now,<br/>you’ll draw attention to yourself.</p>
+<p begin="5920000000t" end="5945200000t" region="bottomCenter" style="s1" xml:id="subtitle123">Why not let Yu take the blame?</p>
+<p begin="5963200000t" end="5984000000t" region="bottomCenter" style="s1" xml:id="subtitle124">She planned to kill Zhen Huan<br/>to avenge her own loss.</p>
+<p begin="5990000000t" end="6024400000t" region="bottomCenter" style="s1" xml:id="subtitle125">If given a chance to live,<br/>how could she not betray us?</p>
+<p begin="6025200000t" end="6068000000t" region="bottomCenter" style="s1" xml:id="subtitle126">Of course she wants to live.<br/>But she won’t want her family harmed.</p>
+<p begin="6097200000t" end="6116800000t" region="bottomCenter" style="s1" xml:id="subtitle127">Huan, really.</p>
+<p begin="6117600000t" end="6140400000t" region="bottomCenter" style="s1" xml:id="subtitle128">What an awful thing.<br/>Why did you hide it from me?</p>
+<p begin="6141200000t" end="6180800000t" region="bottomCenter" style="s1" xml:id="subtitle129">It was the Empress who told me just now<br/>that Yu was plotting to kill you.</p>
+<p begin="6181600000t" end="6200800000t" region="bottomCenter" style="s1" xml:id="subtitle130">I didn’t mean to hide it from you.</p>
+<p begin="6207600000t" end="6230400000t" region="bottomCenter" style="s1" xml:id="subtitle131">These matters are<br/>unsettling and frightful.</p>
+<p begin="6231200000t" end="6247600000t" region="bottomCenter" style="s1" xml:id="subtitle132">It’s better to know nothing of it.</p>
+<p begin="6248400000t" end="6275600000t" region="bottomCenter" style="s1" xml:id="subtitle133">I’ve always regarded you as my own sister.</p>
+<p begin="6276400000t" end="6305600000t" region="bottomCenter" style="s1" xml:id="subtitle134">How could something befall my sister<br/>without me knowing about it?</p>
+<p begin="6306400000t" end="6327200000t" region="bottomCenter" style="s1" xml:id="subtitle135">Fortunately, it’s over now.</p>
+<p begin="6337600000t" end="6358800000t" region="bottomCenter" style="s1" xml:id="subtitle136">She is to take her own life<br/>by His Majesty’s decree.</p>
+<p begin="6366000000t" end="6390800000t" region="bottomCenter" style="s1" xml:id="subtitle137">But I am not at all content.</p>
+<p begin="6391600000t" end="6406000000t" region="bottomCenter" style="s1" xml:id="subtitle138">Nor am I.</p>
+<p begin="6406800000t" end="6436400000t" region="bottomCenter" style="s1" xml:id="subtitle139">No one takes heart<br/>at the death of another.</p>
+<p begin="6437200000t" end="6478400000t" region="bottomCenter" style="s1" xml:id="subtitle140">Besides, we have only stopped one plot.<br/>There’s no telling how many are to come.</p>
+<p begin="6479200000t" end="6495200000t" region="bottomCenter" style="s1" xml:id="subtitle141">Let’s deal with them one by one.</p>
+<p begin="6496000000t" end="6525200000t" region="bottomCenter" style="s1" xml:id="subtitle142">As long as we remain united,<br/>no one may trap us by guile.</p>
+<p begin="6539200000t" end="6582000000t" region="bottomCenter" style="s1" xml:id="subtitle143">Lingrong is ever mild and gentle,<br/>but she is also quite sure of herself.</p>
+<p begin="6582800000t" end="6595600000t" region="bottomCenter" style="s1" xml:id="subtitle144">Young mistress.</p>
+<p begin="6624800000t" end="6655200000t" region="bottomCenter" style="s1" xml:id="subtitle145">Yu refuses to die and has gone<br/>into a rage at the Cold Palace.</p>
+<p begin="6656000000t" end="6681200000t" region="bottomCenter" style="s1" xml:id="subtitle146">She demands to meet His Majesty<br/>one last time before she dies.</p>
+<p begin="6682000000t" end="6692800000t" region="bottomCenter" style="s1" xml:id="subtitle147">Did you report to the Empress?</p>
+<p begin="6693600000t" end="6732400000t" region="bottomCenter" style="s1" xml:id="subtitle148">She is suffering from severe headaches<br/>and cannot even leave her bed.</p>
+<p begin="6733200000t" end="6754400000t" region="bottomCenter" style="s1" xml:id="subtitle149">She is unable to address this.</p>
+<p begin="6764400000t" end="6784400000t" region="bottomCenter" style="s1" xml:id="subtitle150">Then only Consort Hua<br/>is qualified to do so.</p>
+<p begin="6785200000t" end="6805200000t" region="bottomCenter" style="s1" xml:id="subtitle151">Consort Hua has taken<br/>no action whatsoever.</p>
+<p begin="6806000000t" end="6830400000t" region="bottomCenter" style="s1" xml:id="subtitle152">They say she is indisposed.</p>
+<p begin="6831200000t" end="6847200000t" region="bottomCenter" style="s1" xml:id="subtitle153">She has always been close to Yu.</p>
+<p begin="6848000000t" end="6882400000t" region="bottomCenter" style="s1" xml:id="subtitle154">But now, she will take great pains<br/>to distance herself.</p>
+<p begin="6889200000t" end="6917200000t" region="bottomCenter" style="s1" xml:id="subtitle155">Yu claims she was framed.</p>
+<p begin="6918000000t" end="6939600000t" region="bottomCenter" style="s1" xml:id="subtitle156">Like a madwoman, she shattered<br/>the vessel of poison wine.</p>
+<p begin="6940400000t" end="6974400000t" region="bottomCenter" style="s1" xml:id="subtitle157">She also cursed the young mistress<br/>in a venomous tone. It’s an outrage.</p>
+<p begin="6985200000t" end="7014800000t" region="bottomCenter" style="s1" xml:id="subtitle158">Leave her be.<br/>It is merely her last-ditch struggle.</p>
+<p begin="7029600000t" end="7051200000t" region="bottomCenter" style="s1" xml:id="subtitle159">Mei and Huan, the hour is late.</p>
+<p begin="7060800000t" end="7077600000t" region="bottomCenter" style="s1" xml:id="subtitle160">I must return.</p>
+<p begin="7087600000t" end="7116800000t" region="bottomCenter" style="s1" xml:id="subtitle161">- Please take care.<br/>- Lingrong, farewell.</p>
+<p begin="7127600000t" end="7164000000t" region="bottomCenter" style="s1" xml:id="subtitle162">Let go of me! Keep your hands off!</p>
+<p begin="7226800000t" end="7248800000t" region="bottomCenter" style="s1" xml:id="subtitle163">Second Attendant An,<br/>why have you come here?</p>
+<p begin="7249600000t" end="7285200000t" region="bottomCenter" style="s1" xml:id="subtitle164">Zhen has heard that Yu is cursing her.<br/>She asked me to look into it.</p>
+<p begin="7286000000t" end="7304800000t" region="bottomCenter" style="s1" xml:id="subtitle165">Yu is decreed to take her own life.</p>
+<p begin="7305600000t" end="7336000000t" region="bottomCenter" style="s1" xml:id="subtitle166">But the madwoman ruined the poison wine<br/>and tore up the silk noose.</p>
+<p begin="7336800000t" end="7358000000t" region="bottomCenter" style="s1" xml:id="subtitle167">I am truly at a loss.</p>
+<p begin="7358800000t" end="7395200000t" region="bottomCenter" style="s1" xml:id="subtitle168">You’ve served His Majesty with distinction<br/>and have long experience in the palace.</p>
+<p begin="7400800000t" end="7424800000t" region="bottomCenter" style="s1" xml:id="subtitle169">You certainly should be able<br/>to discern His Majesty’s intentions.</p>
+<p begin="7430000000t" end="7462800000t" region="bottomCenter" style="s1" xml:id="subtitle170">- Young mistress, do you mean–<br/>- She is decreed to take her own life.</p>
+<p begin="7463600000t" end="7493600000t" region="bottomCenter" style="s1" xml:id="subtitle171">So long as she lives no more,<br/>your duty has been fulfilled.</p>
+<p begin="7500800000t" end="7528800000t" region="bottomCenter" style="s1" xml:id="subtitle172">Who will care if it was accomplished<br/>one way or another?</p>
+<p begin="7534800000t" end="7547600000t" region="bottomCenter" style="s1" xml:id="subtitle173">I understand.</p>
+<p begin="7548400000t" end="7567600000t" region="bottomCenter" style="s1" xml:id="subtitle174">Your servant will see you out.</p>
+<p begin="7568400000t" end="7608400000t" region="bottomCenter" style="s1" xml:id="subtitle175">Your Majesty, please help me!</p>
+<p begin="7617200000t" end="7636800000t" region="bottomCenter" style="s1" xml:id="subtitle176">Your Majesty!</p>
+<p begin="7654400000t" end="7694000000t" region="bottomCenter" style="s1" xml:id="subtitle177">Zhen Huan, fate will bring you<br/>to a miserable end!</p>
+<p begin="7694800000t" end="7716800000t" region="bottomCenter" style="s1" xml:id="subtitle178">I must let Zhen know</p>
+<p begin="7717600000t" end="7741200000t" region="bottomCenter" style="s1" xml:id="subtitle179">that I did it for her own good.</p>
+<p begin="7748800000t" end="7774000000t" region="bottomCenter" style="s1" xml:id="subtitle180">Lady Wan and Lady Shen,<br/>may good fortune be with you.</p>
+<p begin="7782000000t" end="7805600000t" region="bottomCenter" style="s1" xml:id="subtitle181">I’m here to inform you<br/>that Yu has passed away.</p>
+<p begin="7832400000t" end="7844400000t" region="bottomCenter" style="s1" xml:id="subtitle182">Then it’s settled.</p>
+<p begin="7852400000t" end="7876800000t" region="bottomCenter" style="s1" xml:id="subtitle183">All it requires is a length of bowstring<br/>and it’s neatly done.</p>
+<p begin="7877600000t" end="7893600000t" region="bottomCenter" style="s1" xml:id="subtitle184">You may rest easy now.</p>
+<p begin="7894400000t" end="7915600000t" region="bottomCenter" style="s1" xml:id="subtitle185">- Rest easy?<br/>- Yes, young mistress.</p>
+<p begin="7916400000t" end="7938000000t" region="bottomCenter" style="s1" xml:id="subtitle186">Weren’t you the one who sent Attendant An?</p>
+<p begin="7950400000t" end="7968400000t" region="bottomCenter" style="s1" xml:id="subtitle187">Yu was in a furor.</p>
+<p begin="7969200000t" end="8006400000t" region="bottomCenter" style="s1" xml:id="subtitle188">It was Attendant An’s idea to have me<br/>strangle her and get the job done.</p>
+<p begin="8020000000t" end="8043200000t" region="bottomCenter" style="s1" xml:id="subtitle189">- She was strangled?<br/>- Yes, young mistress.</p>
+<p begin="8044000000t" end="8063200000t" region="bottomCenter" style="s1" xml:id="subtitle190">It was Attendant An’s idea?</p>
+<p begin="8064000000t" end="8101200000t" region="bottomCenter" style="s1" xml:id="subtitle191">Yes, mistress.<br/>Even my master hadn’t thought of that.</p>
+<p begin="8102000000t" end="8128000000t" region="bottomCenter" style="s1" xml:id="subtitle192">So many dislike Yu<br/>that no one will say a word.</p>
+<p begin="8163600000t" end="8190800000t" region="bottomCenter" style="s1" xml:id="subtitle193">- Well done. You may leave.<br/>- Yes, mistress.</p>
+<p begin="8209600000t" end="8227600000t" region="bottomCenter" style="s1" xml:id="subtitle194">- Young mistress.<br/>- Are you all right?</p>
+<p begin="8228400000t" end="8241600000t" region="bottomCenter" style="s1" xml:id="subtitle195">Young mistress, are you well?</p>
+<p begin="8242400000t" end="8266400000t" region="bottomCenter" style="s1" xml:id="subtitle196">She has already died.<br/>Why tell us such an awful thing?</p>
+<p begin="8267200000t" end="8302000000t" region="bottomCenter" style="s1" xml:id="subtitle197">Young mistress, the scent of this incense<br/>will make you feel better.</p>
+<p begin="8318400000t" end="8348400000t" region="bottomCenter" style="s1" xml:id="subtitle198">- I bow before Attendant An.<br/>- Where’s Huan?</p>
+<p begin="8349200000t" end="8387200000t" region="bottomCenter" style="s1" xml:id="subtitle199">She’s having tea with Lady Shen.<br/>I’ll inform her you’ve arrived.</p>
+<p begin="8388000000t" end="8404000000t" region="bottomCenter" style="s1" xml:id="subtitle200">That’s not necessary.</p>
+<p begin="8404800000t" end="8427600000t" region="bottomCenter" style="s1" xml:id="subtitle201">It just so happens that<br/>I’d like some tea myself.</p>
+<p begin="8428400000t" end="8444400000t" region="bottomCenter" style="s1" xml:id="subtitle202">I’ll see myself in.</p>
+<p begin="8455200000t" end="8501600000t" region="bottomCenter" style="s1" xml:id="subtitle203">I never imagined that Lingrong<br/>could be so ruthless.</p>
+<p begin="8509600000t" end="8528000000t" region="bottomCenter" style="s1" xml:id="subtitle204">She did it for our own good.</p>
+<p begin="8542800000t" end="8583200000t" region="bottomCenter" style="s1" xml:id="subtitle205">But it all began with you.<br/>Lingrong was never involved.</p>
+<p begin="8591200000t" end="8638000000t" region="bottomCenter" style="s1" xml:id="subtitle206">Even so, she went to the Cold Palace<br/>and had Yu strangled.</p>
+<p begin="8638800000t" end="8685200000t" region="bottomCenter" style="s1" xml:id="subtitle207">It’s completely unlike the delicate<br/>and gentle manner she’s always had.</p>
+<p begin="8691600000t" end="8711600000t" region="bottomCenter" style="s1" xml:id="subtitle208">A baited cat grows as fierce as a lion.</p>
+<p begin="8712400000t" end="8740000000t" region="bottomCenter" style="s1" xml:id="subtitle209">Not even Su Peisheng knew<br/>how to handle the situation,</p>
+<p begin="8740800000t" end="8761200000t" region="bottomCenter" style="s1" xml:id="subtitle210">but Lingrong was able to settle it tidily.</p>
+<p begin="8770400000t" end="8794800000t" region="bottomCenter" style="s1" xml:id="subtitle211">It’s truly surprising.</p>
+<p begin="8795600000t" end="8826400000t" region="bottomCenter" style="s1" xml:id="subtitle212">It’s very different from the Lingrong<br/>I spend so much time with.</p>
+<p begin="8944800000t" end="8969600000t" region="bottomCenter" style="s1" xml:id="subtitle213">Young mistress, why don’t you sleep?</p>
+<p begin="8978400000t" end="8994400000t" region="bottomCenter" style="s1" xml:id="subtitle214">I’m a bit frightened.</p>
+<p begin="9003600000t" end="9020400000t" region="bottomCenter" style="s1" xml:id="subtitle215">Yu has passed away,</p>
+<p begin="9027600000t" end="9063200000t" region="bottomCenter" style="s1" xml:id="subtitle216">but it hasn’t brought<br/>this matter to an end.</p>
+<p begin="9069200000t" end="9110800000t" region="bottomCenter" style="s1" xml:id="subtitle217">Young mistress, you suspect that Yu<br/>was guided by someone else?</p>
+<p begin="9116800000t" end="9154400000t" region="bottomCenter" style="s1" xml:id="subtitle218">You should have kept her alive<br/>to interrogate her fully.</p>
+<p begin="9163600000t" end="9196400000t" region="bottomCenter" style="s1" xml:id="subtitle219">She hated me to the core.<br/>She would never reveal her master.</p>
+<p begin="9206000000t" end="9228800000t" region="bottomCenter" style="s1" xml:id="subtitle220">She might even accuse us<br/>of framing another in return.</p>
+<p begin="9243600000t" end="9259600000t" region="bottomCenter" style="s1" xml:id="subtitle221">But instead she has died.</p>
+<p begin="9260400000t" end="9298400000t" region="bottomCenter" style="s1" xml:id="subtitle222">The true culprit may be overly relieved,<br/>allowing us to trace the truth.</p>
+<p begin="9326000000t" end="9373600000t" region="bottomCenter" style="s1" xml:id="subtitle223">Then we should make use of Yu’s death.</p>
+<p begin="9484000000t" end="9502400000t" region="bottomCenter" style="s1" xml:id="subtitle224">A ghost!</p>
+<p begin="9510800000t" end="9520800000t" region="bottomCenter" style="s1" xml:id="subtitle225">A ghost!</p>
+<p begin="9526000000t" end="9582800000t" region="bottomCenter" style="s1" xml:id="subtitle226">You’ve all let your imaginations run wild<br/>talking of this ghost nonsense.</p>
+<p begin="9587200000t" end="9606400000t" region="bottomCenter" style="s1" xml:id="subtitle227">I don’t believe in such things.</p>
+<p begin="9607200000t" end="9645600000t" region="bottomCenter" style="s1" xml:id="subtitle228">Those who were hated by Yu in life<br/>would be haunted by her after death.</p>
+<p begin="9646400000t" end="9656400000t" region="bottomCenter" style="s1" xml:id="subtitle229">LADY XIN</p>
+<p begin="9657200000t" end="9687600000t" region="bottomCenter" style="s1" xml:id="subtitle230">- This does not concern us.<br/>- My lady, your words ring true.</p>
+<p begin="9688400000t" end="9708400000t" region="bottomCenter" style="s1" xml:id="subtitle231">There was no other behind Yu’s crime.</p>
+<p begin="9709200000t" end="9738800000t" region="bottomCenter" style="s1" xml:id="subtitle232">Of course she must reap what she has sown.</p>
+<p begin="9739600000t" end="9758400000t" region="bottomCenter" style="s1" xml:id="subtitle233">If she had been guided by another,</p>
+<p begin="9759200000t" end="9787600000t" region="bottomCenter" style="s1" xml:id="subtitle234">she certainly would haunt<br/>the one responsible for her death</p>
+<p begin="9788400000t" end="9817200000t" region="bottomCenter" style="s1" xml:id="subtitle235">asking why she’d been used<br/>as a mere instrument of another’s will.</p>
+<p begin="9983200000t" end="10009600000t" region="bottomCenter" style="s1" xml:id="subtitle236">- What’s that?<br/>- What is it?</p>
+<p begin="10092800000t" end="10110800000t" region="bottomCenter" style="s1" xml:id="subtitle237">- That sounds like Concubine Li.<br/>- It does.</p>
+<p begin="10111600000t" end="10141200000t" region="bottomCenter" style="s1" xml:id="subtitle238">- Jinxi, inform the Empress quickly.<br/>- Yes, mistress.</p>
+<p begin="10142000000t" end="10159600000t" region="bottomCenter" style="s1" xml:id="subtitle239">Let’s go take a look.</p>
+<p begin="10204400000t" end="10214400000t" region="bottomCenter" style="s1" xml:id="subtitle240">A ghost!</p>
+<p begin="10215200000t" end="10238400000t" region="bottomCenter" style="s1" xml:id="subtitle241">It’s late at night. Why are you screaming?</p>
+<p begin="10239200000t" end="10274000000t" region="bottomCenter" style="s1" xml:id="subtitle242">- Be quiet now!<br/>- A ghost! A ghost!</p>
+<p begin="10274800000t" end="10309600000t" region="bottomCenter" style="s1" xml:id="subtitle243">It’s her. Is she coming for us?<br/>Is she here now?</p>
+<p begin="10310400000t" end="10338800000t" region="bottomCenter" style="s1" xml:id="subtitle244">The next one to speak such nonsense<br/>goes directly to the Cold Palace!</p>
+<p begin="10349600000t" end="10377600000t" region="bottomCenter" style="s1" xml:id="subtitle245">Don’t just stand there. Help her up.</p>
+<p begin="10417600000t" end="10436400000t" region="bottomCenter" style="s1" xml:id="subtitle246">It wasn’t me!</p>
+<p begin="10437200000t" end="10459200000t" region="bottomCenter" style="s1" xml:id="subtitle247">I only prepared the medicine!</p>
+<p begin="10460000000t" end="10490800000t" region="bottomCenter" style="s1" xml:id="subtitle248">But I didn’t tell her to harm Lady Wan!<br/>It wasn’t me!</p>
+<p begin="10491600000t" end="10526000000t" region="bottomCenter" style="s1" xml:id="subtitle249">She’s lost her mind. Cover her mouth<br/>and take her to Yikun Palace.</p>
+<p begin="10526800000t" end="10541600000t" region="bottomCenter" style="s1" xml:id="subtitle250">One moment.</p>
+<p begin="10550800000t" end="10566800000t" region="bottomCenter" style="s1" xml:id="subtitle251">My lady, please reconsider.</p>
+<p begin="10567600000t" end="10613200000t" region="bottomCenter" style="s1" xml:id="subtitle252">This happened so suddenly.<br/>We should report to the Empress first.</p>
+<p begin="10619200000t" end="10636000000t" region="bottomCenter" style="s1" xml:id="subtitle253">Do as you see fit.</p>
+<p begin="10636800000t" end="10667600000t" region="bottomCenter" style="s1" xml:id="subtitle254">Concubine Li is in a bad state.<br/>I fear her words will offend the Empress.</p>
+<p begin="10668400000t" end="10692800000t" region="bottomCenter" style="s1" xml:id="subtitle255">There will be time to inform her later.</p>
+<p begin="10700000000t" end="10728000000t" region="bottomCenter" style="s1" xml:id="subtitle256">I assist the Empress<br/>in managing the harem.</p>
+<p begin="10728800000t" end="10751600000t" region="bottomCenter" style="s1" xml:id="subtitle257">Do you think I’m unable<br/>to resolve such trifles?</p>
+<p begin="10752400000t" end="10789200000t" region="bottomCenter" style="s1" xml:id="subtitle258">What Concubine Li said<br/>concerns the poisoning.</p>
+<p begin="10790000000t" end="10818000000t" region="bottomCenter" style="s1" xml:id="subtitle259">I was directly affected.<br/>I have no choice but to intervene.</p>
+<p begin="10818800000t" end="10858400000t" region="bottomCenter" style="s1" xml:id="subtitle260">You two hindered me like that.<br/>Are you opposing me intentionally?</p>
+<p begin="10859200000t" end="10875200000t" region="bottomCenter" style="s1" xml:id="subtitle261">Take her away.</p>
+<p begin="10884000000t" end="10906000000t" region="bottomCenter" style="s1" xml:id="subtitle262">Her Highness the Empress!</p>
+<p begin="10924800000t" end="10947600000t" region="bottomCenter" style="s1" xml:id="subtitle263">Your Highness,<br/>may blessings and peace be with you.</p>
+<p begin="11011600000t" end="11031600000t" region="bottomCenter" style="s1" xml:id="subtitle264">Your Highness,<br/>may good fortune be with you.</p>
+<p begin="11063200000t" end="11080400000t" region="bottomCenter" style="s1" xml:id="subtitle265">You may rise.</p>
+<p begin="11081200000t" end="11101200000t" region="bottomCenter" style="s1" xml:id="subtitle266">Thank you, Your Highness.</p>
+<p begin="11142000000t" end="11166000000t" region="bottomCenter" style="s1" xml:id="subtitle267">You’ve made such a commotion here.</p>
+<p begin="11166800000t" end="11187200000t" region="bottomCenter" style="s1" xml:id="subtitle268">When will I have peace?</p>
+<p begin="11195200000t" end="11209600000t" region="bottomCenter" style="s1" xml:id="subtitle269">What happened to Concubine Li?</p>
+<p begin="11247600000t" end="11279600000t" region="bottomCenter" style="s1" xml:id="subtitle270">Zhou Ninghai, you’re a mere servant.<br/>How dare you cover Concubine Li’s mouth!</p>
+<p begin="11285600000t" end="11302000000t" region="bottomCenter" style="s1" xml:id="subtitle271">This is an outrage!</p>
+<p begin="11302800000t" end="11335200000t" region="bottomCenter" style="s1" xml:id="subtitle272">Your Highness, Concubine Li lost her mind<br/>and was spouting nonsense.</p>
+<p begin="11336000000t" end="11372800000t" region="bottomCenter" style="s1" xml:id="subtitle273">I asked him to cover her mouth,<br/>lest her foul words disturb the others.</p>
+<p begin="11373600000t" end="11393600000t" region="bottomCenter" style="s1" xml:id="subtitle274">You must let her go.</p>
+<p begin="11394400000t" end="11432000000t" region="bottomCenter" style="s1" xml:id="subtitle275">Or did you intend to take her all the way<br/>to Qixiang Palace with her mouth covered?</p>
+<p begin="11490400000t" end="11514400000t" region="bottomCenter" style="s1" xml:id="subtitle276">My lady, save me! Yu is here!</p>
+<p begin="11515200000t" end="11543600000t" region="bottomCenter" style="s1" xml:id="subtitle277">I didn’t order her to do it! It wasn’t me!</p>
+<p begin="11544400000t" end="11558800000t" region="bottomCenter" style="s1" xml:id="subtitle278">Let go!</p>
+<p begin="11559600000t" end="11589600000t" region="bottomCenter" style="s1" xml:id="subtitle279">You’re right. No others were involved.<br/>She herself faced the consequences.</p>
+<p begin="11590400000t" end="11623600000t" region="bottomCenter" style="s1" xml:id="subtitle280">Fear not. Yu is not here.<br/>Return to the palace with me.</p>
+<p begin="11655600000t" end="11693200000t" region="bottomCenter" style="s1" xml:id="subtitle281">Yu is coming! She’s here!<br/>She’s coming for revenge!</p>
+<p begin="11694000000t" end="11707600000t" region="bottomCenter" style="s1" xml:id="subtitle282">What is this?</p>
+<p begin="11713600000t" end="11751600000t" region="bottomCenter" style="s1" xml:id="subtitle283">Your Highness, please help me!<br/>It’s a ghost!</p>
+<p begin="11752400000t" end="11790400000t" region="bottomCenter" style="s1" xml:id="subtitle284">Lunacy! Have you lost your senses?<br/>I can’t allow you to go around like this.</p>
+<p begin="11791200000t" end="11814800000t" region="bottomCenter" style="s1" xml:id="subtitle285">Jiang Fuhai.<br/>Take Concubine Li to Jingren Palace.</p>
+<p begin="11815600000t" end="11831600000t" region="bottomCenter" style="s1" xml:id="subtitle286">Your Highness.</p>
+<p begin="11859600000t" end="11886800000t" region="bottomCenter" style="s1" xml:id="subtitle287">Concubine Li has surely lost her mind.</p>
+<p begin="11887600000t" end="11911600000t" region="bottomCenter" style="s1" xml:id="subtitle288">Will she not disturb you<br/>at peaceful Jingren Palace?</p>
+<p begin="11918400000t" end="11951600000t" region="bottomCenter" style="s1" xml:id="subtitle289">I should take her and care for her.</p>
+<p begin="11952400000t" end="11985200000t" region="bottomCenter" style="s1" xml:id="subtitle290">Jingren Palace is quite spacious.<br/>We can certainly find room for her.</p>
+<p begin="11989600000t" end="12009600000t" region="bottomCenter" style="s1" xml:id="subtitle291">Though Concubine Li is delirious,</p>
+<p begin="12020400000t" end="12059600000t" region="bottomCenter" style="s1" xml:id="subtitle292">her words concern Yu’s poisoning.</p>
+<p begin="12060400000t" end="12096000000t" region="bottomCenter" style="s1" xml:id="subtitle293">It is of great importance.<br/>I must look into this.</p>
+<p begin="12096800000t" end="12139600000t" region="bottomCenter" style="s1" xml:id="subtitle294">Is it inappropriate to let<br/>Concubine Li stay with me?</p>
+<p begin="12146400000t" end="12167200000t" region="bottomCenter" style="s1" xml:id="subtitle295">Your Highness, we bid you good night.</p>
+<p begin="12174800000t" end="12196800000t" region="bottomCenter" style="s1" xml:id="subtitle296">We bid you good night, Your Highness.</p>
+<p begin="12197600000t" end="12228400000t" region="bottomCenter" style="s1" xml:id="subtitle297">- Jiang Fuhai, bring Concubine Li along.<br/>- Yes, Your Highness.</p>
+<p begin="12321200000t" end="12345600000t" region="bottomCenter" style="s1" xml:id="subtitle298">Your Highness,<br/>may blessings and peace be with you.</p>
+<p begin="12346400000t" end="12369600000t" region="bottomCenter" style="s1" xml:id="subtitle299">You may rise. Please take your seats.</p>
+<p begin="12375600000t" end="12396000000t" region="bottomCenter" style="s1" xml:id="subtitle300">Thank you, Your Highness.</p>
+<p begin="12436000000t" end="12483200000t" region="bottomCenter" style="s1" xml:id="subtitle301">I’ve summoned you so early<br/>because I want to know about last night.</p>
+<p begin="12502000000t" end="12524800000t" region="bottomCenter" style="s1" xml:id="subtitle302">Her Highness the Empress Dowager!</p>
+<p begin="12573200000t" end="12603200000t" region="bottomCenter" style="s1" xml:id="subtitle303">We greet the Empress Dowager.<br/>May blessings and peace be with you.</p>
+<p begin="12610400000t" end="12642400000t" region="bottomCenter" style="s1" xml:id="subtitle304">- You may rise.<br/>- Thank you, Your Highness.</p>
+<p begin="12648400000t" end="12683600000t" region="bottomCenter" style="s1" xml:id="subtitle305">Consort Hua visited me earlier<br/>and said that Concubine Li was not well.</p>
+<p begin="12684400000t" end="12700400000t" region="bottomCenter" style="s1" xml:id="subtitle306">So I’ve come to look into it.</p>
+<p begin="12722800000t" end="12761200000t" region="bottomCenter" style="s1" xml:id="subtitle307">Concubine Li is useless.<br/>She couldn’t even take a fright.</p>
+<p begin="12768800000t" end="12805200000t" region="bottomCenter" style="s1" xml:id="subtitle308">The saying is indeed true,<br/>“A guilty conscience needs no accuser.”</p>
+<p begin="12816400000t" end="12838800000t" region="bottomCenter" style="s1" xml:id="subtitle309">But Concubine Li said<br/>that Consort Hua guided her.</p>
+<p begin="12839600000t" end="12881600000t" region="bottomCenter" style="s1" xml:id="subtitle310">What of it? Concubine Li’s words<br/>can only be regarded as madness.</p>
+<p begin="12888000000t" end="12898000000t" region="bottomCenter" style="s1" xml:id="subtitle311">Your Highness–</p>
+<p begin="12898800000t" end="12932400000t" region="bottomCenter" style="s1" xml:id="subtitle312">I know that you have been restrained<br/>by Consort Hua for many years.</p>
+<p begin="12950000000t" end="12991600000t" region="bottomCenter" style="s1" xml:id="subtitle313">She appears not to know her limits.<br/>But the Emperor is fond of her.</p>
+<p begin="12997600000t" end="13019600000t" region="bottomCenter" style="s1" xml:id="subtitle314">And her brother is Nian Gengyao.</p>
+<p begin="13030000000t" end="13048000000t" region="bottomCenter" style="s1" xml:id="subtitle315">Now Concubine Li has lost her mind.</p>
+<p begin="13048800000t" end="13080400000t" region="bottomCenter" style="s1" xml:id="subtitle316">No one will believe<br/>the words of a madwoman.</p>
+<p begin="13081200000t" end="13107200000t" region="bottomCenter" style="s1" xml:id="subtitle317">Send her away from Jingren Palace<br/>to the Cold Palace,</p>
+<p begin="13108000000t" end="13130800000t" region="bottomCenter" style="s1" xml:id="subtitle318">lest she defile your residence.</p>
+<p begin="13131600000t" end="13141600000t" region="bottomCenter" style="s1" xml:id="subtitle319">Yes, Your Highness.</p>
+<p begin="13142400000t" end="13180800000t" region="bottomCenter" style="s1" xml:id="subtitle320">Tell the others that rumors<br/>were running throughout the palace.</p>
+<p begin="13181600000t" end="13208800000t" region="bottomCenter" style="s1" xml:id="subtitle321">The Empress herself had to intervene.</p>
+<p begin="13218000000t" end="13250400000t" region="bottomCenter" style="s1" xml:id="subtitle322">It was you who calmed the harem<br/>and dispelled the rumors.</p>
+<p begin="13262800000t" end="13300800000t" region="bottomCenter" style="s1" xml:id="subtitle323">As for Lady Wan, she is quite clever.</p>
+<p begin="13306800000t" end="13329200000t" region="bottomCenter" style="s1" xml:id="subtitle324">And Lady Shen shows self-possession.</p>
+<p begin="13330000000t" end="13367600000t" region="bottomCenter" style="s1" xml:id="subtitle325">You may let Lady Shen<br/>try managing things in the harem.</p>
+<p begin="13377200000t" end="13389600000t" region="bottomCenter" style="s1" xml:id="subtitle326">I will.</p>
+<p begin="13390400000t" end="13426400000t" region="bottomCenter" style="s1" xml:id="subtitle327">It was His Majesty and Your Highness<br/>who selected those two at the audition.</p>
+<p begin="13439200000t" end="13481600000t" region="bottomCenter" style="s1" xml:id="subtitle328">Then deliver my decree<br/>that Consort Hua must take a rest.</p>
+<p begin="13482400000t" end="13518400000t" region="bottomCenter" style="s1" xml:id="subtitle329">Her assistance in affairs of the harem<br/>is no longer required.</p>
+<p begin="13539600000t" end="13554400000t" region="bottomCenter" style="s1" xml:id="subtitle330">Yes, Your Highness.</p>
+<p begin="13588800000t" end="13600000000t" region="bottomCenter" style="s1" xml:id="subtitle331">I greet Consort Hua.</p>
+<p begin="13655600000t" end="13689200000t" region="bottomCenter" style="s1" xml:id="subtitle332">This is a scorching summer.<br/>It is no surprise that tempers are short.</p>
+<p begin="13690000000t" end="13722000000t" region="bottomCenter" style="s1" xml:id="subtitle333">I know not what I have done wrong.<br/>Please tell me directly, my lady.</p>
+<p begin="13722800000t" end="13742400000t" region="bottomCenter" style="s1" xml:id="subtitle334">I’ll accept your punishment accordingly.</p>
+<p begin="13751600000t" end="13772000000t" region="bottomCenter" style="s1" xml:id="subtitle335">I followed your advice.</p>
+<p begin="13772800000t" end="13801200000t" region="bottomCenter" style="s1" xml:id="subtitle336">I quickly informed the Empress Dowager<br/>of Concubine Li’s madness</p>
+<p begin="13802000000t" end="13822000000t" region="bottomCenter" style="s1" xml:id="subtitle337">in order to distance myself<br/>from those events.</p>
+<p begin="13822800000t" end="13849600000t" region="bottomCenter" style="s1" xml:id="subtitle338">I don’t care that Concubine Li<br/>was sent to the Cold Palace.</p>
+<p begin="13850400000t" end="13880000000t" region="bottomCenter" style="s1" xml:id="subtitle339">But I’ve lost the power to assist<br/>in the affairs of the harem.</p>
+<p begin="13880800000t" end="13916400000t" region="bottomCenter" style="s1" xml:id="subtitle340">All thanks to your brilliant idea,<br/>isn’t that so?</p>
+<p begin="13937600000t" end="13963200000t" region="bottomCenter" style="s1" xml:id="subtitle341">Congratulations, my lady.</p>
+<p begin="13977600000t" end="14013600000t" region="bottomCenter" style="s1" xml:id="subtitle342">To what do I owe the pleasure<br/>of your congratulation?</p>
+<p begin="14020800000t" end="14052400000t" region="bottomCenter" style="s1" xml:id="subtitle343">Anything Concubine Li says will be seen<br/>as the ravings of a madwoman.</p>
+<p begin="14053200000t" end="14069200000t" region="bottomCenter" style="s1" xml:id="subtitle344">Even if the Empress Dowager<br/>and His Majesty</p>
+<p begin="14070000000t" end="14083600000t" region="bottomCenter" style="s1" xml:id="subtitle345">grow suspicious, there is no evidence.</p>
+<p begin="14089600000t" end="14118800000t" region="bottomCenter" style="s1" xml:id="subtitle346">You have lost some power for now,<br/>but kept yourself from harm.</p>
+<p begin="14127600000t" end="14162000000t" region="bottomCenter" style="s1" xml:id="subtitle347">Besides, His Majesty is affectionate.</p>
+<p begin="14162800000t" end="14188800000t" region="bottomCenter" style="s1" xml:id="subtitle348">Your fortune may rise or fall<br/>on His Majesty’s whim.</p>
+<p begin="14189600000t" end="14213600000t" region="bottomCenter" style="s1" xml:id="subtitle349">You make it sound easy!</p>
+<p begin="14214400000t" end="14240400000t" region="bottomCenter" style="s1" xml:id="subtitle350">His Majesty is fascinated with Lady Wan.</p>
+<p begin="14241200000t" end="14258800000t" region="bottomCenter" style="s1" xml:id="subtitle351">And the Empress puts obstacles in my path.</p>
+<p begin="14267600000t" end="14301200000t" region="bottomCenter" style="s1" xml:id="subtitle352">It takes great trouble<br/>to even meet with him once.</p>
+<p begin="14302000000t" end="14322400000t" region="bottomCenter" style="s1" xml:id="subtitle353">My lady, you are most virtuous.</p>
+<p begin="14323200000t" end="14354800000t" region="bottomCenter" style="s1" xml:id="subtitle354">I will gladly do my utmost to make peace<br/>between His Majesty and my lady.</p>
+<p begin="14355600000t" end="14369600000t" region="bottomCenter" style="s1" xml:id="subtitle355">Are you capable of that?</p>
+<p begin="14375600000t" end="14396400000t" region="bottomCenter" style="s1" xml:id="subtitle356">Your Majesty, may blessings be with you.</p>
+<p begin="14397200000t" end="14415600000t" region="bottomCenter" style="s1" xml:id="subtitle357">Your Highness, may blessings be with you.</p>
+<p begin="14421600000t" end="14444800000t" region="bottomCenter" style="s1" xml:id="subtitle358">The sun shines fiercely at this hour.</p>
+<p begin="14445600000t" end="14478400000t" region="bottomCenter" style="s1" xml:id="subtitle359">Why are you walking about<br/>with the Princess?</p>
+<p begin="14479200000t" end="14497200000t" region="bottomCenter" style="s1" xml:id="subtitle360">Come, let me hold her.</p>
+<p begin="14559200000t" end="14588400000t" region="bottomCenter" style="s1" xml:id="subtitle361">I haven’t seen her for a few days.<br/>It seems she has lost some weight.</p>
+<p begin="14589200000t" end="14604400000t" region="bottomCenter" style="s1" xml:id="subtitle362">She has lost her appetite<br/>in the hot weather,</p>
+<p begin="14605200000t" end="14622000000t" region="bottomCenter" style="s1" xml:id="subtitle363">so she has lost some weight.</p>
+<p begin="14622800000t" end="14641200000t" region="bottomCenter" style="s1" xml:id="subtitle364">It has been quite hot.</p>
+<p begin="14642000000t" end="14664800000t" region="bottomCenter" style="s1" xml:id="subtitle365">Why don’t we go to Yuanming Palace<br/>to escape the heat?</p>
+<p begin="14665600000t" end="14698000000t" region="bottomCenter" style="s1" xml:id="subtitle366">Yuanming Palace is ready.<br/>Your Majesty may depart at any time.</p>
+<p begin="14706000000t" end="14722400000t" region="bottomCenter" style="s1" xml:id="subtitle367">Consort Duan is in poor health.</p>
+<p begin="14723200000t" end="14748400000t" region="bottomCenter" style="s1" xml:id="subtitle368">The hot weather<br/>is not good for her recovery.</p>
+<p begin="14755200000t" end="14774400000t" region="bottomCenter" style="s1" xml:id="subtitle369">- Let her come with us.<br/>- Of course.</p>
+<p begin="14782400000t" end="14800400000t" region="bottomCenter" style="s1" xml:id="subtitle370">As for Consort Hua–</p>
+<p begin="14806400000t" end="14847600000t" region="bottomCenter" style="s1" xml:id="subtitle371">Why don’t we let her stay here<br/>to care of the rest of the concubines?</p>
+<p begin="14848400000t" end="14862000000t" region="bottomCenter" style="s1" xml:id="subtitle372">That ornament–</p>
+<p begin="14870400000t" end="14893600000t" region="bottomCenter" style="s1" xml:id="subtitle373">It was a gift I granted to Consort Hua.</p>
+<p begin="14902400000t" end="14914400000t" region="bottomCenter" style="s1" xml:id="subtitle374">Yes, Your Majesty.</p>
+<p begin="14915200000t" end="14945600000t" region="bottomCenter" style="s1" xml:id="subtitle375">Every time Consort Hua wears it,<br/>the Princess smiles.</p>
+<p begin="14951600000t" end="14991600000t" region="bottomCenter" style="s1" xml:id="subtitle376">So Consort Hua gave it to me<br/>to entertain the Princess.</p>
+<p begin="15018000000t" end="15028800000t" region="bottomCenter" style="s1" xml:id="subtitle377">Let her come as well.</p>
+<p begin="15040000000t" end="15051600000t" region="bottomCenter" style="s1" xml:id="subtitle378">Yes, Your Majesty.</p>
+<p begin="15093600000t" end="15128400000t" region="bottomCenter" style="s1" xml:id="subtitle379">It is said that His Majesty prefers<br/>Yuanming Palace. This is my first visit.</p>
+<p begin="15129200000t" end="15153600000t" region="bottomCenter" style="s1" xml:id="subtitle380">Young mistress, I have heard<br/>that Consort Duan is here as well.</p>
+<p begin="15154400000t" end="15178000000t" region="bottomCenter" style="s1" xml:id="subtitle381">We have yet to meet her.</p>
+<p begin="15178800000t" end="15217600000t" region="bottomCenter" style="s1" xml:id="subtitle382">She has been ill for many years.<br/>Someday we will surely meet her.</p>
+<p begin="15238000000t" end="15252800000t" region="bottomCenter" style="s1" xml:id="subtitle383">What is it?</p>
+<p begin="15292800000t" end="15311600000t" region="bottomCenter" style="s1" xml:id="subtitle384">Remarkable archery.</p>
+<p begin="15312400000t" end="15348800000t" region="bottomCenter" style="s1" xml:id="subtitle385">It is a wild pigeon,<br/>known for its dexterity and nimbleness.</p>
+<p begin="15349600000t" end="15383600000t" region="bottomCenter" style="s1" xml:id="subtitle386">It was struck by a single arrow.<br/>The hunter displays remarkable skill.</p>
+<p begin="15395200000t" end="15411600000t" region="bottomCenter" style="s1" xml:id="subtitle387">I greet Lady Wan.</p>
+<p begin="15412400000t" end="15428000000t" region="bottomCenter" style="s1" xml:id="subtitle388">Is His Majesty practicing mounted archery?</p>
+<p begin="15428800000t" end="15464000000t" region="bottomCenter" style="s1" xml:id="subtitle389">Marquess Guo is here. His Majesty<br/>and the Marquess are hunting together.</p>
+<p begin="15464800000t" end="15478000000t" region="bottomCenter" style="s1" xml:id="subtitle390">The Marquess is quite skilled<br/>as an archer.</p>
+<p begin="15478800000t" end="15498800000t" region="bottomCenter" style="s1" xml:id="subtitle391">Even His Majesty praises him for it.</p>
+<p begin="15499600000t" end="15524800000t" region="bottomCenter" style="s1" xml:id="subtitle392">Marquess Guo is versed in music,<br/>chess, poetry and painting.</p>
+<p begin="15525600000t" end="15542400000t" region="bottomCenter" style="s1" xml:id="subtitle393">I did not know he excelled<br/>at archery as well.</p>
+<p begin="15543200000t" end="15581200000t" region="bottomCenter" style="s1" xml:id="subtitle394">You have not been here long enough to see,<br/>but the Marquess excels in many areas.</p>
+<p begin="15640800000t" end="15661200000t" region="bottomCenter" style="s1" xml:id="subtitle395">This imperial doctor is–</p>
+<p begin="15662000000t" end="15672000000t" region="bottomCenter" style="s1" xml:id="subtitle396">LIU BEN</p>
+<p begin="15672800000t" end="15691200000t" region="bottomCenter" style="s1" xml:id="subtitle397">Doctor Jiang<br/>has returned home for mourning.</p>
+<p begin="15692000000t" end="15725600000t" region="bottomCenter" style="s1" xml:id="subtitle398">I was sent by the Imperial Medical Bureau<br/>to check on Lady Shen.</p>
+<p begin="15726400000t" end="15750000000t" region="bottomCenter" style="s1" xml:id="subtitle399">- Doctor Liu, please wait.<br/>- Yes, madam.</p>
+<p begin="15773600000t" end="15800400000t" region="bottomCenter" style="s1" xml:id="subtitle400">From your accent,<br/>it seems that you’re from Jizhou.</p>
+<p begin="15808800000t" end="15842800000t" region="bottomCenter" style="s1" xml:id="subtitle401">I was transferred from Jizhou<br/>and just arrived a few days ago.</p>
+<p begin="15843600000t" end="15870800000t" region="bottomCenter" style="s1" xml:id="subtitle402">What a coincidence.<br/>I’m from Jizhou as well.</p>
+<p begin="15883200000t" end="15907600000t" region="bottomCenter" style="s1" xml:id="subtitle403">It’s a great honor<br/>to meet a fellow countryman.</p>
+<p begin="15944400000t" end="15974400000t" region="bottomCenter" style="s1" xml:id="subtitle404">Your Majesty and Lady Shen,<br/>my congratulations.</p>
+<p begin="15975200000t" end="16017600000t" region="bottomCenter" style="s1" xml:id="subtitle405">You are with child.<br/>More than one month already.</p>
+<p begin="16029200000t" end="16043200000t" region="bottomCenter" style="s1" xml:id="subtitle406">Good.</p>
+<p begin="16052000000t" end="16077200000t" region="bottomCenter" style="s1" xml:id="subtitle407">- You may rise.<br/>- Thank you, Your Majesty.</p>
+<p begin="16086000000t" end="16110000000t" region="bottomCenter" style="s1" xml:id="subtitle408">Where are Lady Shen’s closest maids?</p>
+<p begin="16126400000t" end="16137600000t" region="bottomCenter" style="s1" xml:id="subtitle409">Here.</p>
+<p begin="16138400000t" end="16166400000t" region="bottomCenter" style="s1" xml:id="subtitle410">You two are the personal servants<br/>of Lady Shen.</p>
+<p begin="16167200000t" end="16198000000t" region="bottomCenter" style="s1" xml:id="subtitle411">She is with child and should be<br/>looked after with extra care.</p>
+<p begin="16198800000t" end="16228800000t" region="bottomCenter" style="s1" xml:id="subtitle412">You must report to me<br/>on her condition daily.</p>
+<p begin="16229600000t" end="16239600000t" region="bottomCenter" style="s1" xml:id="subtitle413">Yes, Your Highness.</p>
+<p begin="16240400000t" end="16263600000t" region="bottomCenter" style="s1" xml:id="subtitle414">As usual, the Empress<br/>is meticulous in all matters.</p>
+<p begin="16264400000t" end="16296000000t" region="bottomCenter" style="s1" xml:id="subtitle415">Your Majesty,<br/>now that Lady Shen is expecting.</p>
+<p begin="16296800000t" end="16333600000t" region="bottomCenter" style="s1" xml:id="subtitle416">Shouldn’t we appoint<br/>a reliable doctor for her care?</p>
+<p begin="16334400000t" end="16373600000t" region="bottomCenter" style="s1" xml:id="subtitle417">Your Majesty, the one who was sent<br/>to check on me is Liu Ben.</p>
+<p begin="16380800000t" end="16400800000t" region="bottomCenter" style="s1" xml:id="subtitle418">I have high regard for him.</p>
+<p begin="16401600000t" end="16439200000t" region="bottomCenter" style="s1" xml:id="subtitle419">He and I are from the same province.<br/>May he take charge of my care?</p>
+<p begin="16445200000t" end="16462000000t" region="bottomCenter" style="s1" xml:id="subtitle420">That is good.</p>
+<p begin="16462800000t" end="16486400000t" region="bottomCenter" style="s1" xml:id="subtitle421">Your health comes before all else.</p>
+<p begin="16487200000t" end="16522800000t" region="bottomCenter" style="s1" xml:id="subtitle422">You must take care of yourself<br/>and ensure that there are no mishaps.</p>
+<p begin="16523600000t" end="16535600000t" region="bottomCenter" style="s1" xml:id="subtitle423">Yes, Your Highness.</p>
+<p begin="16551600000t" end="16575200000t" region="bottomCenter" style="s1" xml:id="subtitle424">JIUZHOU QINGYAN HALL<br/>(HALL OF THE NINE CONTINENTS IN PEACE)</p>
+<p begin="16576000000t" end="16616000000t" region="bottomCenter" style="s1" xml:id="subtitle425">Lady Hui, that hairpin is quite delicate.</p>
+<p begin="16627200000t" end="16647200000t" region="bottomCenter" style="s1" xml:id="subtitle426">It must be a new gift<br/>from the Empress Dowager.</p>
+<p begin="16648000000t" end="16659200000t" region="bottomCenter" style="s1" xml:id="subtitle427">Yes, it is.</p>
+<p begin="16660000000t" end="16699600000t" region="bottomCenter" style="s1" xml:id="subtitle428">Her Highness learned of Lady Hui’s<br/>pregnancy, so she had it sent here.</p>
+<p begin="16707600000t" end="16732000000t" region="bottomCenter" style="s1" xml:id="subtitle429">The Gods of Harmony on the hairpin</p>
+<p begin="16732800000t" end="16766000000t" region="bottomCenter" style="s1" xml:id="subtitle430">represent abundant fertility<br/>and good fortune.</p>
+<p begin="16771600000t" end="16817600000t" region="bottomCenter" style="s1" xml:id="subtitle431">This shows that the Empress Dowager<br/>very much looks forward to the newborn.</p>
+<p begin="16879200000t" end="16918000000t" region="bottomCenter" style="s1" xml:id="subtitle432">CONSORT DUAN</p>
+<p begin="16930800000t" end="16970000000t" region="bottomCenter" style="s1" xml:id="subtitle433">Consort Duan!</p>
+<p begin="17039600000t" end="17075600000t" region="bottomCenter" style="s1" xml:id="subtitle434">Your Majesty and Your Highness,<br/>may blessings and peace be with you.</p>
+<p begin="17082800000t" end="17110000000t" region="bottomCenter" style="s1" xml:id="subtitle435">- You may rise.<br/>- Thank you, Your Majesty.</p>
+<p begin="17205200000t" end="17233200000t" region="bottomCenter" style="s1" xml:id="subtitle436">Your Majesty, you are once again<br/>surrounded by new beauties.</p>
+<p begin="17239600000t" end="17269600000t" region="bottomCenter" style="s1" xml:id="subtitle437">Consort Duan has not met<br/>any newcomers for quite some time.</p>
+<p begin="17270400000t" end="17303600000t" region="bottomCenter" style="s1" xml:id="subtitle438">I see that her eye is just as keen<br/>as in the old days.</p>
+<p begin="17309600000t" end="17339600000t" region="bottomCenter" style="s1" xml:id="subtitle439">The sun is shining fiercely,<br/>yet you still rushed here.</p>
+<p begin="17340400000t" end="17376800000t" region="bottomCenter" style="s1" xml:id="subtitle440">It’s just a feast for a child’s birthday,<br/>not any urgent matter.</p>
+<p begin="17383600000t" end="17400400000t" region="bottomCenter" style="s1" xml:id="subtitle441">Wenyi’s first birthday<br/>brings us great joy.</p>
+<p begin="17401200000t" end="17424400000t" region="bottomCenter" style="s1" xml:id="subtitle442">I must pay my respects.</p>
+<p begin="17425200000t" end="17449200000t" region="bottomCenter" style="s1" xml:id="subtitle443">Besides, much time has passed<br/>since I last saw the Princess.</p>
+<p begin="17457600000t" end="17480800000t" region="bottomCenter" style="s1" xml:id="subtitle444">- Take your seat.<br/>- Thank you, Your Majesty.</p>
+<p begin="17491600000t" end="17527600000t" region="bottomCenter" style="s1" xml:id="subtitle445">When last we met,<br/>Princess Wenyi was just one month old.</p>
+<p begin="17535600000t" end="17556400000t" region="bottomCenter" style="s1" xml:id="subtitle446">Your Majesty, I must say,</p>
+<p begin="17562000000t" end="17590000000t" region="bottomCenter" style="s1" xml:id="subtitle447">though the celebration is magnificent,<br/>it feels somewhat restrained.</p>
+<p begin="17598800000t" end="17626400000t" region="bottomCenter" style="s1" xml:id="subtitle448">Since this is a family feast,<br/>and everyone here is family,</p>
+<p begin="17632800000t" end="17662400000t" region="bottomCenter" style="s1" xml:id="subtitle449">may we not dispense with formality?</p>
+<p begin="17663200000t" end="17681200000t" region="bottomCenter" style="s1" xml:id="subtitle450">If you have an idea, just tell us.</p>
+<p begin="17682000000t" end="17721200000t" region="bottomCenter" style="s1" xml:id="subtitle451">Each of the concubines here<br/>possesses different and varied talents.</p>
+<p begin="17729600000t" end="17758400000t" region="bottomCenter" style="s1" xml:id="subtitle452">Let us write down the skills<br/>of each and draw lots.</p>
+<p begin="17759200000t" end="17790800000t" region="bottomCenter" style="s1" xml:id="subtitle453">Whatever is drawn will be performed<br/>to entertain the guests.</p>
+<p begin="17791600000t" end="17811200000t" region="bottomCenter" style="s1" xml:id="subtitle454">Does it please Your Majesty?</p>
+<p begin="17812000000t" end="17850000000t" region="bottomCenter" style="s1" xml:id="subtitle455">The idea is novel. We shall do as you say.</p>
+<p begin="17860000000t" end="17872800000t" region="bottomCenter" style="s1" xml:id="subtitle456">Yes, Your Majesty.</p>
+<p begin="17973200000t" end="18016000000t" region="bottomCenter" style="s1" xml:id="subtitle457">Your Highness, please show us your<br/>calligraphy, writing the word “longevity.”</p>
+<p begin="18026400000t" end="18071200000t" region="bottomCenter" style="s1" xml:id="subtitle458">Seeing as today<br/>is the birthday of Princess Wenyi,</p>
+<p begin="18072000000t" end="18101600000t" region="bottomCenter" style="s1" xml:id="subtitle459">I will write the word “longevity”<br/>as a gift to her.</p>
+<p begin="18112000000t" end="18136000000t" region="bottomCenter" style="s1" xml:id="subtitle460">I express gratitude to Your Highness<br/>on behalf of Wenyi.</p>
+<p begin="18262000000t" end="18284000000t" region="topCenter" style="s1" xml:id="subtitle461">LONGEVITY</p>
+<p begin="18289600000t" end="18321200000t" region="bottomCenter" style="s1" xml:id="subtitle462">The Empress’s calligraphy<br/>grows continually better.</p>
+<p begin="18334400000t" end="18346400000t" region="bottomCenter" style="s1" xml:id="subtitle463">So refined and exquisite.</p>
+<p begin="18375200000t" end="18419600000t" region="bottomCenter" style="s1" xml:id="subtitle464">Your Majesty and Your Highness,<br/>please forgive me.</p>
+<p begin="18427600000t" end="18476800000t" region="bottomCenter" style="s1" xml:id="subtitle465">I’m too weak to stay and enjoy the feast.</p>
+<p begin="18487200000t" end="18522800000t" region="bottomCenter" style="s1" xml:id="subtitle466">You’re indisposed.<br/>You may retire for some rest.</p>
+<p begin="18523600000t" end="18544000000t" region="bottomCenter" style="s1" xml:id="subtitle467">I will see you when time allows.</p>
+<p begin="18544800000t" end="18560800000t" region="bottomCenter" style="s1" xml:id="subtitle468">Thank you, Your Majesty.</p>
+<p begin="18594400000t" end="18617200000t" region="bottomCenter" style="s1" xml:id="subtitle469">My lady, I know that your health is poor,</p>
+<p begin="18618000000t" end="18637600000t" region="bottomCenter" style="s1" xml:id="subtitle470">but you’re leaving so soon.</p>
+<p begin="18638400000t" end="18658400000t" region="bottomCenter" style="s1" xml:id="subtitle471">I’m afraid His Majesty<br/>will be disappointed.</p>
+<p begin="18664400000t" end="18712800000t" region="bottomCenter" style="s1" xml:id="subtitle472">If I stay, I’m afraid those who want<br/>to put on a show will be disappointed.</p>
+<p begin="18724800000t" end="18752000000t" region="bottomCenter" style="s1" xml:id="subtitle473">I dislike such pretentious types.</p>
+<p begin="18752800000t" end="18776800000t" region="bottomCenter" style="s1" xml:id="subtitle474">Let us put them out of sight<br/>and out of mind.</p>
+<p begin="18787200000t" end="18804400000t" region="bottomCenter" style="s1" xml:id="subtitle475">This is for Lady Wan.</p>
+<p begin="18814000000t" end="18834000000t" region="bottomCenter" style="s1" xml:id="subtitle476">Please dance “Flying Wild Goose.”</p>
+<p begin="18879200000t" end="18914800000t" region="bottomCenter" style="s1" xml:id="subtitle477">The dance was created by Consort Mei<br/>of Emperor Xuanzong in the Tang Dynasty.</p>
+<p begin="18915600000t" end="18954000000t" region="bottomCenter" style="s1" xml:id="subtitle478">It was believed lost for many years,<br/>but Empress Chunyuan loved dance.</p>
+<p begin="18961600000t" end="19002800000t" region="bottomCenter" style="s1" xml:id="subtitle479">She attempted to find the original version<br/>and then spent great effort to amend it.</p>
+<p begin="19003600000t" end="19025600000t" region="bottomCenter" style="s1" xml:id="subtitle480">Everyone was profoundly moved<br/>by her dancing.</p>
+<p begin="19031600000t" end="19055600000t" region="bottomCenter" style="s1" xml:id="subtitle481">The whole palace was enchanted.</p>
+<p begin="19063600000t" end="19096800000t" region="bottomCenter" style="s1" xml:id="subtitle482">Lady Wan is still young.<br/>How could she perform “Flying Wild Goose”?</p>
+<p begin="19126000000t" end="19150400000t" region="bottomCenter" style="s1" xml:id="subtitle483">My dancing skills are truly unpresentable.</p>
+<p begin="19151200000t" end="19177600000t" region="bottomCenter" style="s1" xml:id="subtitle484">I’m afraid I will expose myself<br/>to ridicule.</p>
+<p begin="19178400000t" end="19214400000t" region="bottomCenter" style="s1" xml:id="subtitle485">If you are unable to dance,<br/>then no need to impose on yourself.</p>
+<p begin="19215200000t" end="19264400000t" region="bottomCenter" style="s1" xml:id="subtitle486">Empress Chunyuan moved so gracefully.<br/>I doubt that anyone could ever compare.</p>
+<p begin="19281200000t" end="19322400000t" region="bottomCenter" style="s1" xml:id="subtitle487">“Flying Wild Goose” is easy to learn<br/>but difficult to master. Let it be.</p>
+<p begin="19323200000t" end="19342400000t" region="bottomCenter" style="s1" xml:id="subtitle488">She will perform something else.</p>
+<p begin="19348400000t" end="19394000000t" region="bottomCenter" style="s1" xml:id="subtitle489">“Flying Wild Goose” has not been<br/>performed in the palace for a long time.</p>
+<p begin="19394800000t" end="19418800000t" region="bottomCenter" style="s1" xml:id="subtitle490">Its long absence<br/>makes us wish to see it again.</p>
+<p begin="19419600000t" end="19464400000t" region="bottomCenter" style="s1" xml:id="subtitle491">Lady Wan, you may dance in your own way.</p>
+<p begin="19485600000t" end="19511200000t" region="bottomCenter" style="s1" xml:id="subtitle492">Please allow me to prepare.<br/>I’ll return presently.</p>
+<p begin="19653200000t" end="19692800000t" region="bottomCenter" style="s1" xml:id="subtitle493">Your Majesty, the common<br/>musical accompaniment is vulgar.</p>
+<p begin="19693600000t" end="19711600000t" region="bottomCenter" style="s1" xml:id="subtitle494">Please allow me to play the music.</p>
+<p begin="19712400000t" end="19745600000t" region="bottomCenter" style="s1" xml:id="subtitle495">Attendant An will sing<br/>to accompany Lady Wan’s dancing.</p>
+<p begin="19763600000t" end="19782800000t" region="bottomCenter" style="s1" xml:id="subtitle496">With pleasure.</p>
+<p begin="19800000000t" end="19840000000t" region="bottomCenter" style="s1" xml:id="subtitle497">Bring out Consort Dowager Shu’s<br/>Zither of Endless Longing.</p>
+<p begin="19840800000t" end="19862400000t" region="bottomCenter" style="s1" xml:id="subtitle498">The day Consort Shu entered the palace,</p>
+<p begin="19863200000t" end="19891200000t" region="bottomCenter" style="s1" xml:id="subtitle499">the late Emperor granted her<br/>a zither named Endless Longing</p>
+<p begin="19900000000t" end="19940000000t" region="bottomCenter" style="s1" xml:id="subtitle500">and a flute named Eternal Faithfulness<br/>as a token of his love.</p>
+<p begin="19940800000t" end="19956800000t" region="bottomCenter" style="s1" xml:id="subtitle501">After the late Emperor died,</p>
+<p begin="19957600000t" end="19982800000t" region="bottomCenter" style="s1" xml:id="subtitle502">Consort Shu left the palace<br/>for the temple.</p>
+<p begin="19989600000t" end="20022000000t" region="bottomCenter" style="s1" xml:id="subtitle503">The zither and flute were left behind.</p>
+<p begin="20022800000t" end="20048000000t" region="bottomCenter" style="s1" xml:id="subtitle504">Today we have the good fortune<br/>of hearing one of them.</p>
+<p begin="20249200000t" end="20297600000t" region="bottomCenter" style="s1" xml:id="subtitle505"><span style="s1_1">Dance lightly like a startled wild goose</span></p>
+<p begin="20306000000t" end="20352400000t" region="bottomCenter" style="s1" xml:id="subtitle506"><span style="s1_1">Move gracefully like a soaring dragon</span></p>
+<p begin="20363600000t" end="20413200000t" region="bottomCenter" style="s1" xml:id="subtitle507"><span style="s1_1">More glorious</span><br/><span style="s1_1">than the chrysanthemums of autumn</span></p>
+<p begin="20422800000t" end="20464000000t" region="bottomCenter" style="s1" xml:id="subtitle508"><span style="s1_1">More majestic</span><br/><span style="s1_1">than the pines of spring</span></p>
+<p begin="20480800000t" end="20550000000t" region="bottomCenter" style="s1" xml:id="subtitle509"><span style="s1_1">Just like the moon</span><br/><span style="s1_1">mantled in light clouds</span></p>
+<p begin="20598000000t" end="20667200000t" region="bottomCenter" style="s1" xml:id="subtitle510"><span style="s1_1">Swinging like a snowflake</span><br/><span style="s1_1">swirling in the blowing breeze</span></p>
+<p begin="20714800000t" end="20743200000t" region="bottomCenter" style="s1" xml:id="subtitle511"><span style="s1_1">Gazing from a distance</span></p>
+<p begin="20744000000t" end="20801600000t" region="bottomCenter" style="s1" xml:id="subtitle512"><span style="s1_1">As bright as the sun rising</span><br/><span style="s1_1">above the rosy clouds of dawn</span></p>
+<p begin="20802400000t" end="20844000000t" region="bottomCenter" style="s1" xml:id="subtitle513">Her every movement corresponds<br/>to Empress Chunyuan’s.</p>
+<p begin="20857600000t" end="20869600000t" region="bottomCenter" style="s1" xml:id="subtitle514">DUKE DUN</p>
+<p begin="20870400000t" end="20910400000t" region="bottomCenter" style="s1" xml:id="subtitle515">It is beautiful, but lacking innovation.</p>
+<p begin="20916400000t" end="20950000000t" region="bottomCenter" style="s1" xml:id="subtitle516">Innovation is good.<br/>But respect is much more important.</p>
+<p begin="22086400000t" end="22124000000t" region="bottomCenter" style="s1" xml:id="subtitle517">How many more surprises<br/>can we expect from you?</p>
+<p begin="22142800000t" end="22178000000t" region="bottomCenter" style="s1" xml:id="subtitle518">It is a mere performance.<br/>Your Majesty, please don’t laugh.</p>
+<p begin="22182800000t" end="22206400000t" region="bottomCenter" style="s1" xml:id="subtitle519">You’ve danced for some time.<br/>Are you tired?</p>
+<p begin="22218800000t" end="22234800000t" region="bottomCenter" style="s1" xml:id="subtitle520">I am not.</p>
+<p begin="22243200000t" end="22282000000t" region="bottomCenter" style="s1" xml:id="subtitle521">I never saw Empress Chunyuan perform<br/>“Flying Wild Goose” with ingenious grace.</p>
+<p begin="22282800000t" end="22305600000t" region="bottomCenter" style="s1" xml:id="subtitle522">It is truly my loss.</p>
+<p begin="22306400000t" end="22345200000t" region="bottomCenter" style="s1" xml:id="subtitle523">What I performed today<br/>is an imitation of Consort Mei’s dance.</p>
+<p begin="22346000000t" end="22391200000t" region="bottomCenter" style="s1" xml:id="subtitle524">My insignificant skill cannot compare to<br/>the performance of Empress Chunyuan.</p>
+<p begin="22468000000t" end="22483600000t" region="bottomCenter" style="s1" xml:id="subtitle525">Yunli.</p>
+<p begin="22484400000t" end="22526800000t" region="bottomCenter" style="s1" xml:id="subtitle526">The sound of Eternal Faithfulness<br/>must indeed accompany Endless Longing.</p>
+<p begin="22527600000t" end="22554800000t" region="bottomCenter" style="s1" xml:id="subtitle527">Only together do they make<br/>truly unparalleled music.</p>
+<p begin="22575600000t" end="22610400000t" region="bottomCenter" style="s1" xml:id="subtitle528">This is Noble Lady Wan<br/>from the Zhen family.</p>
+<p begin="22622800000t" end="22654400000t" region="bottomCenter" style="s1" xml:id="subtitle529">This is Noble Lady Hui<br/>from the Shen family.</p>
+<p begin="22687200000t" end="22706800000t" region="bottomCenter" style="s1" xml:id="subtitle530">The one who just sang–</p>
+<p begin="22715600000t" end="22739600000t" region="bottomCenter" style="s1" xml:id="subtitle531">- I’m Second Attendant An.<br/>- Rewards.</p>
+<p begin="22764400000t" end="22786000000t" region="bottomCenter" style="s1" xml:id="subtitle532">You, come be seated here.</p>
+<p begin="22798400000t" end="22810400000t" region="bottomCenter" style="s1" xml:id="subtitle533">Thank you, Your Majesty.</p>
+<p begin="22887600000t" end="22910400000t" region="bottomCenter" style="s1" xml:id="subtitle534">We bow in respect before Your Majesty.</p>
+<p begin="22921600000t" end="22937600000t" region="bottomCenter" style="s1" xml:id="subtitle535">What a coincidence. You are all here.</p>
+<p begin="22954400000t" end="22968000000t" region="bottomCenter" style="s1" xml:id="subtitle536">You may rise.</p>
+<p begin="22968800000t" end="22981600000t" region="bottomCenter" style="s1" xml:id="subtitle537">Come here.</p>
+<p begin="23008400000t" end="23035200000t" region="bottomCenter" style="s1" xml:id="subtitle538">How are you? How do you feel today?</p>
+<p begin="23042400000t" end="23073200000t" region="bottomCenter" style="s1" xml:id="subtitle539">I am very well. Thank you, Your Majesty.</p>
+<p begin="23074000000t" end="23093200000t" region="bottomCenter" style="s1" xml:id="subtitle540">Your Majesty, have you dined yet?</p>
+<p begin="23099600000t" end="23142400000t" region="bottomCenter" style="s1" xml:id="subtitle541">I’ve just retained a new chef,<br/>a master in Jiangnan cuisine.</p>
+<p begin="23143200000t" end="23179600000t" region="bottomCenter" style="s1" xml:id="subtitle542">I had dinner in Bitong Study Hall.<br/>Maybe another day.</p>
+<p begin="23186800000t" end="23222000000t" region="bottomCenter" style="s1" xml:id="subtitle543">Your Majesty, the General of Yili<br/>sent us melons in tribute.</p>
+<p begin="23222800000t" end="23239200000t" region="bottomCenter" style="s1" xml:id="subtitle544">Let’s try them together.</p>
+<p begin="23240000000t" end="23270400000t" region="bottomCenter" style="s1" xml:id="subtitle545">- Good. I’ll sample them with you.<br/>- Yes, Your Majesty.</p>
+<p begin="23331600000t" end="23343600000t" region="bottomCenter" style="s1" xml:id="subtitle546">Who is lurking there?</p>
+<p begin="23375200000t" end="23390000000t" region="bottomCenter" style="s1" xml:id="subtitle547">I saw you! Come out now!</p>
+<p begin="23390800000t" end="23421200000t" region="bottomCenter" style="s1" xml:id="subtitle548">Don’t catch me! I’m a servant of Lady Hui!</p>
+<p begin="23444400000t" end="23488400000t" region="bottomCenter" style="s1" xml:id="subtitle549">It’s Fuling, one of Lady Hui’s servants.<br/>Why is she sneaking about?</p>
+<p begin="23489200000t" end="23523600000t" region="bottomCenter" style="s1" xml:id="subtitle550">What is in your hands? What is it?</p>
+<p begin="23536000000t" end="23548800000t" region="bottomCenter" style="s1" xml:id="subtitle551">What?</p>
+<p begin="23558400000t" end="23580800000t" region="bottomCenter" style="s1" xml:id="subtitle552">You try to steal away<br/>with Lady Hui’s belongings?</p>
+<p begin="23581600000t" end="23595600000t" region="bottomCenter" style="s1" xml:id="subtitle553">Young mistress, save me!</p>
+<p begin="23596400000t" end="23621600000t" region="bottomCenter" style="s1" xml:id="subtitle554">How could you? I will not allow it.</p>
+<p begin="23672400000t" end="23702000000t" region="bottomCenter" style="s1" xml:id="subtitle555">- What is this?<br/>- Blood.</p>
+<p begin="23712000000t" end="23736000000t" region="bottomCenter" style="s1" xml:id="subtitle556">Why is there blood on the clothing?</p>
+<p begin="23736800000t" end="23768800000t" region="bottomCenter" style="s1" xml:id="subtitle557">Is it possible that someone<br/>attempted to kill for money?</p>
+<p begin="23783600000t" end="23803600000t" region="bottomCenter" style="s1" xml:id="subtitle558">Do these things belong to Lady Hui?</p>
+<p begin="23809600000t" end="23837200000t" region="bottomCenter" style="s1" xml:id="subtitle559">Why are they stained with blood?</p>
+<p begin="23838000000t" end="23872000000t" region="bottomCenter" style="s1" xml:id="subtitle560">Is it possible that Lady Hui<br/>had her menstruation?</p>
+<p begin="23904400000t" end="23920400000t" region="bottomCenter" style="s1" xml:id="subtitle561">I didn’t.</p>
+<p begin="23926400000t" end="23950800000t" region="bottomCenter" style="s1" xml:id="subtitle562">Your Majesty,<br/>this servant is acting so strangely.</p>
+<p begin="23951600000t" end="23998800000t" region="bottomCenter" style="s1" xml:id="subtitle563">We should send her to the Office<br/>of Punishment for a full interrogation.</p>
+<p begin="24005200000t" end="24042800000t" region="bottomCenter" style="s1" xml:id="subtitle564">I didn’t know you were a thief.<br/>Drag her out and beat her now.</p>
+<p begin="24043600000t" end="24070800000t" region="bottomCenter" style="s1" xml:id="subtitle565">Young mistress,<br/>I was destroying the evidence for you.</p>
+<p begin="24081600000t" end="24104400000t" region="bottomCenter" style="s1" xml:id="subtitle566">Yet you would ruthlessly allow me to die.</p>
+<p begin="24118000000t" end="24151200000t" region="bottomCenter" style="s1" xml:id="subtitle567">Why should I remain loyal to you?</p>
+<p begin="24158400000t" end="24193600000t" region="bottomCenter" style="s1" xml:id="subtitle568">Your Majesty, I dare not<br/>hide the truth from you now.</p>
+<p begin="24202400000t" end="24241600000t" region="bottomCenter" style="s1" xml:id="subtitle569">In fact, our young mistress<br/>was never pregnant at all.</p>
+<p begin="24242400000t" end="24270800000t" region="bottomCenter" style="s1" xml:id="subtitle570">Nor did I steal these clothes.</p>
+<p begin="24271600000t" end="24309200000t" region="bottomCenter" style="s1" xml:id="subtitle571">They were stained two days ago when<br/>the young mistress had her menstruation.</p>
+<p begin="24310000000t" end="24328000000t" region="bottomCenter" style="s1" xml:id="subtitle572">She asked me to get rid of them.</p>
+<p begin="24333200000t" end="24355600000t" region="bottomCenter" style="s1" xml:id="subtitle573">These clothes are solid evidence.</p>
+<p begin="24356400000t" end="24370800000t" region="bottomCenter" style="s1" xml:id="subtitle574">Mei.</p>
+<p begin="24416800000t" end="24450800000t" region="bottomCenter" style="s1" xml:id="subtitle575">Your Majesty, this is slander.</p>
+<p begin="24468400000t" end="24499200000t" region="bottomCenter" style="s1" xml:id="subtitle576">Lady Hui has had a shock.<br/>Summon the imperial doctor.</p>
+<p begin="24500000000t" end="24520000000t" region="bottomCenter" style="s1" xml:id="subtitle577">- Yes, Your Majesty.<br/>- Eunuch Su.</p>
+<p begin="24527200000t" end="24554000000t" region="bottomCenter" style="s1" xml:id="subtitle578">Please call Doctor Liu.<br/>He’s been caring for my pregnancy.</p>
+<p begin="24554800000t" end="24590800000t" region="bottomCenter" style="s1" xml:id="subtitle579">I don’t know if he is on duty tonight.</p>
+<p begin="24591600000t" end="24627600000t" region="bottomCenter" style="s1" xml:id="subtitle580">Young mistress,<br/>Doctor Liu is not on duty today.</p>
+<p begin="24628400000t" end="24656800000t" region="bottomCenter" style="s1" xml:id="subtitle581">- No matter.<br/>- Yes, Your Majesty.</p>
+<p begin="24657600000t" end="24684800000t" region="bottomCenter" style="s1" xml:id="subtitle582">Your Majesty, it’s Doctor Liu<br/>who’s been caring for my pregnancy.</p>
+<p begin="24685600000t" end="24698800000t" region="bottomCenter" style="s1" xml:id="subtitle583">No matter!</p>
+<p begin="24858400000t" end="24896400000t" region="bottomCenter" style="s1" xml:id="subtitle584">Your Majesty,<br/>the young mistress is not with child.</p>
+<p begin="24897200000t" end="24929200000t" region="bottomCenter" style="s1" xml:id="subtitle585">Which imperial doctor diagnosed her?</p>
+<p begin="24957600000t" end="24967600000t" region="bottomCenter" style="s1" xml:id="subtitle586">Your Majesty.</p>
+<p begin="25013200000t" end="25033200000t" region="bottomCenter" style="s1" xml:id="subtitle587">- Su Peisheng.<br/>- Yes, Your Majesty.</p>
+<p begin="25043600000t" end="25078800000t" region="bottomCenter" style="s1" xml:id="subtitle588">Summon Liu Ben at once.</p>
+<p begin="25086000000t" end="25104000000t" region="bottomCenter" style="s1" xml:id="subtitle589">If he dares to resist,<br/>tie him up immediately.</p>
+<p begin="25113200000t" end="25125600000t" region="bottomCenter" style="s1" xml:id="subtitle590">Your Majesty,</p>
+<p begin="25126400000t" end="25148400000t" region="bottomCenter" style="s1" xml:id="subtitle591">when I summoned Doctor Jiang just now,</p>
+<p begin="25149200000t" end="25170400000t" region="bottomCenter" style="s1" xml:id="subtitle592">I had Doctor Liu summoned as well.</p>
+<p begin="25180000000t" end="25217200000t" region="bottomCenter" style="s1" xml:id="subtitle593">But Doctor Liu’s residence<br/>has already been vacated.</p>
+<p begin="25243200000t" end="25266400000t" region="bottomCenter" style="s1" xml:id="subtitle594">A fine state of affairs this is.</p>
+<p begin="25277600000t" end="25307600000t" region="bottomCenter" style="s1" xml:id="subtitle595">Lady Shen, is he not<br/>from the same province as you?</p>
+<p begin="25337600000t" end="25380400000t" region="bottomCenter" style="s1" xml:id="subtitle596">It was you who requested<br/>that he care for you, wasn’t it?</p>
+<p begin="25389200000t" end="25400000000t" region="bottomCenter" style="s1" xml:id="subtitle597">Your Majesty.</p>
+<p begin="25400800000t" end="25433200000t" region="bottomCenter" style="s1" xml:id="subtitle598">Whoever dares intercede for Shen<br/>will receive the same punishment.</p>
+<p begin="25440000000t" end="25456000000t" region="bottomCenter" style="s1" xml:id="subtitle599">Your Majesty.</p>
+<p begin="25472000000t" end="25510800000t" region="bottomCenter" style="s1" xml:id="subtitle600">Your Majesty, Lady Wan<br/>and Lady Hui are quite close.</p>
+<p begin="25516800000t" end="25530000000t" region="bottomCenter" style="s1" xml:id="subtitle601">I’m wondering if that–</p>
+<p begin="25530800000t" end="25543200000t" region="bottomCenter" style="s1" xml:id="subtitle602">Silence!</p>
+<p begin="25575200000t" end="25599600000t" region="bottomCenter" style="s1" xml:id="subtitle603">Your Majesty, please quiet your anger.</p>
+<p begin="25692000000t" end="25714000000t" region="bottomCenter" style="s1" xml:id="subtitle604">You deceived the Empress Dowager<br/>as well as myself.</p>
+<p begin="25714800000t" end="25735600000t" region="bottomCenter" style="s1" xml:id="subtitle605">How dare you flaunt her hairpin!</p>
+<p begin="25755600000t" end="25782400000t" region="bottomCenter" style="s1" xml:id="subtitle606">Your Majesty,<br/>you must care for your health first.</p>
+<p begin="25869600000t" end="25918400000t" region="bottomCenter" style="s1" xml:id="subtitle607">The Noble Lady from the Shen family<br/>has behaved imprudently.</p>
+<p begin="25927600000t" end="25968800000t" region="bottomCenter" style="s1" xml:id="subtitle608">She is demoted to Second Attendant,<br/>deprived of the honorific name Hui</p>
+<p begin="25977600000t" end="25995200000t" region="bottomCenter" style="s1" xml:id="subtitle609">and to be confined to Cunju Hall.</p>
+<p begin="25996000000t" end="26021200000t" region="bottomCenter" style="s1" xml:id="subtitle610">No one is to visit her<br/>without our permission.</p>
+<p begin="26051600000t" end="26091200000t" region="bottomCenter" style="s1" xml:id="subtitle611">Your Majesty, please instruct us<br/>how to deal with Liu Ben and Fuling–</p>
+<p begin="26092000000t" end="26119200000t" region="bottomCenter" style="s1" xml:id="subtitle612">Track down Liu Ben, take him alive.</p>
+<p begin="26120000000t" end="26155200000t" region="bottomCenter" style="s1" xml:id="subtitle613">And Fuling will be sentenced to death.</p>
+<p begin="26185600000t" end="26197600000t" region="bottomCenter" style="s1" xml:id="subtitle614">Mei.</p>
+<p begin="26198400000t" end="26226000000t" region="bottomCenter" style="s1" xml:id="subtitle615">What? Liu Ben escaped?</p>
+<p begin="26232000000t" end="26262400000t" region="bottomCenter" style="s1" xml:id="subtitle616">My lady, please be calm.<br/>I’ve already sent someone to chase him.</p>
+<p begin="26263200000t" end="26300000000t" region="bottomCenter" style="s1" xml:id="subtitle617">Liu Ben knew too much of our plan.<br/>He must not remain alive.</p>
+<p begin="26308000000t" end="26320800000t" region="bottomCenter" style="s1" xml:id="subtitle618">He must be killed on sight.</p>
+<p begin="26327600000t" end="26352000000t" region="bottomCenter" style="s1" xml:id="subtitle619">Catch him alive,<br/>or bring his dead body to me.</p>
+<p begin="26352800000t" end="26390400000t" region="bottomCenter" style="s1" xml:id="subtitle620">I don’t believe a man<br/>can disappear completely.</p>
+<p begin="26391200000t" end="26438800000t" region="bottomCenter" style="s1" xml:id="subtitle621">Liuzhu, tell Xiao Yunzi<br/>to find Doctor Wen Shichu.</p>
+<p begin="26439600000t" end="26470400000t" region="bottomCenter" style="s1" xml:id="subtitle622">Ask him to convey a handwritten letter<br/>from myself to my family</p>
+<p begin="26471200000t" end="26492800000t" region="bottomCenter" style="s1" xml:id="subtitle623">and another letter<br/>to Mei’s grandparents in the capital.</p>
+<p begin="26493600000t" end="26512800000t" region="bottomCenter" style="s1" xml:id="subtitle624">Tell them that we must track down Liu Ben.</p>
+<p begin="26513600000t" end="26529600000t" region="bottomCenter" style="s1" xml:id="subtitle625">I will surely do so.</p>
+<p begin="26622800000t" end="26651200000t" region="bottomCenter" style="s1" xml:id="subtitle626">Young mistress, Fangruo has already done<br/>what you requested of her.</p>
+<p begin="26679600000t" end="26712000000t" region="bottomCenter" style="s1" xml:id="subtitle627">Mistress Meizhuang<br/>asked Fangruo to pass this to you.</p>
+<p begin="26712800000t" end="26734400000t" region="bottomCenter" style="s1" xml:id="subtitle628">It was only to be delivered<br/>into your hands.</p>
+<p begin="26760000000t" end="26792400000t" region="bottomCenter" style="s1" xml:id="subtitle629"><span style="s1_1">Take care of yourself</span><br/><span style="s1_1">and support Lingrong.</span></p>
+<p begin="26817200000t" end="26835600000t" region="bottomCenter" style="s1" xml:id="subtitle630">Mei is trapped<br/>in such a difficult situation</p>
+<p begin="26836400000t" end="26858000000t" region="bottomCenter" style="s1" xml:id="subtitle631">yet still shows consideration for me.</p>
+<p begin="26876800000t" end="26896800000t" region="bottomCenter" style="s1" xml:id="subtitle632">Mistress Meizhuang is right.</p>
+<p begin="26897600000t" end="26939600000t" region="bottomCenter" style="s1" xml:id="subtitle633">At the moment, Attendant An<br/>is the only one you can rely on.</p>
+<p begin="27054800000t" end="27086800000t" region="bottomCenter" style="s1" xml:id="subtitle634">I hear that Princess Wenyi<br/>has been unwell and crying constantly.</p>
+<p begin="27100400000t" end="27130800000t" region="bottomCenter" style="s1" xml:id="subtitle635">I’ll ask the priest to hold<br/>a prayer ceremony to bless her.</p>
+<p begin="27193200000t" end="27209200000t" region="bottomCenter" style="s1" xml:id="subtitle636">Who is singing?</p>
+<p begin="27210000000t" end="27230800000t" region="bottomCenter" style="s1" xml:id="subtitle637">Perhaps a female entertainer<br/>from the palace.</p>
+<p begin="27242400000t" end="27274800000t" region="bottomCenter" style="s1" xml:id="subtitle638">Such a beautiful voice is rarely found.</p>
+<p begin="27275600000t" end="27340400000t" region="bottomCenter" style="s1" xml:id="subtitle639"><span style="s1_1">One must pick a flower</span><br/><span style="s1_1">at the prime of its bloom</span></p>
+<p begin="27347200000t" end="27416400000t" region="bottomCenter" style="s1" xml:id="subtitle640"><span style="s1_1">Do not wait until</span><br/><span style="s1_1">the blossoms fade and fall</span></p>
+<p begin="27454000000t" end="27467600000t" region="bottomCenter" style="s1" xml:id="subtitle641">Huan.</p>
+<p begin="27468400000t" end="27489600000t" region="bottomCenter" style="s1" xml:id="subtitle642">Who is singing there?</p>
+<p begin="27518000000t" end="27540400000t" region="bottomCenter" style="s1" xml:id="subtitle643">- I greet Consort Hua.<br/>- I greet Consort Hua.</p>
+<p begin="27550000000t" end="27572800000t" region="bottomCenter" style="s1" xml:id="subtitle644">- You may rise.<br/>- Thank you.</p>
+<p begin="27579600000t" end="27602800000t" region="bottomCenter" style="s1" xml:id="subtitle645">When did Lady Wan find her voice?</p>
+<p begin="27609200000t" end="27650000000t" region="bottomCenter" style="s1" xml:id="subtitle646">You are skilled in singing and dancing.<br/>This comes as quite a surprise.</p>
+<p begin="27655200000t" end="27688000000t" region="bottomCenter" style="s1" xml:id="subtitle647">I’m not the one who should receive<br/>your praise. I could never sing like that.</p>
+<p begin="27688800000t" end="27708000000t" region="bottomCenter" style="s1" xml:id="subtitle648">It was Second Attendant An.</p>
+<p begin="27726800000t" end="27756400000t" region="bottomCenter" style="s1" xml:id="subtitle649">“One must pick a flower<br/>at the prime of its bloom.”</p>
+<p begin="27764400000t" end="27792800000t" region="bottomCenter" style="s1" xml:id="subtitle650">Flowers are always used<br/>as a symbol for women.</p>
+<p begin="27793600000t" end="27826400000t" region="bottomCenter" style="s1" xml:id="subtitle651">With her song, she aims<br/>to draw the attention of men.</p>
+<p begin="27827200000t" end="27851200000t" region="bottomCenter" style="s1" xml:id="subtitle652">She’s willing to be “picked”<br/>at a moment’s notice.</p>
+<p begin="27858400000t" end="27878000000t" region="bottomCenter" style="s1" xml:id="subtitle653">The title is<br/>“Golden Embroidered Garments.”</p>
+<p begin="27878800000t" end="27898000000t" region="bottomCenter" style="s1" xml:id="subtitle654">It advises us to cherish what we have.</p>
+<p begin="27898800000t" end="27915600000t" region="bottomCenter" style="s1" xml:id="subtitle655">Surely you have mistaken its meaning.</p>
+<p begin="27916400000t" end="27939600000t" region="bottomCenter" style="s1" xml:id="subtitle656">Lady Wan indeed has a glib tongue.</p>
+<p begin="27940400000t" end="27970000000t" region="bottomCenter" style="s1" xml:id="subtitle657">But only a dutiful woman<br/>will be regarded as virtuous,</p>
+<p begin="27970800000t" end="27993200000t" region="bottomCenter" style="s1" xml:id="subtitle658">not one who defies with sophistry.</p>
+<p begin="27994000000t" end="28028000000t" region="bottomCenter" style="s1" xml:id="subtitle659">Lady Wan disregards the rules of decorum<br/>and offends her superiors with her words.</p>
+<p begin="28040000000t" end="28050000000t" region="bottomCenter" style="s1" xml:id="subtitle660">I dare not.</p>
+<p begin="28050800000t" end="28088800000t" region="bottomCenter" style="s1" xml:id="subtitle661">Lady Wan intends no offense.<br/>My lady, please forgive her.</p>
+<p begin="28089600000t" end="28127600000t" region="bottomCenter" style="s1" xml:id="subtitle662">Isn’t it too late to beg for forgiveness<br/>once you’ve already made an error?</p>
+<p begin="28128400000t" end="28147600000t" region="bottomCenter" style="s1" xml:id="subtitle663">I, as the head of the harem,</p>
+<p begin="28148400000t" end="28181200000t" region="bottomCenter" style="s1" xml:id="subtitle664">must spare no effort in instructing you<br/>what rules are to be followed.</p>
+<p begin="28195200000t" end="28213200000t" region="bottomCenter" style="s1" xml:id="subtitle665">- Servants!<br/>- Yes, my lady.</p>
+<p begin="28274000000t" end="28308400000t" region="bottomCenter" style="s1" xml:id="subtitle666">Your Majesty and Your Highness,<br/>may blessings and peace be with you.</p>
+<p begin="28309200000t" end="28338800000t" region="bottomCenter" style="s1" xml:id="subtitle667">What a wonderful voice.</p>
+<p begin="28391600000t" end="28413200000t" region="bottomCenter" style="s1" xml:id="subtitle668">You’ve seldom dressed<br/>in such bright colors.</p>
+<p begin="28433600000t" end="28443600000t" region="bottomCenter" style="s1" xml:id="subtitle669">You may rise.</p>
+<p begin="28462000000t" end="28487200000t" region="bottomCenter" style="s1" xml:id="subtitle670">What is wrong?<br/>You seem out of sorts today.</p>
+<p begin="28488000000t" end="28533200000t" region="bottomCenter" style="s1" xml:id="subtitle671">Here we are in full daylight.<br/>How dare she sing such unseemly songs.</p>
+<p begin="28534000000t" end="28562400000t" region="bottomCenter" style="s1" xml:id="subtitle672">Tell me. What do you think of the song?</p>
+<p begin="28573600000t" end="28606000000t" region="bottomCenter" style="s1" xml:id="subtitle673">Attendant An’s singing<br/>has a heavenly ring to it.</p>
+<p begin="28606800000t" end="28637200000t" region="bottomCenter" style="s1" xml:id="subtitle674">Your Highness praises me too highly.<br/>I am unworthy of such praise.</p>
+<p begin="28645200000t" end="28672400000t" region="bottomCenter" style="s1" xml:id="subtitle675">One must pick a flower<br/>at the prime of its bloom indeed.</p>
+<p begin="28680400000t" end="28708800000t" region="bottomCenter" style="s1" xml:id="subtitle676">- What is your name?<br/>- An Lingrong.</p>
+<p begin="28759200000t" end="28774000000t" region="bottomCenter" style="s1" xml:id="subtitle677">Lovely.</p>
+<p begin="28774800000t" end="28798800000t" region="bottomCenter" style="s1" xml:id="subtitle678">Your voice is refreshing, as are you.</p>
+<p begin="28820000000t" end="28861200000t" region="bottomCenter" style="s1" xml:id="subtitle679">Your Majesty, I’m a little tired.<br/>I’d like to retire.</p>
+<p begin="28862000000t" end="28904400000t" region="bottomCenter" style="s1" xml:id="subtitle680">Very well. Liuzhu, come.<br/>Escort Lady Wan so she may rest.</p>
+<p begin="28905200000t" end="28918800000t" region="bottomCenter" style="s1" xml:id="subtitle681">Yes, Your Majesty.</p>
+<p begin="28927600000t" end="28950800000t" region="bottomCenter" style="s1" xml:id="subtitle682">I will return with Huan as well.</p>
+<p begin="29086800000t" end="29152800000t" region="bottomCenter" style="s1" xml:id="subtitle683"><span style="s1_1">I advise you not to covet</span><br/><span style="s1_1">golden embroidered garments</span></p>
+<p begin="29153600000t" end="29182800000t" region="bottomCenter" style="s1" xml:id="subtitle684">I very much enjoyed Attendant An’s song.</p>
+<p begin="29183600000t" end="29216800000t" region="bottomCenter" style="s1" xml:id="subtitle685">Have her sing it again<br/>for His Majesty and myself.</p>
+<p begin="29217600000t" end="29232400000t" region="bottomCenter" style="s1" xml:id="subtitle686">Summon Attendant An.</p>
+<p begin="29233200000t" end="29246000000t" region="bottomCenter" style="s1" xml:id="subtitle687">Yes, Your Highness.</p>
+<p begin="29266000000t" end="29335200000t" region="bottomCenter" style="s1" xml:id="subtitle688"><span style="s1_1">One must pick a flower</span><br/><span style="s1_1">at the prime of its bloom</span></p>
+<p begin="29354800000t" end="29423600000t" region="bottomCenter" style="s1" xml:id="subtitle689"><span style="s1_1">Do not wait until</span><br/><span style="s1_1">the blossoms fade and fall</span></p>
+<p begin="29443600000t" end="29512800000t" region="bottomCenter" style="s1" xml:id="subtitle690"><span style="s1_1">Do not wait until</span><br/><span style="s1_1">the blossoms fade and fall</span></p>
+<p begin="29606000000t" end="29626400000t" region="bottomCenter" style="s1" xml:id="subtitle691">LADY FUCHA</p>
+<p begin="29638800000t" end="29691600000t" region="bottomCenter" style="s1" xml:id="subtitle692">Lady Fucha, are you unwell?<br/>Did you eat something unclean?</p>
+<p begin="29698400000t" end="29726000000t" region="bottomCenter" style="s1" xml:id="subtitle693">I inform Your Highness<br/>that she is not ill.</p>
+<p begin="29726800000t" end="29737200000t" region="bottomCenter" style="s1" xml:id="subtitle694">She is with child.</p>
+<p begin="29738000000t" end="29754000000t" region="bottomCenter" style="s1" xml:id="subtitle695">Nonsense.</p>
+<p begin="29762000000t" end="29806800000t" region="bottomCenter" style="s1" xml:id="subtitle696">Is it true? Wonderful.<br/>It is a joyous occurrence.</p>
+<p begin="29812800000t" end="29832800000t" region="bottomCenter" style="s1" xml:id="subtitle697">Congratulations are due to His Majesty.</p>
+<p begin="29833600000t" end="29868800000t" region="bottomCenter" style="s1" xml:id="subtitle698">Is it true?<br/>Has an imperial doctor confirmed it?</p>
+<p begin="29869600000t" end="29892800000t" region="bottomCenter" style="s1" xml:id="subtitle699">Two imperial doctors have confirmed it.</p>
+<p begin="29893600000t" end="29928000000t" region="bottomCenter" style="s1" xml:id="subtitle700">I’m not the type to say anything<br/>to win His Majesty’s favor.</p>
+<p begin="29928800000t" end="29972800000t" region="bottomCenter" style="s1" xml:id="subtitle701">If pregnant, I say yes. If not, I say no.<br/>How could I lie about an imperial heir?</p>
+<p begin="29973600000t" end="30000400000t" region="bottomCenter" style="s1" xml:id="subtitle702">Isn’t it enough to have Attendant Shen<br/>as an example?</p>
+<p begin="30001200000t" end="30028000000t" region="bottomCenter" style="s1" xml:id="subtitle703">Lady Wan, don’t you agree?</p>
+<p begin="30078000000t" end="30114400000t" region="bottomCenter" style="s1" xml:id="subtitle704">Young mistress, it’s quite late.<br/>Try to sleep now.</p>
+<p begin="30115200000t" end="30160400000t" region="bottomCenter" style="s1" xml:id="subtitle705">Lady Fucha is with child after<br/>serving His Majesty only a few times.</p>
+<p begin="30167600000t" end="30199200000t" region="bottomCenter" style="s1" xml:id="subtitle706">Yet it has never happened to me.</p>
+<p begin="30213600000t" end="30246400000t" region="bottomCenter" style="s1" xml:id="subtitle707">I can’t help but think that I lack<br/>blessings and good fortune.</p>
+<p begin="30247200000t" end="30259200000t" region="bottomCenter" style="s1" xml:id="subtitle708">How can it be?</p>
+<p begin="30268400000t" end="30291600000t" region="bottomCenter" style="s1" xml:id="subtitle709">Mistress, you are fated to enjoy<br/>blessings and good fortune.</p>
+<p begin="30292400000t" end="30316400000t" region="bottomCenter" style="s1" xml:id="subtitle710">Conceiving a child is only<br/>a matter of time.</p>
+<p begin="30317200000t" end="30334800000t" region="bottomCenter" style="s1" xml:id="subtitle711">Do not worry at all, mistress.</p>
+<p begin="30348000000t" end="30381600000t" region="bottomCenter" style="s1" xml:id="subtitle712">However, I learned from the city guards</p>
+<p begin="30382400000t" end="30411200000t" region="bottomCenter" style="s1" xml:id="subtitle713">that an epidemic has broken out<br/>in the capital city.</p>
+<p begin="30412000000t" end="30430800000t" region="bottomCenter" style="s1" xml:id="subtitle714">It’s possible that<br/>it may spread to the palace.</p>
+<p begin="30444800000t" end="30468400000t" region="bottomCenter" style="s1" xml:id="subtitle715">Young mistress,<br/>you must take extra caution.</p>
+<p begin="30492000000t" end="30502400000t" region="bottomCenter" style="s1" xml:id="subtitle716">Sleep now.</p>
+<p begin="30554800000t" end="30580400000t" region="bottomCenter" style="s1" xml:id="subtitle717">My lady, the epidemic<br/>has reached the palace.</p>
+<p begin="30591600000t" end="30603200000t" region="bottomCenter" style="s1" xml:id="subtitle718">What?</p>
+<p begin="30604000000t" end="30623200000t" region="bottomCenter" style="s1" xml:id="subtitle719">Xiao Dezi, a eunuch<br/>in our palace was infected.</p>
+<p begin="30624000000t" end="30648400000t" region="bottomCenter" style="s1" xml:id="subtitle720">The Imperial Household Department<br/>plans to remove him.</p>
+<p begin="30659200000t" end="30670800000t" region="bottomCenter" style="s1" xml:id="subtitle721">A report, my lady.</p>
+<p begin="30671600000t" end="30706400000t" region="bottomCenter" style="s1" xml:id="subtitle722">The Empress sends word that<br/>the epidemic has reached the palace.</p>
+<p begin="30707200000t" end="30724000000t" region="bottomCenter" style="s1" xml:id="subtitle723">Your assistance is required.</p>
+<p begin="30724800000t" end="30744400000t" region="bottomCenter" style="s1" xml:id="subtitle724">The eastern six palaces have been doused</p>
+<p begin="30745200000t" end="30764400000t" region="bottomCenter" style="s1" xml:id="subtitle725">with boiling liquor<br/>and mugwort is burning.</p>
+<p begin="30765200000t" end="30787200000t" region="bottomCenter" style="s1" xml:id="subtitle726">The western six palaces<br/>will be under your management.</p>
+<p begin="30800000000t" end="30814000000t" region="bottomCenter" style="s1" xml:id="subtitle727">Very well.</p>
+<p begin="30820000000t" end="30833200000t" region="bottomCenter" style="s1" xml:id="subtitle728">Her Highness also states</p>
+<p begin="30834000000t" end="30870400000t" region="bottomCenter" style="s1" xml:id="subtitle729">that mugwort must be burned at Cunju Hall<br/>where Attendant Shen resides as well.</p>
+<p begin="30871200000t" end="30894400000t" region="bottomCenter" style="s1" xml:id="subtitle730">No palace among the six is to be left out.</p>
+<p begin="30895200000t" end="30932800000t" region="bottomCenter" style="s1" xml:id="subtitle731">Report to Her Highness<br/>that I will get the job done.</p>
+<p begin="30942800000t" end="30955600000t" region="bottomCenter" style="s1" xml:id="subtitle732">Yes, my lady.</p>
+<p begin="30978000000t" end="31024800000t" region="bottomCenter" style="s1" xml:id="subtitle733">I was unable to eliminate Shen Meizhuang.<br/>She has tremendous luck.</p>
+<p begin="31032400000t" end="31048400000t" region="bottomCenter" style="s1" xml:id="subtitle734">But if Attendant Shen should die,</p>
+<p begin="31049200000t" end="31086400000t" region="bottomCenter" style="s1" xml:id="subtitle735">even though Liu Ben were to be caught,<br/>there would be no one to confront him.</p>
+<p begin="31094400000t" end="31128400000t" region="bottomCenter" style="s1" xml:id="subtitle736">Is there anything of use to us<br/>in Xiao Dezi’s quarters?</p>
+<p begin="31136400000t" end="31168000000t" region="bottomCenter" style="s1" xml:id="subtitle737">There is a tea set that he used<br/>after contracting the disease.</p>
+<p begin="31174000000t" end="31186800000t" region="bottomCenter" style="s1" xml:id="subtitle738">Send it to Cunju Hall.</p>
+<p begin="31200400000t" end="31210400000t" region="bottomCenter" style="s1" xml:id="subtitle739">Understood.</p>
+<p begin="31310800000t" end="31330800000t" region="bottomCenter" style="s1" xml:id="subtitle740">Two patients died this morning.</p>
+<p begin="31331600000t" end="31353600000t" region="bottomCenter" style="s1" xml:id="subtitle741">This epidemic threatens us all.</p>
+<p begin="31354400000t" end="31378400000t" region="bottomCenter" style="s1" xml:id="subtitle742">Not even the Imperial Medical Bureau<br/>has a remedy.</p>
+<p begin="31388800000t" end="31404800000t" region="bottomCenter" style="s1" xml:id="subtitle743">Young mistress, bad news!</p>
+<p begin="31405600000t" end="31418400000t" region="bottomCenter" style="s1" xml:id="subtitle744">Slowly.</p>
+<p begin="31419200000t" end="31442400000t" region="bottomCenter" style="s1" xml:id="subtitle745">Xianfu Palace informs us<br/>that Mistress Meizhuang is ill.</p>
+<p begin="31466800000t" end="31485200000t" region="bottomCenter" style="s1" xml:id="subtitle746">Young mistress.</p>
+<p begin="31486000000t" end="31515600000t" region="bottomCenter" style="s1" xml:id="subtitle747">Mistress Meizhuang is already ill.<br/>You must think of your own health.</p>
+<p begin="31516400000t" end="31558800000t" region="bottomCenter" style="s1" xml:id="subtitle748">- Just one look.<br/>- Who else will defend Mistress Meizhuang?</p>
+<p begin="31606400000t" end="31619200000t" region="bottomCenter" style="s1" xml:id="subtitle749">Young mistress.</p>
+<p begin="31644800000t" end="31672000000t" region="bottomCenter" style="s1" xml:id="subtitle750">Please take good care of Mei.</p>
+<p begin="31690800000t" end="31725600000t" region="bottomCenter" style="s1" xml:id="subtitle751">If I had one request for you,<br/>could you help me?</p>
+<p begin="31734800000t" end="31774800000t" region="bottomCenter" style="s1" xml:id="subtitle752">I must remind you, if you succeed,<br/>you may receive no recognition.</p>
+<p begin="31775600000t" end="31794000000t" region="bottomCenter" style="s1" xml:id="subtitle753">And if others find out, you may be blamed.</p>
+<p begin="31801200000t" end="31837200000t" region="bottomCenter" style="s1" xml:id="subtitle754">But if I don’t do this,<br/>I’m afraid my heart will never rest easy.</p>
+<p begin="31838000000t" end="31872000000t" region="bottomCenter" style="s1" xml:id="subtitle755">To give you peace,<br/>I’m prepared to do all that I can.</p>
+<p begin="31882400000t" end="31900400000t" region="bottomCenter" style="s1" xml:id="subtitle756">I am at your disposal.</p>
+<p begin="31954400000t" end="31989600000t" region="bottomCenter" style="s1" xml:id="subtitle757">Doctor Wen, you’re working so hard.<br/>Haven’t you taken a rest yet?</p>
+<p begin="32002400000t" end="32015600000t" region="bottomCenter" style="s1" xml:id="subtitle758">Doctor Jiang.</p>
+<p begin="32022800000t" end="32062000000t" region="bottomCenter" style="s1" xml:id="subtitle759">Recently you have been caring<br/>for all the concubines by day</p>
+<p begin="32062800000t" end="32073200000t" region="bottomCenter" style="s1" xml:id="subtitle760">JIANG SHEN</p>
+<p begin="32074000000t" end="32097600000t" region="bottomCenter" style="s1" xml:id="subtitle761">while also working on a remedy<br/>for the epidemic by night.</p>
+<p begin="32098400000t" end="32117600000t" region="bottomCenter" style="s1" xml:id="subtitle762">You must be exhausted.</p>
+<p begin="32118400000t" end="32134400000t" region="bottomCenter" style="s1" xml:id="subtitle763">Is there any progress?</p>
+<p begin="32149600000t" end="32183600000t" region="bottomCenter" style="s1" xml:id="subtitle764">Not yet.<br/>But I’ll do my best to develop it.</p>
+<p begin="32184400000t" end="32205200000t" region="bottomCenter" style="s1" xml:id="subtitle765">Then please return to your work.</p>
+<p begin="32214400000t" end="32262400000t" region="bottomCenter" style="s1" xml:id="subtitle766">I’ve secretly arranged<br/>for Doctor Wen to treat her.</p>
+<p begin="32263200000t" end="32297600000t" region="bottomCenter" style="s1" xml:id="subtitle767">However, we’re short of medicine,<br/>and her diet is not good.</p>
+<p begin="32307600000t" end="32350800000t" region="bottomCenter" style="s1" xml:id="subtitle768">Mistress Meizhuang<br/>isn’t getting any better.</p>
+<p begin="32380000000t" end="32406400000t" region="bottomCenter" style="s1" xml:id="subtitle769">Congratulations, young mistress.<br/>We’ve found the one you requested.</p>
+<p begin="32412400000t" end="32423200000t" region="bottomCenter" style="s1" xml:id="subtitle770">So it is you.</p>
+<p begin="32435200000t" end="32470400000t" region="bottomCenter" style="s1" xml:id="subtitle771">I never believed that Attendant Shen<br/>would feign pregnancy to win favor.</p>
+<p begin="32471200000t" end="32492000000t" region="bottomCenter" style="s1" xml:id="subtitle772">So I secretly began to search for Liu Ben.</p>
+<p begin="32492800000t" end="32523600000t" region="bottomCenter" style="s1" xml:id="subtitle773">Our efforts have finally paid off.<br/>He was caught at the border of Yongzhou.</p>
+<p begin="32538800000t" end="32566800000t" region="bottomCenter" style="s1" xml:id="subtitle774">We will not torture you<br/>to force a confession.</p>
+<p begin="32567600000t" end="32598000000t" region="bottomCenter" style="s1" xml:id="subtitle775">But if you dare tell any lies,</p>
+<p begin="32606800000t" end="32636400000t" region="bottomCenter" style="s1" xml:id="subtitle776">you will suffer pain<br/>much worse than death.</p>
+<p begin="32642400000t" end="32667600000t" region="bottomCenter" style="s1" xml:id="subtitle777">Your Majesty, Mistress Meizhuang<br/>was never pregnant.</p>
+<p begin="32678800000t" end="32690400000t" region="bottomCenter" style="s1" xml:id="subtitle778">I’m aware of that.</p>
+<p begin="32691200000t" end="32725200000t" region="bottomCenter" style="s1" xml:id="subtitle779">But Mistress Meizhuang did not know<br/>that she was not with child.</p>
+<p begin="32732400000t" end="32770400000t" region="bottomCenter" style="s1" xml:id="subtitle780">When I started taking care of her,<br/>her menstruation had already stopped.</p>
+<p begin="32771200000t" end="32815200000t" region="bottomCenter" style="s1" xml:id="subtitle781">The symptoms of dizziness and nausea<br/>were caused by medicine, not pregnancy.</p>
+<p begin="32823600000t" end="32854400000t" region="bottomCenter" style="s1" xml:id="subtitle782">I received orders<br/>before examining Mistress Meizhuang.</p>
+<p begin="32855200000t" end="32884800000t" region="bottomCenter" style="s1" xml:id="subtitle783">No matter what,<br/>I was to report that she was pregnant.</p>
+<p begin="32885600000t" end="32917200000t" region="bottomCenter" style="s1" xml:id="subtitle784">Received orders? From whom?</p>
+<p begin="32918000000t" end="32930800000t" region="bottomCenter" style="s1" xml:id="subtitle785">From–</p>
+<p begin="32936800000t" end="32965200000t" region="bottomCenter" style="s1" xml:id="subtitle786">She planned to have you killed.<br/>Will you still hide her guilt?</p>
+<p begin="32983200000t" end="33009600000t" region="bottomCenter" style="s1" xml:id="subtitle787">Consort Hua. It was Consort Hua.</p>
+<p begin="33016000000t" end="33036000000t" region="bottomCenter" style="s1" xml:id="subtitle788">That day, Consort Hua<br/>gave me a sum of money</p>
+<p begin="33036800000t" end="33061200000t" region="bottomCenter" style="s1" xml:id="subtitle789">and told me to leave Yuanming Palace<br/>at once to avoid trouble.</p>
+<p begin="33062000000t" end="33095200000t" region="bottomCenter" style="s1" xml:id="subtitle790">As soon as I entered the city,<br/>I was chased by killers.</p>
+<p begin="33096000000t" end="33132800000t" region="bottomCenter" style="s1" xml:id="subtitle791">I was forced to become an outcast<br/>and wander like a homeless dog.</p>
+<p begin="33144400000t" end="33183200000t" region="bottomCenter" style="s1" xml:id="subtitle792">Xiao Yunzi, keep a close watch over him.<br/>Don’t let anything happen.</p>
+<p begin="33184000000t" end="33196000000t" region="bottomCenter" style="s1" xml:id="subtitle793">Yes, young mistress.</p>
+<p begin="33196800000t" end="33208400000t" region="bottomCenter" style="s1" xml:id="subtitle794">Get up.</p>
+<p begin="33218400000t" end="33234400000t" region="bottomCenter" style="s1" xml:id="subtitle795">Your Majesty, please quiet your anger.</p>
+<p begin="33235200000t" end="33276000000t" region="bottomCenter" style="s1" xml:id="subtitle796">Is it possible Liu Ben<br/>did not reveal the whole truth?</p>
+<p begin="33276800000t" end="33297600000t" region="bottomCenter" style="s1" xml:id="subtitle797">Actually there are many doubts<br/>about what happened that day.</p>
+<p begin="33298400000t" end="33318800000t" region="bottomCenter" style="s1" xml:id="subtitle798">But we have no evidence.</p>
+<p begin="33319600000t" end="33344000000t" region="bottomCenter" style="s1" xml:id="subtitle799">If Attendant Shen truly did have<br/>her menstruation a few days before,</p>
+<p begin="33349200000t" end="33374800000t" region="bottomCenter" style="s1" xml:id="subtitle800">the stained clothes could have<br/>been discarded at any time.</p>
+<p begin="33375600000t" end="33390800000t" region="bottomCenter" style="s1" xml:id="subtitle801">Why was it done in your presence?</p>
+<p begin="33425600000t" end="33438800000t" region="bottomCenter" style="s1" xml:id="subtitle802">Consort Hua.</p>
+<p begin="33458000000t" end="33468000000t" region="bottomCenter" style="s1" xml:id="subtitle803">Very well.</p>
+<p begin="33478800000t" end="33500400000t" region="bottomCenter" style="s1" xml:id="subtitle804">We have wronged Mei.</p>
+<p begin="33501200000t" end="33528800000t" region="bottomCenter" style="s1" xml:id="subtitle805">Release her and restore her rank at once.</p>
+<p begin="33529600000t" end="33554000000t" region="bottomCenter" style="s1" xml:id="subtitle806">- I’m afraid she can’t go out now.<br/>- Did she–</p>
+<p begin="33554800000t" end="33582000000t" region="bottomCenter" style="s1" xml:id="subtitle807">No, Mei did not take her life.</p>
+<p begin="33591200000t" end="33622000000t" region="bottomCenter" style="s1" xml:id="subtitle808">Unfortunately, she’s contracted<br/>the disease in her extreme sorrow.</p>
+<p begin="33629200000t" end="33681200000t" region="bottomCenter" style="s1" xml:id="subtitle809">We shall order the imperial doctors<br/>to treat Noble Lady Hui at once.</p>
+<p begin="33682000000t" end="33710000000t" region="bottomCenter" style="s1" xml:id="subtitle810">We must let her live<br/>a good life from now on.</p>
+<p begin="33735200000t" end="33761200000t" region="bottomCenter" style="s1" xml:id="subtitle811">Your Majesty,<br/>please forgive my impertinence.</p>
+<p begin="33762000000t" end="33784800000t" region="bottomCenter" style="s1" xml:id="subtitle812">Seeing that Attendant Shen<br/>was seriously ill,</p>
+<p begin="33785600000t" end="33818000000t" region="bottomCenter" style="s1" xml:id="subtitle813">I privately requested<br/>an imperial doctor to save her life.</p>
+<p begin="33818800000t" end="33846800000t" region="bottomCenter" style="s1" xml:id="subtitle814">- Is that so?<br/>- Your Majesty, please forgive me.</p>
+<p begin="33847600000t" end="33880000000t" region="bottomCenter" style="s1" xml:id="subtitle815">If it hadn’t been for you<br/>risking your life to take such measures,</p>
+<p begin="33887200000t" end="33924800000t" region="bottomCenter" style="s1" xml:id="subtitle816">I’m afraid I would be faced<br/>with deep regret over Lady Hui.</p>
+<p begin="33925600000t" end="33943200000t" region="bottomCenter" style="s1" xml:id="subtitle817">Your Majesty is blameless.</p>
+<p begin="33944000000t" end="33972800000t" region="bottomCenter" style="s1" xml:id="subtitle818">It was those guileful schemers.<br/>They clouded Your Majesty’s clear vision.</p>
+<p begin="34004400000t" end="34016800000t" region="bottomCenter" style="s1" xml:id="subtitle819">Su Peisheng.</p>
+<p begin="34060400000t" end="34073200000t" region="bottomCenter" style="s1" xml:id="subtitle820">Yes, Your Majesty.</p>
+<p begin="34074000000t" end="34100000000t" region="bottomCenter" style="s1" xml:id="subtitle821">Deliver my order<br/>to the Imperial Medical Bureau.</p>
+<p begin="34109600000t" end="34137600000t" region="bottomCenter" style="s1" xml:id="subtitle822">Jiang Cheng and Jiang Shen<br/>are decreed to take their own lives.</p>
+<p begin="34138400000t" end="34175600000t" region="bottomCenter" style="s1" xml:id="subtitle823">Consort Hua’s honorific name is revoked.<br/>She is demoted to Noble Lady.</p>
+<p begin="34182000000t" end="34204000000t" region="bottomCenter" style="s1" xml:id="subtitle824">The demotion of Consort Hua–</p>
+<p begin="34204800000t" end="34217600000t" region="bottomCenter" style="s1" xml:id="subtitle825">It’s already midnight.</p>
+<p begin="34218400000t" end="34242000000t" region="bottomCenter" style="s1" xml:id="subtitle826">If we ask the Imperial Household<br/>Department to deliver your decree,</p>
+<p begin="34242800000t" end="34267200000t" region="bottomCenter" style="s1" xml:id="subtitle827">I’m afraid it will disturb<br/>the entire harem.</p>
+<p begin="34274800000t" end="34293200000t" region="bottomCenter" style="s1" xml:id="subtitle828">Then wait until tomorrow.</p>
+<p begin="34294000000t" end="34310800000t" region="bottomCenter" style="s1" xml:id="subtitle829">Go to Cunju Hall first.</p>
+<p begin="34311600000t" end="34338000000t" region="bottomCenter" style="s1" xml:id="subtitle830">Announce that we have reinstated<br/>Lady Shen to her former rank.</p>
+<p begin="34338800000t" end="34355600000t" region="bottomCenter" style="s1" xml:id="subtitle831">Her honorific name is restored.</p>
+<p begin="34361600000t" end="34387200000t" region="bottomCenter" style="s1" xml:id="subtitle832">- The most urgent matter is to cure her.<br/>- Yes, Your Majesty.</p>
+<p begin="34394400000t" end="34420000000t" region="bottomCenter" style="s1" xml:id="subtitle833">What? Liu Ben has been found?</p>
+<p begin="34420800000t" end="34441600000t" region="bottomCenter" style="s1" xml:id="subtitle834">I knew nothing of it<br/>until I overheard a conversation</p>
+<p begin="34442400000t" end="34470800000t" region="bottomCenter" style="s1" xml:id="subtitle835">between First Attendant An’s maid<br/>and our servants.</p>
+<p begin="34484000000t" end="34500000000t" region="bottomCenter" style="s1" xml:id="subtitle836">It must be Zhen Huan.</p>
+<p begin="34511200000t" end="34551200000t" region="bottomCenter" style="s1" xml:id="subtitle837">The Jiang brothers could not<br/>keep themselves out of trouble either.</p>
+<p begin="34552000000t" end="34592400000t" region="bottomCenter" style="s1" xml:id="subtitle838">Zhou Ninghai, tell those two<br/>to keep their mouths shut.</p>
+<p begin="34593200000t" end="34617200000t" region="bottomCenter" style="s1" xml:id="subtitle839">Understood. I’ll do so right away.</p>
+<p begin="34650800000t" end="34678400000t" region="bottomCenter" style="s1" xml:id="subtitle840">My lady, it would be wise<br/>to silence those two men.</p>
+<p begin="34679200000t" end="34707600000t" region="bottomCenter" style="s1" xml:id="subtitle841">But if you want to change<br/>His Majesty’s mind,</p>
+<p begin="34708400000t" end="34735200000t" region="bottomCenter" style="s1" xml:id="subtitle842">you can’t simply expect that His Majesty<br/>will soften out of affection for you.</p>
+<p begin="34736000000t" end="34762000000t" region="bottomCenter" style="s1" xml:id="subtitle843">You must offer him<br/>what he most desires at this moment.</p>
+<p begin="34780400000t" end="34824400000t" region="bottomCenter" style="s1" xml:id="subtitle844">My lady, if you are guilty of a fault,<br/>His Majesty is obliged to punish you.</p>
+<p begin="34825200000t" end="34860400000t" region="bottomCenter" style="s1" xml:id="subtitle845">Faults must be punished,<br/>but achievements must be rewarded.</p>
+<p begin="34887200000t" end="34904400000t" region="bottomCenter" style="s1" xml:id="subtitle846">Why have you come in such haste?</p>
+<p begin="34910400000t" end="34934800000t" region="bottomCenter" style="s1" xml:id="subtitle847">Your Majesty, congratulations.<br/>I have just learned</p>
+<p begin="34935600000t" end="34979200000t" region="bottomCenter" style="s1" xml:id="subtitle848">that Jiang Cheng and Jiang Shen<br/>have developed a remedy for the epidemic.</p>
+<p begin="34980000000t" end="35010000000t" region="bottomCenter" style="s1" xml:id="subtitle849">I have brought the two imperial doctors<br/>here to report to you.</p>
+<p begin="35030400000t" end="35066800000t" region="bottomCenter" style="s1" xml:id="subtitle850">Your Majesty, most disease<br/>is caused by unsanitary food</p>
+<p begin="35067600000t" end="35089600000t" region="bottomCenter" style="s1" xml:id="subtitle851">and leads to damage of the spleen,<br/>stomach and intestine.</p>
+<p begin="35090400000t" end="35109600000t" region="bottomCenter" style="s1" xml:id="subtitle852">We’ve pored over ancient books</p>
+<p begin="35110400000t" end="35142400000t" region="bottomCenter" style="s1" xml:id="subtitle853">and developed a remedy,<br/>an emergency disease preparation.</p>
+<p begin="35143200000t" end="35166000000t" region="bottomCenter" style="s1" xml:id="subtitle854">Several young eunuchs<br/>have already taken the medicine.</p>
+<p begin="35173600000t" end="35196800000t" region="bottomCenter" style="s1" xml:id="subtitle855">After taking two doses,<br/>they showed a reduction of fever.</p>
+<p begin="35209600000t" end="35238400000t" region="bottomCenter" style="s1" xml:id="subtitle856">Good.</p>
+<p begin="35274800000t" end="35287600000t" region="bottomCenter" style="s1" xml:id="subtitle857">My lady.</p>
+<p begin="35310000000t" end="35334400000t" region="bottomCenter" style="s1" xml:id="subtitle858">Your Majesty,<br/>please forgive my discourtesy.</p>
+<p begin="35342400000t" end="35368000000t" region="bottomCenter" style="s1" xml:id="subtitle859">Are you unwell? Take your seat quickly.</p>
+<p begin="35368800000t" end="35378800000t" region="bottomCenter" style="s1" xml:id="subtitle860">Thank you, Your Majesty.</p>
+<p begin="35379600000t" end="35417200000t" region="bottomCenter" style="s1" xml:id="subtitle861">Consort Hua recalled that disease remedies<br/>may be found in ancient books.</p>
+<p begin="35418000000t" end="35435200000t" region="bottomCenter" style="s1" xml:id="subtitle862">She stayed up last night<br/>reading through books.</p>
+<p begin="35442000000t" end="35466400000t" region="bottomCenter" style="s1" xml:id="subtitle863">Over the last few days<br/>she has done the same.</p>
+<p begin="35467200000t" end="35490000000t" region="bottomCenter" style="s1" xml:id="subtitle864">Perhaps that is why she feels weak.</p>
+<p begin="35501600000t" end="35520800000t" region="bottomCenter" style="s1" xml:id="subtitle865">My beloved, you are tired.</p>
+<p begin="35542400000t" end="35560400000t" region="bottomCenter" style="s1" xml:id="subtitle866">- Su Peisheng.<br/>- Your Majesty.</p>
+<p begin="35561200000t" end="35593200000t" region="bottomCenter" style="s1" xml:id="subtitle867">Take your men and accompany<br/>Doctor Jiang to the Medical Bureau.</p>
+<p begin="35594000000t" end="35622800000t" region="bottomCenter" style="s1" xml:id="subtitle868">Deliver the medicine to Lady Hui’s<br/>residence at Cunju Hall first.</p>
+<p begin="35623600000t" end="35648000000t" region="bottomCenter" style="s1" xml:id="subtitle869">Then give it to every servant<br/>in the palace who has been infected.</p>
+<p begin="35648800000t" end="35661200000t" region="bottomCenter" style="s1" xml:id="subtitle870">Yes, Your Majesty.</p>
+<p begin="35740400000t" end="35754800000t" region="bottomCenter" style="s1" xml:id="subtitle871">Lady Hui?</p>
+<p begin="35767600000t" end="35802400000t" region="bottomCenter" style="s1" xml:id="subtitle872">We have already restored Shen’s rank.</p>
+<p begin="35811600000t" end="35839200000t" region="bottomCenter" style="s1" xml:id="subtitle873">We’ve wronged her<br/>over what happened in the past.</p>
+<p begin="35844800000t" end="35877600000t" region="bottomCenter" style="s1" xml:id="subtitle874">Your Majesty, I dare not ask you<br/>to forgive my past recklessness.</p>
+<p begin="35878400000t" end="35920400000t" region="bottomCenter" style="s1" xml:id="subtitle875">I only ask that you do not risk<br/>your own health in anger over me.</p>
+<p begin="35934800000t" end="35955600000t" region="bottomCenter" style="s1" xml:id="subtitle876">I’m merely one insignificant individual.</p>
+<p begin="35956400000t" end="35989200000t" region="bottomCenter" style="s1" xml:id="subtitle877">But your health matters<br/>to everyone in this land.</p>
+<p begin="35990000000t" end="36038800000t" region="bottomCenter" style="s1" xml:id="subtitle878">All right. Today you’ve made<br/>a great achievement.</p>
+<p begin="36050800000t" end="36078000000t" region="bottomCenter" style="s1" xml:id="subtitle879">If this remedy can cure the epidemic,</p>
+<p begin="36084400000t" end="36102000000t" region="bottomCenter" style="s1" xml:id="subtitle880">it will prove a blessing to us all.</p>
+<p begin="36109200000t" end="36140800000t" region="bottomCenter" style="s1" xml:id="subtitle881">I’m not the kind to fail in dispensing<br/>rewards and punishment.</p>
+<p begin="36163600000t" end="36182000000t" region="bottomCenter" style="s1" xml:id="subtitle882">Your Majesty, you’re divinely wise.</p>
+<p begin="36296000000t" end="36332800000t" region="bottomCenter" style="s1" xml:id="subtitle883">Doctor Wen, Doctor Jiang told us<br/>to deliver this remedy to Lady Hui.</p>
+<p begin="36333600000t" end="36374400000t" region="bottomCenter" style="s1" xml:id="subtitle884">What? Doctor Jiang has developed<br/>a remedy for the disease as well?</p>
+<p begin="36381200000t" end="36393200000t" region="bottomCenter" style="s1" xml:id="subtitle885">Place it here.</p>
+<p begin="36486400000t" end="36540400000t" region="bottomCenter" style="s1" xml:id="subtitle886">Lady Hui, there has been<br/>one doubt in my mind all along.</p>
+<p begin="36548800000t" end="36562800000t" region="bottomCenter" style="s1" xml:id="subtitle887">Tell me.</p>
+<p begin="36569600000t" end="36596400000t" region="bottomCenter" style="s1" xml:id="subtitle888">Does it seem you contracted<br/>the disease too suddenly?</p>
+<p begin="36604400000t" end="36640800000t" region="bottomCenter" style="s1" xml:id="subtitle889">I remember that the epidemic<br/>reached us first at Consort Hua’s palace.</p>
+<p begin="36649200000t" end="36666000000t" region="bottomCenter" style="s1" xml:id="subtitle890">Then your palace followed.</p>
+<p begin="36666800000t" end="36687600000t" region="bottomCenter" style="s1" xml:id="subtitle891">At the time, you were<br/>confined to your palace.</p>
+<p begin="36688400000t" end="36719600000t" region="bottomCenter" style="s1" xml:id="subtitle892">You had no contact<br/>with Consort Hua’s servants.</p>
+<p begin="36720400000t" end="36744400000t" region="bottomCenter" style="s1" xml:id="subtitle893">How did you catch the disease so suddenly?</p>
+<p begin="36799600000t" end="36837200000t" region="bottomCenter" style="s1" xml:id="subtitle894">The Imperial Household Department<br/>ordered me to send you a new tea set.</p>
+<p begin="36838000000t" end="36862400000t" region="bottomCenter" style="s1" xml:id="subtitle895">The tea is ready now. Please enjoy.</p>
+<p begin="36894800000t" end="36910800000t" region="bottomCenter" style="s1" xml:id="subtitle896">It was her!</p>
+<p begin="36916800000t" end="36933200000t" region="bottomCenter" style="s1" xml:id="subtitle897">Mei, please be calm.</p>
+<p begin="36934000000t" end="36958800000t" region="bottomCenter" style="s1" xml:id="subtitle898">We have no evidence at the moment.</p>
+<p begin="36964800000t" end="36980000000t" region="bottomCenter" style="s1" xml:id="subtitle899">I have another doubt.</p>
+<p begin="36986400000t" end="37014800000t" region="bottomCenter" style="s1" xml:id="subtitle900">Jiang Cheng and Jiang Shen are studied<br/>in women’s health and infant care.</p>
+<p begin="37022400000t" end="37061200000t" region="bottomCenter" style="s1" xml:id="subtitle901">How could they suddenly make a leap<br/>to the treatment of diseases?</p>
+<p begin="37062000000t" end="37102800000t" region="bottomCenter" style="s1" xml:id="subtitle902">If I say that the remedy<br/>was mostly developed by myself,</p>
+<p begin="37110400000t" end="37146400000t" region="bottomCenter" style="s1" xml:id="subtitle903">- will you believe me?<br/>- Yes, you are capable.</p>
+<p begin="37154400000t" end="37180400000t" region="bottomCenter" style="s1" xml:id="subtitle904">But His Majesty has already said<br/>that they are of great merit.</p>
+<p begin="37190000000t" end="37222000000t" region="bottomCenter" style="s1" xml:id="subtitle905">If you say anything now,<br/>nobody will believe your words.</p>
+<p begin="37242000000t" end="37279200000t" region="bottomCenter" style="s1" xml:id="subtitle906">Your Majesty,<br/>does Lady Wan serve you well?</p>
+<p begin="37280000000t" end="37301200000t" region="bottomCenter" style="s1" xml:id="subtitle907">That’s hard to answer.</p>
+<p begin="37302000000t" end="37320000000t" region="bottomCenter" style="s1" xml:id="subtitle908">If I say she serves me well,</p>
+<p begin="37320800000t" end="37349200000t" region="bottomCenter" style="s1" xml:id="subtitle909">and then I do not dress warmly<br/>in order to enjoy the bracing cold,</p>
+<p begin="37350000000t" end="37381600000t" region="bottomCenter" style="s1" xml:id="subtitle910">Queen Mother will blame her for it.</p>
+<p begin="37382400000t" end="37402800000t" region="bottomCenter" style="s1" xml:id="subtitle911">If I say she doesn’t serve me well–</p>
+<p begin="37413600000t" end="37447200000t" region="bottomCenter" style="s1" xml:id="subtitle912">In fact, she is very attentive.</p>
+<p begin="37459200000t" end="37506800000t" region="bottomCenter" style="s1" xml:id="subtitle913">But I’ve been busy with my duties.<br/>I haven’t seen her for several days.</p>
+<p begin="37511600000t" end="37536000000t" region="bottomCenter" style="s1" xml:id="subtitle914">Your Majesty has been occupied<br/>with affairs of state.</p>
+<p begin="37536800000t" end="37566800000t" region="bottomCenter" style="s1" xml:id="subtitle915">It’s a mere few days<br/>that you haven’t met with her.</p>
+<p begin="37567600000t" end="37601600000t" region="bottomCenter" style="s1" xml:id="subtitle916">How often do you meet with Consort Hua?</p>
+<p begin="37602400000t" end="37619200000t" region="bottomCenter" style="s1" xml:id="subtitle917">How often do you meet with the Empress?</p>
+<p begin="37626000000t" end="37654400000t" region="bottomCenter" style="s1" xml:id="subtitle918">How often do you meet with Concubine Jing<br/>and the rest of them?</p>
+<p begin="37655200000t" end="37675600000t" region="bottomCenter" style="s1" xml:id="subtitle919">Since Your Majesty is busy,</p>
+<p begin="37676400000t" end="37702800000t" region="bottomCenter" style="s1" xml:id="subtitle920">you may meet all of the concubines<br/>much less frequently.</p>
+<p begin="37708800000t" end="37736800000t" region="bottomCenter" style="s1" xml:id="subtitle921">But if you show partiality to one,</p>
+<p begin="37737600000t" end="37760000000t" region="bottomCenter" style="s1" xml:id="subtitle922">then you aggrieve the others.</p>
+<p begin="37778800000t" end="37799600000t" region="bottomCenter" style="s1" xml:id="subtitle923">Queen Mother, I have learned from you.</p>
+<p begin="37800400000t" end="37819200000t" region="bottomCenter" style="s1" xml:id="subtitle924">I will bear this in mind.</p>
+<p begin="37830400000t" end="37879200000t" region="bottomCenter" style="s1" xml:id="subtitle925">Such fine black fox fur<br/>may only be found in Qinghai.</p>
+<p begin="37897200000t" end="37921200000t" region="bottomCenter" style="s1" xml:id="subtitle926">Your Majesty has a keen eye<br/>and a clear heart.</p>
+<p begin="37922000000t" end="37949600000t" region="bottomCenter" style="s1" xml:id="subtitle927">It is quite dim here, yet you still<br/>recognize this black fox fur.</p>
+<p begin="37955600000t" end="37994000000t" region="bottomCenter" style="s1" xml:id="subtitle928">When you behold the harem and the court,<br/>of course it’s as clear as day to you.</p>
+<p begin="38001200000t" end="38017200000t" region="bottomCenter" style="s1" xml:id="subtitle929">This black fox cloak</p>
+<p begin="38018000000t" end="38040400000t" region="bottomCenter" style="s1" xml:id="subtitle930">has a satin lining<br/>selected by Consort Hua,</p>
+<p begin="38041200000t" end="38063600000t" region="bottomCenter" style="s1" xml:id="subtitle931">embroidered with passionflowers.</p>
+<p begin="38064400000t" end="38092400000t" region="bottomCenter" style="s1" xml:id="subtitle932">When inside and outside are balanced,<br/>there is harmony in the whole.</p>
+<p begin="38116400000t" end="38148000000t" region="bottomCenter" style="s1" xml:id="subtitle933">Queen Mother, I understand<br/>what you have just taught me.</p>
+<p begin="38160000000t" end="38205200000t" region="bottomCenter" style="s1" xml:id="subtitle934">You should temper justice with mercy,<br/>not only in the court,</p>
+<p begin="38206000000t" end="38231600000t" region="bottomCenter" style="s1" xml:id="subtitle935">but also in the harem.</p>
+<p begin="38237600000t" end="38277200000t" region="bottomCenter" style="s1" xml:id="subtitle936">The pacification of the Northwest<br/>is nearly complete.</p>
+<p begin="38283200000t" end="38317600000t" region="bottomCenter" style="s1" xml:id="subtitle937">But the chieftain of the Southwest<br/>is still a thorn in our side.</p>
+<p begin="38318400000t" end="38345200000t" region="bottomCenter" style="s1" xml:id="subtitle938">If we have to calm the situation,<br/>it will take great effort.</p>
+<p begin="38358400000t" end="38382800000t" region="bottomCenter" style="s1" xml:id="subtitle939">Nian Gengyao displays<br/>great talent and acceptable loyalty.</p>
+<p begin="38383600000t" end="38422400000t" region="bottomCenter" style="s1" xml:id="subtitle940">Such a meritorious official,<br/>providing he grows not overly arrogant,</p>
+<p begin="38423200000t" end="38448800000t" region="bottomCenter" style="s1" xml:id="subtitle941">should be put to proper use<br/>by Your Majesty.</p>
+<p begin="38454800000t" end="38481600000t" region="bottomCenter" style="s1" xml:id="subtitle942">Calming the situation<br/>on the western frontier shows true merit.</p>
+<p begin="38482400000t" end="38516800000t" region="bottomCenter" style="s1" xml:id="subtitle943">He will surely be highly rewarded.</p>
+<p begin="38606000000t" end="38625200000t" region="bottomCenter" style="s1" xml:id="subtitle944">- My lady.<br/>- Has my brother returned?</p>
+<p begin="38626000000t" end="38653200000t" region="bottomCenter" style="s1" xml:id="subtitle945">The General has calmed the situation<br/>on the frontier and has just returned.</p>
+<p begin="38654000000t" end="38676400000t" region="bottomCenter" style="s1" xml:id="subtitle946">He has gone to greet His Majesty.</p>
+<p begin="38677200000t" end="38691600000t" region="bottomCenter" style="s1" xml:id="subtitle947">My lady.</p>
+<p begin="38710800000t" end="38745600000t" region="bottomCenter" style="s1" xml:id="subtitle948">On His Majesty’s order,<br/>please come to Yangxin Hall to dine.</p>
+<p begin="38766000000t" end="38800400000t" region="bottomCenter" style="s1" xml:id="subtitle949">Wait outside. I’ll come immediately.</p>
+<p begin="38835600000t" end="38870400000t" region="bottomCenter" style="s1" xml:id="subtitle950">This is grilled mutton.<br/>It’s fresh, tender and savory.</p>
+<p begin="38871200000t" end="38908800000t" region="bottomCenter" style="s1" xml:id="subtitle951">My favorite dish. Try it yourself.</p>
+<p begin="38999200000t" end="39011600000t" region="bottomCenter" style="s1" xml:id="subtitle952">Delicious indeed.</p>
+<p begin="39028800000t" end="39042000000t" region="bottomCenter" style="s1" xml:id="subtitle953">Brother.</p>
+<p begin="39042800000t" end="39084400000t" region="bottomCenter" style="s1" xml:id="subtitle954">When His Majesty grants you a feast,<br/>you must be served by imperial servants.</p>
+<p begin="39085200000t" end="39107600000t" region="bottomCenter" style="s1" xml:id="subtitle955">NIAN GENGYAO</p>
+<p begin="39108400000t" end="39150800000t" region="bottomCenter" style="s1" xml:id="subtitle956">Your Majesty, I’ve been discourteous.<br/>Please don’t hold it against me.</p>
+<p begin="39170400000t" end="39194800000t" region="bottomCenter" style="s1" xml:id="subtitle957">You have been far away<br/>at battle for a long time.</p>
+<p begin="39199600000t" end="39226400000t" region="bottomCenter" style="s1" xml:id="subtitle958">Of course you are used to<br/>attending to every detail yourself.</p>
+<p begin="39227200000t" end="39242000000t" region="bottomCenter" style="s1" xml:id="subtitle959">It’s of no importance.</p>
+<p begin="39324000000t" end="39360800000t" region="bottomCenter" style="s1" xml:id="subtitle960">The edible bird’s nest with duck<br/>placed before me looks quite good.</p>
+<p begin="39384400000t" end="39407600000t" region="bottomCenter" style="s1" xml:id="subtitle961">I’d like to trouble Eunuch Su.</p>
+<p begin="39654800000t" end="39673200000t" region="bottomCenter" style="s1" xml:id="subtitle962">General, please enjoy.</p>
+<p begin="39704000000t" end="39741200000t" region="bottomCenter" style="s1" xml:id="subtitle963">What a rare chance to eat<br/>at the same table as the Emperor.</p>
+<p begin="39832000000t" end="39875600000t" region="bottomCenter" style="s1" xml:id="subtitle964">Very well. Let us enjoy this meal.</p>
+<p begin="39912000000t" end="39935200000t" region="bottomCenter" style="s1" xml:id="subtitle965">Your Majesty, you’ve been<br/>keeping me company recently,</p>
+<p begin="39941200000t" end="39962400000t" region="bottomCenter" style="s1" xml:id="subtitle966">without visiting the others.</p>
+<p begin="39980000000t" end="40002400000t" region="bottomCenter" style="s1" xml:id="subtitle967">Since you strive to be<br/>a generous concubine,</p>
+<p begin="40008400000t" end="40040000000t" region="bottomCenter" style="s1" xml:id="subtitle968">then I will pay a visit to Consort Qi<br/>and the others.</p>
+<p begin="40046000000t" end="40056400000t" region="bottomCenter" style="s1" xml:id="subtitle969">Your Majesty.</p>
+<p begin="40062800000t" end="40085200000t" region="bottomCenter" style="s1" xml:id="subtitle970">I know you are reluctant to part with me.</p>
+<p begin="40100400000t" end="40124000000t" region="bottomCenter" style="s1" xml:id="subtitle971">Your Majesty, you always enjoy<br/>listening to Attendant An sing.</p>
+<p begin="40132000000t" end="40154000000t" region="bottomCenter" style="s1" xml:id="subtitle972">I haven’t heard her for quite some time.</p>
+<p begin="40160400000t" end="40194000000t" region="bottomCenter" style="s1" xml:id="subtitle973">Why don’t we ask her to come sing for us?</p>
+<p begin="40194800000t" end="40230000000t" region="bottomCenter" style="s1" xml:id="subtitle974">Let me take this chance<br/>to enjoy it together with you once.</p>
+<p begin="40235600000t" end="40266000000t" region="bottomCenter" style="s1" xml:id="subtitle975">It is late at night.<br/>Why should we trouble her?</p>
+<p begin="40266800000t" end="40279600000t" region="bottomCenter" style="s1" xml:id="subtitle976">Your Majesty.</p>
+<p begin="40310800000t" end="40345600000t" region="bottomCenter" style="s1" xml:id="subtitle977">If you want to call her,<br/>you may do as you wish.</p>
+<p begin="40346400000t" end="40371200000t" region="bottomCenter" style="s1" xml:id="subtitle978">I greet Lady Wan and First Attendant An.</p>
+<p begin="40379600000t" end="40395600000t" region="bottomCenter" style="s1" xml:id="subtitle979">May good fortune be with you.</p>
+<p begin="40396400000t" end="40414400000t" region="bottomCenter" style="s1" xml:id="subtitle980">Eunuch Zhou, why have you come?</p>
+<p begin="40420400000t" end="40444800000t" region="bottomCenter" style="s1" xml:id="subtitle981">His Majesty wishes<br/>to hear Attendant An sing.</p>
+<p begin="40450400000t" end="40466000000t" region="bottomCenter" style="s1" xml:id="subtitle982">He awaits you at Yikun Palace.</p>
+<p begin="40514800000t" end="40545600000t" region="bottomCenter" style="s1" xml:id="subtitle983">His Majesty is visiting Consort Hua.<br/>What am I if I go there?</p>
+<p begin="40553600000t" end="40565600000t" region="bottomCenter" style="s1" xml:id="subtitle984">His Majesty awaits.</p>
+<p begin="40566400000t" end="40606800000t" region="bottomCenter" style="s1" xml:id="subtitle985">If you intend to defy the order,<br/>you should reply to it yourself.</p>
+<p begin="40607600000t" end="40634400000t" region="bottomCenter" style="s1" xml:id="subtitle986">Don’t make it difficult for us.<br/>We are merely servants.</p>
+<p begin="40697600000t" end="40721600000t" region="bottomCenter" style="s1" xml:id="subtitle987">Jinxi, fetch my zither.</p>
+<p begin="40722400000t" end="40736000000t" region="bottomCenter" style="s1" xml:id="subtitle988">Young mistress.</p>
+<p begin="40745200000t" end="40761200000t" region="bottomCenter" style="s1" xml:id="subtitle989">Singing without accompaniment<br/>is monotonous.</p>
+<p begin="40762000000t" end="40798800000t" region="bottomCenter" style="s1" xml:id="subtitle990">I’d like to join Attendant An and play<br/>the zither to entertain His Majesty.</p>
+<p begin="40823200000t" end="40849600000t" region="bottomCenter" style="s1" xml:id="subtitle991">By order of Your Highness,<br/>I went to Yikun Palace</p>
+<p begin="40850400000t" end="40869200000t" region="bottomCenter" style="s1" xml:id="subtitle992">to report that the Empress is ill<br/>and will be</p>
+<p begin="40870000000t" end="40889200000t" region="bottomCenter" style="s1" xml:id="subtitle993">absent for the chrysanthemum viewing.</p>
+<p begin="40895200000t" end="40910800000t" region="bottomCenter" style="s1" xml:id="subtitle994">To my surprise, Xiao Xiazi told me</p>
+<p begin="40911600000t" end="40948400000t" region="bottomCenter" style="s1" xml:id="subtitle995">that Lady Wan and Attendant An<br/>were summoned to entertain Consort Hua.</p>
+<p begin="40949200000t" end="40965200000t" region="bottomCenter" style="s1" xml:id="subtitle996">I watched for a while out of curiosity.</p>
+<p begin="40972400000t" end="40996000000t" region="bottomCenter" style="s1" xml:id="subtitle997">When Lady Wan and Attendant An came out,</p>
+<p begin="40996800000t" end="41023600000t" region="bottomCenter" style="s1" xml:id="subtitle998">they were perfectly calm<br/>as if nothing had happened.</p>
+<p begin="41024400000t" end="41062400000t" region="bottomCenter" style="s1" xml:id="subtitle999">I know the temperament of Lady Wan.<br/>She is not easily perturbed.</p>
+<p begin="41076400000t" end="41114000000t" region="bottomCenter" style="s1" xml:id="subtitle1000">But I never imagined that Attendant An<br/>could bear it as well.</p>
+<p begin="41122400000t" end="41149200000t" region="bottomCenter" style="s1" xml:id="subtitle1001">It seems that I haven’t paid<br/>much attention to An lately.</p>
+<p begin="41150000000t" end="41176000000t" region="bottomCenter" style="s1" xml:id="subtitle1002">Consort Hua has been<br/>overly arrogant and capricious.</p>
+<p begin="41176800000t" end="41200800000t" region="bottomCenter" style="s1" xml:id="subtitle1003">But First Attendant An–</p>
+<p begin="41201600000t" end="41220000000t" region="bottomCenter" style="s1" xml:id="subtitle1004">She is quite good.</p>
+<p begin="41220800000t" end="41256800000t" region="bottomCenter" style="s1" xml:id="subtitle1005">Huan, we are not performers<br/>who sing for a living.</p>
+<p begin="41263600000t" end="41283200000t" region="bottomCenter" style="s1" xml:id="subtitle1006">How can she humiliate us that way?</p>
+<p begin="41308800000t" end="41324000000t" region="bottomCenter" style="s1" xml:id="subtitle1007">Don’t cry.</p>
+<p begin="41330000000t" end="41356000000t" region="bottomCenter" style="s1" xml:id="subtitle1008">Have some water to soothe your throat.</p>
+<p begin="41356800000t" end="41398000000t" region="bottomCenter" style="s1" xml:id="subtitle1009">Huan, you were humiliated as well<br/>just because of me.</p>
+<p begin="41406800000t" end="41424800000t" region="bottomCenter" style="s1" xml:id="subtitle1010">If it were not for your presence,</p>
+<p begin="41425600000t" end="41449200000t" region="bottomCenter" style="s1" xml:id="subtitle1011">as His Majesty was considerate of you,</p>
+<p begin="41455200000t" end="41486000000t" region="bottomCenter" style="s1" xml:id="subtitle1012">I can’t imagine how much humiliation<br/>I would have had to take from her.</p>
+<p begin="41503600000t" end="41527600000t" region="bottomCenter" style="s1" xml:id="subtitle1013">His Majesty holds Nian Gengyao<br/>in high regard.</p>
+<p begin="41528400000t" end="41550000000t" region="bottomCenter" style="s1" xml:id="subtitle1014">Consort Hua is gloating.</p>
+<p begin="41559600000t" end="41587200000t" region="bottomCenter" style="s1" xml:id="subtitle1015">His Majesty must consider<br/>the overall situation.</p>
+<p begin="41588000000t" end="41619600000t" region="bottomCenter" style="s1" xml:id="subtitle1016">It would not be wise of him<br/>to offend her openly for our sake.</p>
+<p begin="41620400000t" end="41638800000t" region="bottomCenter" style="s1" xml:id="subtitle1017">As long as Nian Gengyao exists,</p>
+<p begin="41649600000t" end="41680800000t" region="bottomCenter" style="s1" xml:id="subtitle1018">His Majesty will not neglect Consort Hua.</p>
+<p begin="41703600000t" end="41732400000t" region="bottomCenter" style="s1" xml:id="subtitle1019">The spread of the epidemic<br/>in the palace has been checked.</p>
+<p begin="41733200000t" end="41753200000t" region="bottomCenter" style="s1" xml:id="subtitle1020">Consort Hua is congratulated.</p>
+<p begin="41754000000t" end="41794800000t" region="bottomCenter" style="s1" xml:id="subtitle1021">Starting today, Consort Hua regains power<br/>to assist in affairs of the harem.</p>
+<p begin="41836400000t" end="41855600000t" region="bottomCenter" style="s1" xml:id="subtitle1022">Thank you, Your Majesty.</p>
+<p begin="41862400000t" end="41875600000t" region="bottomCenter" style="s1" xml:id="subtitle1023">Congratulations, Hua.</p>
+<p begin="41901200000t" end="41942000000t" region="bottomCenter" style="s1" xml:id="subtitle1024">Concubine Jing has been serving me<br/>for eight or nine years.</p>
+<p begin="41942800000t" end="41972800000t" region="bottomCenter" style="s1" xml:id="subtitle1025">She is hereby promoted to Consort Jing.</p>
+<p begin="42003600000t" end="42022400000t" region="bottomCenter" style="s1" xml:id="subtitle1026">Thank you for your kindness, Your Majesty.</p>
+<p begin="42028400000t" end="42051600000t" region="bottomCenter" style="s1" xml:id="subtitle1027">The conferring ceremony<br/>will be held on the 19th of next month.</p>
+<p begin="42060000000t" end="42098000000t" region="bottomCenter" style="s1" xml:id="subtitle1028">I will discharge my duties and share<br/>the burden with Her Highness the Empress.</p>
+<p begin="42159600000t" end="42169600000t" region="bottomCenter" style="s1" xml:id="subtitle1029">Mei and Huan.</p>
+<p begin="42184800000t" end="42199600000t" region="bottomCenter" style="s1" xml:id="subtitle1030">Mei and Huan, help me!</p>
+<p begin="42200400000t" end="42224400000t" region="bottomCenter" style="s1" xml:id="subtitle1031">- Lingrong, what’s the matter?<br/>- Get up, speak slowly.</p>
+<p begin="42225200000t" end="42250800000t" region="bottomCenter" style="s1" xml:id="subtitle1032">Mei and Huan,<br/>my father has been imprisoned.</p>
+<p begin="42258800000t" end="42284800000t" region="bottomCenter" style="s1" xml:id="subtitle1033">How could such a thing happen?</p>
+<p begin="42285600000t" end="42298000000t" region="bottomCenter" style="s1" xml:id="subtitle1034">I received a letter from home.</p>
+<p begin="42298800000t" end="42323600000t" region="bottomCenter" style="s1" xml:id="subtitle1035">It said that the Magistrate of<br/>Songyang County, Jiang Wenqing,</p>
+<p begin="42324400000t" end="42343600000t" region="bottomCenter" style="s1" xml:id="subtitle1036">was convoying provisions to the Northwest.</p>
+<p begin="42344400000t" end="42369200000t" region="bottomCenter" style="s1" xml:id="subtitle1037">My father was a member<br/>of the escort group.</p>
+<p begin="42370000000t" end="42405200000t" region="bottomCenter" style="s1" xml:id="subtitle1038">However, they encountered<br/>deserters of the enemy</p>
+<p begin="42406000000t" end="42428800000t" region="bottomCenter" style="s1" xml:id="subtitle1039">and the military provisions were snatched.</p>
+<p begin="42429600000t" end="42446000000t" region="bottomCenter" style="s1" xml:id="subtitle1040">His Majesty was furious.</p>
+<p begin="42446800000t" end="42481600000t" region="bottomCenter" style="s1" xml:id="subtitle1041">Jiang Wenqing was captured immediately<br/>and was imprisoned along with my father.</p>
+<p begin="42490000000t" end="42512800000t" region="bottomCenter" style="s1" xml:id="subtitle1042">I’m afraid that in a fit of rage,</p>
+<p begin="42513600000t" end="42541600000t" region="bottomCenter" style="s1" xml:id="subtitle1043">His Majesty will kill my father.</p>
+<p begin="42542400000t" end="42556400000t" region="bottomCenter" style="s1" xml:id="subtitle1044">This matter concerns your family.</p>
+<p begin="42557200000t" end="42579600000t" region="bottomCenter" style="s1" xml:id="subtitle1045">Of course we will intercede<br/>with His Majesty.</p>
+<p begin="42580400000t" end="42608000000t" region="bottomCenter" style="s1" xml:id="subtitle1046">I’m overwhelmed with gratitude.</p>
+<p begin="42608800000t" end="42624800000t" region="bottomCenter" style="s1" xml:id="subtitle1047">Lingrong.</p>
+<p begin="42625600000t" end="42658400000t" region="bottomCenter" style="s1" xml:id="subtitle1048">Lady Hui, are you here to plead<br/>for the father of Attendant An?</p>
+<p begin="42659200000t" end="42682400000t" region="bottomCenter" style="s1" xml:id="subtitle1049">Yes, I can’t sit by and do nothing.</p>
+<p begin="42683200000t" end="42701200000t" region="bottomCenter" style="s1" xml:id="subtitle1050">You’d better do nothing.</p>
+<p begin="42710400000t" end="42740400000t" region="bottomCenter" style="s1" xml:id="subtitle1051">Think about it.<br/>If you write a letter to your parents,</p>
+<p begin="42741200000t" end="42769600000t" region="bottomCenter" style="s1" xml:id="subtitle1052">of course, your father<br/>will give a mild punishment.</p>
+<p begin="42770400000t" end="42796400000t" region="bottomCenter" style="s1" xml:id="subtitle1053">But if someone raises objections to this,</p>
+<p begin="42797200000t" end="42822800000t" region="bottomCenter" style="s1" xml:id="subtitle1054">His Majesty will be furious.</p>
+<p begin="42823600000t" end="42854800000t" region="bottomCenter" style="s1" xml:id="subtitle1055">Then what of your father’s future?</p>
+<p begin="42863600000t" end="42890400000t" region="bottomCenter" style="s1" xml:id="subtitle1056">Besides, once you intervene</p>
+<p begin="42891200000t" end="42907200000t" region="bottomCenter" style="s1" xml:id="subtitle1057">and Consort Hua learns of it,</p>
+<p begin="42916000000t" end="42945600000t" region="bottomCenter" style="s1" xml:id="subtitle1058">Attendant An’s father<br/>will surely be put to death.</p>
+<p begin="42976800000t" end="43012000000t" region="bottomCenter" style="s1" xml:id="subtitle1059">As soon as the Empress left<br/>Consort Hua arrived.</p>
+<p begin="43018000000t" end="43037200000t" region="bottomCenter" style="s1" xml:id="subtitle1060">They came for the same person.</p>
+<p begin="43043200000t" end="43075600000t" region="bottomCenter" style="s1" xml:id="subtitle1061">Did they come for Attendant An’s father,<br/>An Bihuai?</p>
+<p begin="43076400000t" end="43089600000t" region="bottomCenter" style="s1" xml:id="subtitle1062">Exactly.</p>
+<p begin="43101600000t" end="43123600000t" region="bottomCenter" style="s1" xml:id="subtitle1063">Let me guess.</p>
+<p begin="43130800000t" end="43150800000t" region="bottomCenter" style="s1" xml:id="subtitle1064">Her Highness the Empress<br/>is kind and virtuous.</p>
+<p begin="43151600000t" end="43170400000t" region="bottomCenter" style="s1" xml:id="subtitle1065">She interceded on behalf<br/>of Attendant An’s father.</p>
+<p begin="43177600000t" end="43198800000t" region="bottomCenter" style="s1" xml:id="subtitle1066">Consort Hua is righteous and tenacious.</p>
+<p begin="43199600000t" end="43220000000t" region="bottomCenter" style="s1" xml:id="subtitle1067">She must have asked my dear<br/>to enforce the law strictly,</p>
+<p begin="43220800000t" end="43240400000t" region="bottomCenter" style="s1" xml:id="subtitle1068">and to remain unswayed<br/>by personal considerations.</p>
+<p begin="43241200000t" end="43252400000t" region="bottomCenter" style="s1" xml:id="subtitle1069">And what say you?</p>
+<p begin="43253200000t" end="43283200000t" region="bottomCenter" style="s1" xml:id="subtitle1070">Concubines should not meddle in affairs<br/>of state. I always bear this in mind.</p>
+<p begin="43326400000t" end="43343200000t" region="bottomCenter" style="s1" xml:id="subtitle1071">As a child, I studied history books.</p>
+<p begin="43344000000t" end="43368400000t" region="bottomCenter" style="s1" xml:id="subtitle1072">I learned that when the wise Emperors<br/>punished their officials,</p>
+<p begin="43369200000t" end="43379600000t" region="bottomCenter" style="s1" xml:id="subtitle1073">they would punish the leader yet forgive</p>
+<p begin="43380400000t" end="43395200000t" region="bottomCenter" style="s1" xml:id="subtitle1074">the follower,<br/>balancing justice with mercy.</p>
+<p begin="43396000000t" end="43429200000t" region="bottomCenter" style="s1" xml:id="subtitle1075">The people not only revered them,<br/>but also admired their clemency.</p>
+<p begin="43434800000t" end="43450400000t" region="bottomCenter" style="s1" xml:id="subtitle1076">I am ignorant in these matters.</p>
+<p begin="43451200000t" end="43477600000t" region="bottomCenter" style="s1" xml:id="subtitle1077">Battles are fought outside the palace.<br/>Discipline is maintained within.</p>
+<p begin="43478400000t" end="43502800000t" region="bottomCenter" style="s1" xml:id="subtitle1078">If both are clearly settled,<br/>then the nation will thrive in peace.</p>
+<p begin="43520800000t" end="43558800000t" region="bottomCenter" style="s1" xml:id="subtitle1079">I already knew you were<br/>well-read in the classics,</p>
+<p begin="43569600000t" end="43592400000t" region="bottomCenter" style="s1" xml:id="subtitle1080">but did not expect you to be versed<br/>in history and national policy.</p>
+<p begin="43609200000t" end="43631600000t" region="bottomCenter" style="s1" xml:id="subtitle1081">Your words did not concern<br/>affairs of state,</p>
+<p begin="43632400000t" end="43662400000t" region="bottomCenter" style="s1" xml:id="subtitle1082">yet you advised through history.</p>
+<p begin="43668800000t" end="43703600000t" region="bottomCenter" style="s1" xml:id="subtitle1083">We will send someone to reinvestigate<br/>An Bihuai’s case,</p>
+<p begin="43704400000t" end="43724800000t" region="bottomCenter" style="s1" xml:id="subtitle1084">and shall let no one suffer a wrong.</p>
+<p begin="43747200000t" end="43772400000t" region="bottomCenter" style="s1" xml:id="subtitle1085">Congratulations, young mistress.</p>
+<p begin="43773200000t" end="43794800000t" region="bottomCenter" style="s1" xml:id="subtitle1086">You’re too kind. What is it?</p>
+<p begin="43795600000t" end="43820800000t" region="bottomCenter" style="s1" xml:id="subtitle1087">This morning His Majesty ordered<br/>Shen Zishan, Colonel of Jizhou Garrison,</p>
+<p begin="43821600000t" end="43845200000t" region="bottomCenter" style="s1" xml:id="subtitle1088">to reexamine your father’s case.</p>
+<p begin="43846000000t" end="43867600000t" region="bottomCenter" style="s1" xml:id="subtitle1089">Hopefully, your father will live.</p>
+<p begin="43883200000t" end="43903600000t" region="bottomCenter" style="s1" xml:id="subtitle1090">- Is it true?<br/>- Of course.</p>
+<p begin="43904400000t" end="43928400000t" region="bottomCenter" style="s1" xml:id="subtitle1091">Yesterday the Empress interceded<br/>with His Majesty.</p>
+<p begin="43934800000t" end="43962400000t" region="bottomCenter" style="s1" xml:id="subtitle1092">Of course His Majesty<br/>won’t disappoint her.</p>
+<p begin="43963200000t" end="43986000000t" region="bottomCenter" style="s1" xml:id="subtitle1093">- Thanks to the Empress.<br/>- Don’t–</p>
+<p begin="44004400000t" end="44020800000t" region="bottomCenter" style="s1" xml:id="subtitle1094">If such things may befall me,</p>
+<p begin="44021600000t" end="44056000000t" region="bottomCenter" style="s1" xml:id="subtitle1095">I know that I can rely on nothing.</p>
+<p begin="44078400000t" end="44096400000t" region="bottomCenter" style="s1" xml:id="subtitle1096">I finally understand now.</p>
+<p begin="44097200000t" end="44132800000t" region="bottomCenter" style="s1" xml:id="subtitle1097">One word from the Empress is<br/>much more powerful than any others.</p>
+<p begin="44133600000t" end="44154800000t" region="bottomCenter" style="s1" xml:id="subtitle1098">Of course. Besides the Empress Dowager,</p>
+<p begin="44155600000t" end="44184800000t" region="bottomCenter" style="s1" xml:id="subtitle1099">Her Highness the Empress<br/>is the most powerful woman in the palace.</p>
+<p begin="44210400000t" end="44261200000t" region="bottomCenter" style="s1" xml:id="subtitle1100">Your Highness, I made a sachet<br/>and would like to present it to you.</p>
+<p begin="44262000000t" end="44297200000t" region="bottomCenter" style="s1" xml:id="subtitle1101">I hope that Your Highness will not<br/>dislike it due to my unskillful handwork.</p>
+<p begin="44343600000t" end="44363600000t" region="bottomCenter" style="s1" xml:id="subtitle1102">What an exquisite sachet.</p>
+<p begin="44380000000t" end="44414000000t" region="bottomCenter" style="s1" xml:id="subtitle1103">Its fragrance is delicate and elegant.</p>
+<p begin="44414800000t" end="44434000000t" region="bottomCenter" style="s1" xml:id="subtitle1104">It contains peony and orchid,</p>
+<p begin="44434800000t" end="44456800000t" region="bottomCenter" style="s1" xml:id="subtitle1105">mixed with eaglewood and pine needle.</p>
+<p begin="44457600000t" end="44475600000t" region="bottomCenter" style="s1" xml:id="subtitle1106">Though the sachet is wonderful,</p>
+<p begin="44476400000t" end="44509200000t" region="bottomCenter" style="s1" xml:id="subtitle1107">it is a pity that I usually<br/>don’t use perfume.</p>
+<p begin="44526400000t" end="44542400000t" region="bottomCenter" style="s1" xml:id="subtitle1108">I had not noticed.</p>
+<p begin="44543200000t" end="44561600000t" region="bottomCenter" style="s1" xml:id="subtitle1109">Every time I come to greet Your Highness,</p>
+<p begin="44562400000t" end="44574800000t" region="bottomCenter" style="s1" xml:id="subtitle1110">I only notice that your palace<br/>is filled with</p>
+<p begin="44575600000t" end="44599200000t" region="bottomCenter" style="s1" xml:id="subtitle1111">the fragrance of fresh flowers and fruits.</p>
+<p begin="44600000000t" end="44632400000t" region="bottomCenter" style="s1" xml:id="subtitle1112">But I was not aware that Your Highness<br/>doesn’t like perfume at all.</p>
+<p begin="44633200000t" end="44653600000t" region="bottomCenter" style="s1" xml:id="subtitle1113">I’m quite careless.</p>
+<p begin="44654400000t" end="44672800000t" region="bottomCenter" style="s1" xml:id="subtitle1114">It’s not that I don’t like perfume.</p>
+<p begin="44678800000t" end="44696400000t" region="bottomCenter" style="s1" xml:id="subtitle1115">But I must remind you</p>
+<p begin="44697200000t" end="44733600000t" region="bottomCenter" style="s1" xml:id="subtitle1116">that certain perfumes may do harm<br/>to your health if used improperly.</p>
+<p begin="44746400000t" end="44766400000t" region="bottomCenter" style="s1" xml:id="subtitle1117">Thank you for your counsel, Your Highness.</p>
+<p begin="44774800000t" end="44816800000t" region="bottomCenter" style="s1" xml:id="subtitle1118">As you understand perfumes,<br/>you must know how terrible they can be.</p>
+<p begin="44842400000t" end="44872400000t" region="bottomCenter" style="s1" xml:id="subtitle1119">It’s springtime.<br/>Even the cats are starting to wail.</p>
+<p begin="44880000000t" end="44935600000t" region="bottomCenter" style="s1" xml:id="subtitle1120">Other cats will yowl.<br/>But my cat, Songzi, loves to pounce.</p>
+<p begin="44945600000t" end="44975200000t" region="bottomCenter" style="s1" xml:id="subtitle1121">Cats are not easy to train when in heat.</p>
+<p begin="44981600000t" end="45004400000t" region="bottomCenter" style="s1" xml:id="subtitle1122">But they are quite susceptible to scents.</p>
+<p begin="45011200000t" end="45042800000t" region="bottomCenter" style="s1" xml:id="subtitle1123">They can be trained<br/>once accustomed to certain scents.</p>
+<p begin="45043600000t" end="45084400000t" region="bottomCenter" style="s1" xml:id="subtitle1124">Very good. The flowers<br/>at Jingren Palace are in full bloom.</p>
+<p begin="45085200000t" end="45124400000t" region="bottomCenter" style="s1" xml:id="subtitle1125">I will invite all the concubines<br/>to the palace to view them.</p>
+<p begin="45131600000t" end="45142000000t" region="bottomCenter" style="s1" xml:id="subtitle1126">Yes, Your Highness.</p>
+<p begin="45211200000t" end="45250400000t" region="bottomCenter" style="s1" xml:id="subtitle1127">Consort Jing and Consort Hua became<br/>concubines of His Majesty on the same day.</p>
+<p begin="45251200000t" end="45267200000t" region="bottomCenter" style="s1" xml:id="subtitle1128">Now Jing has been promoted to Consort,</p>
+<p begin="45268000000t" end="45292400000t" region="bottomCenter" style="s1" xml:id="subtitle1129">and will help Consort Hua<br/>to assist in affairs of the harem.</p>
+<p begin="45293200000t" end="45332400000t" region="bottomCenter" style="s1" xml:id="subtitle1130">It is a blessing that<br/>you now have a helper.</p>
+<p begin="45333200000t" end="45364800000t" region="bottomCenter" style="s1" xml:id="subtitle1131">But even more so for me<br/>since I can enjoy my leisure time now.</p>
+<p begin="45376000000t" end="45406000000t" region="bottomCenter" style="s1" xml:id="subtitle1132">Lady Fucha, you’ve viewed the flowers<br/>for a while, your makeup has run.</p>
+<p begin="45446000000t" end="45480800000t" region="bottomCenter" style="s1" xml:id="subtitle1133">It truly must be a gift from His Majesty.<br/>Your powder smells so good.</p>
+<p begin="45715200000t" end="45730800000t" region="bottomCenter" style="s1" xml:id="subtitle1134">- Young mistress.<br/>- Call the imperial doctor.</p>
+<p begin="45731600000t" end="45753600000t" region="bottomCenter" style="s1" xml:id="subtitle1135">Young mistress, are you all right?</p>
+<p begin="45754400000t" end="45775600000t" region="bottomCenter" style="s1" xml:id="subtitle1136">- Are you all right?<br/>- It hurts.</p>
+<p begin="45776400000t" end="45798800000t" region="bottomCenter" style="s1" xml:id="subtitle1137">Are you all right?<br/>Young mistress, don’t worry.</p>
+<p begin="45890800000t" end="45906800000t" region="bottomCenter" style="s1" xml:id="subtitle1138">It’s hopeless.</p>
+<p begin="45920800000t" end="45945200000t" region="bottomCenter" style="s1" xml:id="subtitle1139">Who is the owner of that beast?</p>
+<p begin="45955200000t" end="45974800000t" region="bottomCenter" style="s1" xml:id="subtitle1140">I am to blame.</p>
+<p begin="45975600000t" end="46008800000t" region="bottomCenter" style="s1" xml:id="subtitle1141">The cat is named Songzi.<br/>It was given to me by Consort Qi.</p>
+<p begin="46009600000t" end="46040400000t" region="bottomCenter" style="s1" xml:id="subtitle1142">I only kept it as a pet for pleasure.</p>
+<p begin="46041200000t" end="46078400000t" region="bottomCenter" style="s1" xml:id="subtitle1143">Songzi is usually very gentle.<br/>But she suddenly went wild today.</p>
+<p begin="46079200000t" end="46093200000t" region="bottomCenter" style="s1" xml:id="subtitle1144">It is truly my fault.</p>
+<p begin="46114400000t" end="46124400000t" region="bottomCenter" style="s1" xml:id="subtitle1145">You may rise.</p>
+<p begin="46160400000t" end="46172000000t" region="bottomCenter" style="s1" xml:id="subtitle1146">What happened to Lady Wan?</p>
+<p begin="46179200000t" end="46205200000t" region="bottomCenter" style="s1" xml:id="subtitle1147">Lady Wan stumbled<br/>when she attempted to save Lady Fucha.</p>
+<p begin="46206000000t" end="46226400000t" region="bottomCenter" style="s1" xml:id="subtitle1148">Maybe she was injured.</p>
+<p begin="46227200000t" end="46248800000t" region="bottomCenter" style="s1" xml:id="subtitle1149">Imperial doctor, check on Lady Wan.</p>
+<p begin="46249600000t" end="46262800000t" region="bottomCenter" style="s1" xml:id="subtitle1150">Yes, Your Highness.</p>
+<p begin="46362800000t" end="46402000000t" region="bottomCenter" style="s1" xml:id="subtitle1151">Congratulations, young mistress.<br/>You are with child, about two months.</p>
+<p begin="46440000000t" end="46455600000t" region="bottomCenter" style="s1" xml:id="subtitle1152">Wonderful.</p>
+<p begin="46468800000t" end="46481200000t" region="bottomCenter" style="s1" xml:id="subtitle1153">Don’t move.</p>
+<p begin="46482000000t" end="46506800000t" region="bottomCenter" style="s1" xml:id="subtitle1154">You sit down. Sit down.</p>
+<p begin="46520800000t" end="46560400000t" region="bottomCenter" style="s1" xml:id="subtitle1155">Doctor Zhang, are you certain<br/>that Lady Wan is with child?</p>
+<p begin="46561200000t" end="46578800000t" region="bottomCenter" style="s1" xml:id="subtitle1156">I’ve been a doctor for several decades.</p>
+<p begin="46579600000t" end="46607600000t" region="bottomCenter" style="s1" xml:id="subtitle1157">I’m quite confident of my diagnosis.</p>
+<p begin="46608400000t" end="46636000000t" region="bottomCenter" style="s1" xml:id="subtitle1158">What happened today<br/>was entirely unexpected.</p>
+<p begin="46636800000t" end="46660000000t" region="bottomCenter" style="s1" xml:id="subtitle1159">But Lady Wan, you’re quite careless.</p>
+<p begin="46660800000t" end="46682800000t" region="bottomCenter" style="s1" xml:id="subtitle1160">You didn’t even realize<br/>that you were with child</p>
+<p begin="46683600000t" end="46704000000t" region="bottomCenter" style="s1" xml:id="subtitle1161">and threw yourself down to save another.</p>
+<p begin="46704800000t" end="46720800000t" region="bottomCenter" style="s1" xml:id="subtitle1162">It’s fortunate that you weren’t hurt.</p>
+<p begin="46726800000t" end="46748800000t" region="bottomCenter" style="s1" xml:id="subtitle1163">What if an accident were to happen?</p>
+<p begin="46749600000t" end="46788000000t" region="bottomCenter" style="s1" xml:id="subtitle1164">This is important news<br/>vital to the imperial family.</p>
+<p begin="46788800000t" end="46818800000t" region="bottomCenter" style="s1" xml:id="subtitle1165">If I were to say that I was pushed,<br/>would you believe me?</p>
+<p begin="46838800000t" end="46859600000t" region="bottomCenter" style="s1" xml:id="subtitle1166">I guess the true intention of that person</p>
+<p begin="46860400000t" end="46880800000t" region="bottomCenter" style="s1" xml:id="subtitle1167">was to make me strike Lady Fucha’s belly.</p>
+<p begin="46890800000t" end="46927600000t" region="bottomCenter" style="s1" xml:id="subtitle1168">If Lady Fucha were to miscarry,<br/>then I would be to blame.</p>
+<p begin="46928400000t" end="46944800000t" region="bottomCenter" style="s1" xml:id="subtitle1169">Kill two birds with one stone.</p>
+<p begin="46945600000t" end="46968000000t" region="bottomCenter" style="s1" xml:id="subtitle1170">Among the concubines in the harem,</p>
+<p begin="46968800000t" end="46998000000t" region="bottomCenter" style="s1" xml:id="subtitle1171">those who carry a child will become<br/>the targets of all the others.</p>
+<p begin="47006000000t" end="47042000000t" region="bottomCenter" style="s1" xml:id="subtitle1172">I’m afraid there are many<br/>who will not sleep well tonight.</p>
+<p begin="47042800000t" end="47055600000t" region="bottomCenter" style="s1" xml:id="subtitle1173">Precisely.</p>
+<p begin="47056400000t" end="47085600000t" region="bottomCenter" style="s1" xml:id="subtitle1174">Those who could not sleep<br/>due to Lady Fucha’s pregnancy</p>
+<p begin="47086400000t" end="47109200000t" region="bottomCenter" style="s1" xml:id="subtitle1175">can finally sleep well tonight.</p>
+<p begin="47115200000t" end="47134400000t" region="bottomCenter" style="s1" xml:id="subtitle1176">But when they think of you,<br/>young mistress,</p>
+<p begin="47135200000t" end="47158800000t" region="bottomCenter" style="s1" xml:id="subtitle1177">they will pass another sleepless night.</p>
+<p begin="47212000000t" end="47231200000t" region="bottomCenter" style="s1" xml:id="subtitle1178">Hasn’t that wretched creature<br/>been caught yet?</p>
+<p begin="47251200000t" end="47270000000t" region="bottomCenter" style="s1" xml:id="subtitle1179">I’ve tried my best.</p>
+<p begin="47290400000t" end="47330400000t" region="bottomCenter" style="s1" xml:id="subtitle1180">It seems that even such trifles<br/>still require my personal attention.</p>
+<p begin="47342000000t" end="47368000000t" region="bottomCenter" style="s1" xml:id="subtitle1181">- Zhuxi.<br/>- Your Highness.</p>
+<p begin="47381200000t" end="47410000000t" region="bottomCenter" style="s1" xml:id="subtitle1182">- Is it ready?<br/>- Yes, Your Highness.</p>
+<p begin="47620400000t" end="47651600000t" region="bottomCenter" style="s1" xml:id="subtitle1183">I have been suffering from eye problems,<br/>so you think I’m blind.</p>
+<p begin="47666000000t" end="47689600000t" region="bottomCenter" style="s1" xml:id="subtitle1184">It’s fortunate that my mind<br/>is still clear.</p>
+<p begin="47700400000t" end="47739600000t" region="bottomCenter" style="s1" xml:id="subtitle1185">That vile creature<br/>has killed my own grandson.</p>
+<p begin="47772800000t" end="47787600000t" region="bottomCenter" style="s1" xml:id="subtitle1186">Please forgive me, Your Highness.</p>
+<p begin="47788400000t" end="47815200000t" region="bottomCenter" style="s1" xml:id="subtitle1187">Lady Fucha has lost her baby.<br/>It is beyond repair.</p>
+<p begin="47823200000t" end="47868400000t" region="bottomCenter" style="s1" xml:id="subtitle1188">But as for Lady Wan’s baby,<br/>no further mishaps are to happen.</p>
+<p begin="47905200000t" end="47936000000t" region="bottomCenter" style="s1" xml:id="subtitle1189">Consort Hua!</p>
+<p begin="47948400000t" end="47968800000t" region="bottomCenter" style="s1" xml:id="subtitle1190">My lady, Consort Duan<br/>has already retired for the night.</p>
+<p begin="47969600000t" end="47992800000t" region="bottomCenter" style="s1" xml:id="subtitle1191">If you’d like to visit,<br/>please return tomorrow.</p>
+<p begin="48006400000t" end="48020400000t" region="bottomCenter" style="s1" xml:id="subtitle1192">- Hold her.<br/>- Yes, my lady.</p>
+<p begin="48025200000t" end="48046000000t" region="bottomCenter" style="s1" xml:id="subtitle1193">My lady.</p>
+<p begin="48128000000t" end="48141600000t" region="bottomCenter" style="s1" xml:id="subtitle1194">It’s been so many years.</p>
+<p begin="48152000000t" end="48181600000t" region="bottomCenter" style="s1" xml:id="subtitle1195">Whenever you lost your temper,<br/>you would burst into my palace</p>
+<p begin="48191200000t" end="48213600000t" region="bottomCenter" style="s1" xml:id="subtitle1196">in exactly the same pose as now.</p>
+<p begin="48214400000t" end="48234400000t" region="bottomCenter" style="s1" xml:id="subtitle1197">It’s been so many years.</p>
+<p begin="48235200000t" end="48260400000t" region="bottomCenter" style="s1" xml:id="subtitle1198">Whenever I think of my unborn child,</p>
+<p begin="48267600000t" end="48290800000t" region="bottomCenter" style="s1" xml:id="subtitle1199">I wish I could eat your flesh<br/>and drink your blood.</p>
+<p begin="48304800000t" end="48334000000t" region="bottomCenter" style="s1" xml:id="subtitle1200">It was you who served me<br/>that medicinal tonic.</p>
+<p begin="48340000000t" end="48383600000t" region="bottomCenter" style="s1" xml:id="subtitle1201">You were the most inoffensive concubine.<br/>That’s why I trusted you somehow.</p>
+<p begin="48390400000t" end="48418800000t" region="bottomCenter" style="s1" xml:id="subtitle1202">I never imagined you could be so vicious.</p>
+<p begin="48425600000t" end="48456000000t" region="bottomCenter" style="s1" xml:id="subtitle1203">How could you kill my baby like that?</p>
+<p begin="48456800000t" end="48472800000t" region="bottomCenter" style="s1" xml:id="subtitle1204">If you had any solid evidence,</p>
+<p begin="48488400000t" end="48516400000t" region="bottomCenter" style="s1" xml:id="subtitle1205">you should have ended my life<br/>in the most terrible fashion.</p>
+<p begin="48531600000t" end="48551600000t" region="bottomCenter" style="s1" xml:id="subtitle1206">Why are you still standing there?</p>
+<p begin="48573200000t" end="48600800000t" region="bottomCenter" style="s1" xml:id="subtitle1207">As long as you dwell in the palace,</p>
+<p begin="48606800000t" end="48633600000t" region="bottomCenter" style="s1" xml:id="subtitle1208">I will never let you off.</p>
+<p begin="48634400000t" end="48652800000t" region="bottomCenter" style="s1" xml:id="subtitle1209">I will watch you linger on<br/>to your last breath</p>
+<p begin="48653600000t" end="48670800000t" region="bottomCenter" style="s1" xml:id="subtitle1210">and make your life a living hell.</p>
+<p begin="48780000000t" end="48796000000t" region="bottomCenter" style="s1" xml:id="subtitle1211">How’s your wound?</p>
+<p begin="48805200000t" end="48817200000t" region="bottomCenter" style="s1" xml:id="subtitle1212">It’s healing.</p>
+<p begin="48847200000t" end="48871200000t" region="bottomCenter" style="s1" xml:id="subtitle1213">This healing balm is made<br/>from my family’s traditional recipe.</p>
+<p begin="48877600000t" end="48916800000t" region="bottomCenter" style="s1" xml:id="subtitle1214">It contains peach blossom and pearl powder<br/>which can give you a rosy complexion.</p>
+<p begin="48924000000t" end="48953200000t" region="bottomCenter" style="s1" xml:id="subtitle1215">The most valuable ingredient<br/>is the marrow of white otter.</p>
+<p begin="48954000000t" end="48978800000t" region="bottomCenter" style="s1" xml:id="subtitle1216">It can erase the scar,<br/>leaving your skin as good as new.</p>
+<p begin="48983600000t" end="49006400000t" region="bottomCenter" style="s1" xml:id="subtitle1217">It’s best to use it<br/>while it’s still fresh.</p>
+<p begin="49007200000t" end="49044800000t" region="bottomCenter" style="s1" xml:id="subtitle1218">Otherwise, as it grows stale,<br/>it will lose its effect.</p>
+<p begin="49045600000t" end="49062000000t" region="bottomCenter" style="s1" xml:id="subtitle1219">It smells good.</p>
+<p begin="49062800000t" end="49086800000t" region="bottomCenter" style="s1" xml:id="subtitle1220">At first I wanted to use perfume<br/>to regulate the odor.</p>
+<p begin="49087600000t" end="49120000000t" region="bottomCenter" style="s1" xml:id="subtitle1221">But I realized that you should avoid<br/>perfumes since you’re pregnant.</p>
+<p begin="49120800000t" end="49146800000t" region="bottomCenter" style="s1" xml:id="subtitle1222">So I used fresh flowers<br/>to regulate the odor instead.</p>
+<p begin="49147600000t" end="49182000000t" region="bottomCenter" style="s1" xml:id="subtitle1223">In this case,<br/>it doesn’t smell like an ointment.</p>
+<p begin="49189200000t" end="49225600000t" region="bottomCenter" style="s1" xml:id="subtitle1224">You are so thoughtful.<br/>I don’t know how to show my gratitude.</p>
+<p begin="49321200000t" end="49342400000t" region="bottomCenter" style="s1" xml:id="subtitle1225">I’ve already told the Empress.</p>
+<p begin="49348400000t" end="49387200000t" region="bottomCenter" style="s1" xml:id="subtitle1226">On the day Consort Jing is conferred,<br/>you will be promoted to Concubine Wan.</p>
+<p begin="49422400000t" end="49440400000t" region="bottomCenter" style="s1" xml:id="subtitle1227">Huan Huan, what do you think?</p>
+<p begin="49472800000t" end="49504400000t" region="bottomCenter" style="s1" xml:id="subtitle1228">It looks softer, not as stiff<br/>as a normal floral ornament.</p>
+<p begin="49512000000t" end="49544000000t" region="bottomCenter" style="s1" xml:id="subtitle1229">Imitating its beauty is enough.<br/>It need not be exactly the same.</p>
+<p begin="49553600000t" end="49594000000t" region="bottomCenter" style="s1" xml:id="subtitle1230">We’ll call it<br/>“Lovely Pear Blossom Makeup.”</p>
+<p begin="49609200000t" end="49630800000t" region="bottomCenter" style="s1" xml:id="subtitle1231">My dear, as you created it,<br/>you may name it.</p>
+<p begin="49631600000t" end="49654000000t" region="bottomCenter" style="s1" xml:id="subtitle1232">It’s very elegant and refined.</p>
+<p begin="49654800000t" end="49688800000t" region="bottomCenter" style="s1" xml:id="subtitle1233">I’m afraid the others<br/>will think you are partial to me.</p>
+<p begin="49689600000t" end="49723600000t" region="bottomCenter" style="s1" xml:id="subtitle1234">I am clearly partial only to you.<br/>Does that displease you?</p>
+<p begin="49742400000t" end="49775600000t" region="bottomCenter" style="s1" xml:id="subtitle1235">Mei has only just recovered.<br/>Your Majesty, you should visit her.</p>
+<p begin="49781600000t" end="49803600000t" region="bottomCenter" style="s1" xml:id="subtitle1236">I just did.</p>
+<p begin="49804400000t" end="49832000000t" region="bottomCenter" style="s1" xml:id="subtitle1237">I somehow sensed<br/>that she received me coldly.</p>
+<p begin="49844400000t" end="49884400000t" region="bottomCenter" style="s1" xml:id="subtitle1238">Mei has been ill for so long.<br/>It’s no surprise that she is dispirited.</p>
+<p begin="49892400000t" end="49920400000t" region="bottomCenter" style="s1" xml:id="subtitle1239">Your Majesty, if she has displeased you,<br/>please forgive her.</p>
+<p begin="49940000000t" end="49958800000t" region="bottomCenter" style="s1" xml:id="subtitle1240">Speaking of the illness,</p>
+<p begin="49959600000t" end="49981600000t" region="bottomCenter" style="s1" xml:id="subtitle1241">a vexing question remains in my mind.</p>
+<p begin="49987600000t" end="50013200000t" region="bottomCenter" style="s1" xml:id="subtitle1242">Is it proper for you to share it with me?</p>
+<p begin="50014000000t" end="50042800000t" region="bottomCenter" style="s1" xml:id="subtitle1243">The other day Consort Jing told me</p>
+<p begin="50043600000t" end="50080800000t" region="bottomCenter" style="s1" xml:id="subtitle1244">that Jiang Cheng and Jiang Shen have<br/>an effective treatment for the disease.</p>
+<p begin="50089200000t" end="50126400000t" region="bottomCenter" style="s1" xml:id="subtitle1245">But they accept bribes in secret<br/>from many imperial maids and eunuchs.</p>
+<p begin="50133200000t" end="50150800000t" region="bottomCenter" style="s1" xml:id="subtitle1246">They treat the powerful first</p>
+<p begin="50151600000t" end="50176400000t" region="bottomCenter" style="s1" xml:id="subtitle1247">without even glancing<br/>at those of lower status.</p>
+<p begin="50177200000t" end="50210400000t" region="bottomCenter" style="s1" xml:id="subtitle1248">They withhold the medicine<br/>and let them perish untreated.</p>
+<p begin="50215200000t" end="50255600000t" region="bottomCenter" style="s1" xml:id="subtitle1249">But the epidemic has not abated.<br/>We must keep them alive.</p>
+<p begin="50272000000t" end="50324400000t" region="bottomCenter" style="s1" xml:id="subtitle1250">I can recommend a doctor.<br/>He is able to treat the disease.</p>
+<p begin="50325200000t" end="50351200000t" region="bottomCenter" style="s1" xml:id="subtitle1251">- Who?<br/>- Imperial Doctor Wen Shichu.</p>
+<p begin="50361600000t" end="50377200000t" region="bottomCenter" style="s1" xml:id="subtitle1252">Why him?</p>
+<p begin="50378000000t" end="50410400000t" region="bottomCenter" style="s1" xml:id="subtitle1253">When Doctor Wen treated Mei’s illness,<br/>she recovered effectively.</p>
+<p begin="50411200000t" end="50427600000t" region="bottomCenter" style="s1" xml:id="subtitle1254">Besides, I have also heard</p>
+<p begin="50428400000t" end="50466800000t" region="bottomCenter" style="s1" xml:id="subtitle1255">that Jiang Cheng and Jiang Shen’s remedy<br/>was derived from Doctor Wen’s work.</p>
+<p begin="50467600000t" end="50497200000t" region="bottomCenter" style="s1" xml:id="subtitle1256">Your Majesty, if you don’t believe me,<br/>you may look into it.</p>
+<p begin="50498000000t" end="50536800000t" region="bottomCenter" style="s1" xml:id="subtitle1257">Those who were treated by Doctor Wen<br/>recovered in a shorter time</p>
+<p begin="50537600000t" end="50560400000t" region="bottomCenter" style="s1" xml:id="subtitle1258">and had no residual problems,<br/>like nausea or weakness.</p>
+<p begin="50561200000t" end="50596000000t" region="bottomCenter" style="s1" xml:id="subtitle1259">What Doctor Jiang used was an<br/>old prescription drawn up by Doctor Wen.</p>
+<p begin="50596800000t" end="50615600000t" region="bottomCenter" style="s1" xml:id="subtitle1260">The side effects were stronger.</p>
+<p begin="50634400000t" end="50650400000t" region="bottomCenter" style="s1" xml:id="subtitle1261">I see.</p>
+<p begin="50671200000t" end="50701200000t" region="bottomCenter" style="s1" xml:id="subtitle1262">After all, those two men<br/>work for Consort Hua.</p>
+<p begin="50707200000t" end="50741600000t" region="bottomCenter" style="s1" xml:id="subtitle1263">But if I wish to remove them,<br/>there are many ways to do so.</p>
+<p begin="50785600000t" end="50819600000t" region="bottomCenter" style="s1" xml:id="subtitle1264">Very well. Let’s change the subject.</p>
+<p begin="50829200000t" end="50849200000t" region="bottomCenter" style="s1" xml:id="subtitle1265">April 17th is your birthday.</p>
+<p begin="50850000000t" end="50869600000t" region="bottomCenter" style="s1" xml:id="subtitle1266">Moreover, you’re expecting.</p>
+<p begin="50870400000t" end="50911600000t" region="bottomCenter" style="s1" xml:id="subtitle1267">I will order the Imperial Household<br/>Department to hold a celebration.</p>
+<p begin="50912400000t" end="50931600000t" region="bottomCenter" style="s1" xml:id="subtitle1268">It is your decision, Your Majesty.</p>
+<p begin="50932400000t" end="50951600000t" region="bottomCenter" style="s1" xml:id="subtitle1269">Good, leave it to me.</p>
+<p begin="50952400000t" end="50980000000t" region="bottomCenter" style="s1" xml:id="subtitle1270">So long as it pleases you and the baby.</p>
+<p begin="50980800000t" end="51000000000t" region="bottomCenter" style="s1" xml:id="subtitle1271">Your Majesty,<br/>you are very fond of children.</p>
+<p begin="51000800000t" end="51020400000t" region="bottomCenter" style="s1" xml:id="subtitle1272">And you meet with Consort Hua quite often.</p>
+<p begin="51021200000t" end="51045600000t" region="bottomCenter" style="s1" xml:id="subtitle1273">How is it that Consort Hua<br/>has not yet conceived a child?</p>
+<p begin="51046400000t" end="51065200000t" region="bottomCenter" style="s1" xml:id="subtitle1274">She never will.</p>
+<p begin="51090000000t" end="51116800000t" region="bottomCenter" style="s1" xml:id="subtitle1275">I understand that Consort Hua<br/>had a miscarriage before.</p>
+<p begin="51117600000t" end="51137600000t" region="bottomCenter" style="s1" xml:id="subtitle1276">Did it cause a complication?</p>
+<p begin="51314000000t" end="51326800000t" region="bottomCenter" style="s1" xml:id="subtitle1277">My lady.</p>
+<p begin="51332800000t" end="51366400000t" region="bottomCenter" style="s1" xml:id="subtitle1278">The two Doctor Jiangs<br/>came to check on you.</p>
+<p begin="51372400000t" end="51412800000t" region="bottomCenter" style="s1" xml:id="subtitle1279">But they left when they learned<br/>that His Majesty was coming to dine.</p>
+<p begin="51418800000t" end="51446000000t" region="bottomCenter" style="s1" xml:id="subtitle1280">They said they would return<br/>in the evening.</p>
+<p begin="51461200000t" end="51473600000t" region="bottomCenter" style="s1" xml:id="subtitle1281">By the way,</p>
+<p begin="51481600000t" end="51503600000t" region="bottomCenter" style="s1" xml:id="subtitle1282">that pregnant woman at Suiyu Pavilion<br/>is unable to serve in bed.</p>
+<p begin="51504400000t" end="51522000000t" region="bottomCenter" style="s1" xml:id="subtitle1283">Yet His Majesty visits her frequently.</p>
+<p begin="51528400000t" end="51553600000t" region="bottomCenter" style="s1" xml:id="subtitle1284">Tell Doctor Jiang to remind His Majesty<br/>that he should avoid going there.</p>
+<p begin="51587200000t" end="51600400000t" region="bottomCenter" style="s1" xml:id="subtitle1285">Xia Yi.</p>
+<p begin="51613600000t" end="51630000000t" region="bottomCenter" style="s1" xml:id="subtitle1286">I wish to remove two men.</p>
+<p begin="51634800000t" end="51652000000t" region="bottomCenter" style="s1" xml:id="subtitle1287">I await your orders.</p>
+<p begin="51652800000t" end="51676400000t" region="bottomCenter" style="s1" xml:id="subtitle1288">Do it secretly<br/>and do not arouse suspicion.</p>
+<p begin="51677200000t" end="51688000000t" region="bottomCenter" style="s1" xml:id="subtitle1289">XIA YI</p>
+<p begin="51688800000t" end="51707600000t" region="bottomCenter" style="s1" xml:id="subtitle1290">As you wish, Your Majesty.</p>
+<p begin="51744000000t" end="51754400000t" region="bottomCenter" style="s1" xml:id="subtitle1291">Your Majesty.</p>
+<p begin="51755200000t" end="51790000000t" region="bottomCenter" style="s1" xml:id="subtitle1292">Jiang Cheng and Jiang Shen were killed<br/>by robbers on their way home last night.</p>
+<p begin="51790800000t" end="51810800000t" region="bottomCenter" style="s1" xml:id="subtitle1293">Their heads are not to be found.</p>
+<p begin="51811600000t" end="51828800000t" region="bottomCenter" style="s1" xml:id="subtitle1294">In the capital city,<br/>at the Emperor’s feet,</p>
+<p begin="51829600000t" end="51844000000t" region="bottomCenter" style="s1" xml:id="subtitle1295">how can such a murder happen?</p>
+<p begin="51844800000t" end="51860800000t" region="bottomCenter" style="s1" xml:id="subtitle1296">It’s outrageous!</p>
+<p begin="51871200000t" end="51887200000t" region="bottomCenter" style="s1" xml:id="subtitle1297">My beloved concubine,</p>
+<p begin="51894400000t" end="51925600000t" region="bottomCenter" style="s1" xml:id="subtitle1298">I was shocked to hear<br/>of this grievous event.</p>
+<p begin="51926400000t" end="51957600000t" region="bottomCenter" style="s1" xml:id="subtitle1299">I’ve ordered an investigation.<br/>You may rest easy.</p>
+<p begin="51969200000t" end="52000000000t" region="bottomCenter" style="s1" xml:id="subtitle1300">But with those two imperial doctors dead,<br/>the treatment of the epidemic–</p>
+<p begin="52000800000t" end="52018400000t" region="bottomCenter" style="s1" xml:id="subtitle1301">You need not worry.</p>
+<p begin="52056000000t" end="52066400000t" region="bottomCenter" style="s1" xml:id="subtitle1302"><span style="s1_1">Here.</span></p>
+<p begin="52067200000t" end="52087200000t" region="bottomCenter" style="s1" xml:id="subtitle1303">Throw more fish food here.</p>
+<p begin="52088000000t" end="52105200000t" region="bottomCenter" style="s1" xml:id="subtitle1304">Don’t let some overeat<br/>while others starve to death.</p>
+<p begin="52106000000t" end="52137600000t" region="bottomCenter" style="s1" xml:id="subtitle1305">- Over there.<br/>- Eunuch Yun. The fish here are well-fed.</p>
+<p begin="52148400000t" end="52175600000t" region="bottomCenter" style="s1" xml:id="subtitle1306"><span style="s1_1">Well-fed? Of course.</span></p>
+<p begin="52181600000t" end="52233600000t" region="bottomCenter" style="s1" xml:id="subtitle1307"><span style="s1_1">In those years, Consort Hua wished</span><br/><span style="s1_1">she could feed her enemies to the fish.</span></p>
+<p begin="52240800000t" end="52274000000t" region="bottomCenter" style="s1" xml:id="subtitle1308"><span style="s1_1">However, I do not believe</span><br/><span style="s1_1">Consort Hua was born like that.</span></p>
+<p begin="52274800000t" end="52331200000t" region="bottomCenter" style="s1" xml:id="subtitle1309"><span style="s1_1">Her behavior grew outrageous over time,</span><br/><span style="s1_1">for two reasons alone.</span></p>
+<p begin="52332000000t" end="52370400000t" region="bottomCenter" style="s1" xml:id="subtitle1310"><span style="s1_1">Having lost her own, she could not bear</span><br/><span style="s1_1">to see any other raise a child.</span></p>
+<p begin="52371200000t" end="52413200000t" region="bottomCenter" style="s1" xml:id="subtitle1311"><span style="s1_1">Loving the Emperor, she could not bear</span><br/><span style="s1_1">to see any other win his favor.</span></p>
+<p begin="52414000000t" end="52464800000t" region="bottomCenter" style="s1" xml:id="subtitle1312"><span style="s1_1">She was arrogant and capricious</span><br/><span style="s1_1">because she enjoyed the Emperor’s favor.</span></p>
+<p begin="52465600000t" end="52508000000t" region="bottomCenter" style="s1" xml:id="subtitle1313"><span style="s1_1">If not for her, I would not have lost</span><br/><span style="s1_1">my first imperial son.</span></p>
+<p begin="52514000000t" end="52546400000t" region="bottomCenter" style="s1" xml:id="subtitle1314"><span style="s1_1">Everyone in the harem</span><br/><span style="s1_1">feared her and hated her</span></p>
+<p begin="52547200000t" end="52581200000t" region="bottomCenter" style="s1" xml:id="subtitle1315"><span style="s1_1">but secretly hoped one day</span><br/><span style="s1_1">to become just like her.</span></p>
+<p begin="52585600000t" end="52612800000t" region="bottomCenter" style="s1" xml:id="subtitle1316">Empress Dowager, aren’t you tired?</p>
+<p begin="52613600000t" end="52641200000t" region="bottomCenter" style="s1" xml:id="subtitle1317">Let me help you walk<br/>to the pavilion for some rest.</p>
+<p begin="52654800000t" end="52668800000t" region="bottomCenter" style="s1" xml:id="subtitle1318">Let us go.</p>
+</div>
+</body>
+</tt>
