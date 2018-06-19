@@ -33,7 +33,7 @@ def cn_parse(sent):
     return list(parser.raw_parse(sent))[0]
 
 f=open("句对齐的喜福会-中文分词版.txt","r",encoding="utf-8")
-fw=open("out.txt","w",encoding="utf-8")
+fw=open("out.txt","a",encoding="utf-8")
 for line in f.readlines():
     line=line.replace("\n","")
     print(line)
@@ -55,6 +55,7 @@ for line in f.readlines():
             result=result+"\t"+" ".join(cn_PPs)+"\n"
             print(result)
             fw.write(result)
+            fw.flush()
 fw.close()
 f.close()
 
