@@ -22,8 +22,8 @@ def en_parse(sent):
     """
     对英文句子做句法分析
     """
-   parser=StanfordParser('E:\standford_nlp\stanford-parser-full-2018-02-27\stanford-parser.jar','E:\standford_nlp\stanford-parser-full-2018-02-27\stanford-parser-3.9.1-models.jar')
-   return list(parser.raw_parse(sent))[0]
+    parser=StanfordParser('E:\standford_nlp\stanford-parser-full-2018-02-27\stanford-parser.jar','E:\standford_nlp\stanford-parser-full-2018-02-27\stanford-parser-3.9.1-models.jar')
+    return list(parser.raw_parse(sent))[0]
 
 def cn_parse(sent):
     """
@@ -33,6 +33,7 @@ def cn_parse(sent):
     return list(parser.raw_parse(sent))[0]
 
 f=open("句对齐的喜福会-中文分词版.txt","r",encoding="utf-8")
+fw=open("out.txt","w",encoding="utf-8")
 for line in f.readlines():
     line=line.replace("\n","")
     print(line)
@@ -53,6 +54,10 @@ for line in f.readlines():
             result=" ".join(en_PPs)
             result=result+"\t"+" ".join(cn_PPs)+"\n"
             print(result)
+            fw.write(result)
+fw.close()
+f.close()
+
 
 
 
