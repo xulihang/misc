@@ -1,0 +1,65 @@
+﻿AppType=JavaFX
+Build1=Default,b4j.example
+File1=main.bjl
+FileGroup1=Default Group
+Group=Default Group
+Library1=jcore
+Library2=jfx
+NumberOfFiles=1
+NumberOfLibraries=2
+NumberOfModules=0
+Version=6.51
+@EndOfDesignText@
+#Region Project Attributes 
+	#MainFormWidth: 600
+	#MainFormHeight: 600 
+#End Region
+
+Sub Process_Globals
+	Private fx As JFX
+	Private MainForm As Form
+	Private ListView1 As ListView
+	Private TextArea1 As TextArea
+	Private TextField1 As TextField
+End Sub
+
+Sub AppStart (Form1 As Form, Args() As String)
+	MainForm = Form1
+	MainForm.RootPane.LoadLayout("main") 'Load the layout file.
+	MainForm.Show
+	init
+End Sub
+
+'Return true to allow the default exceptions handler to handle the uncaught exception.
+Sub Application_Error (Error As Exception, StackTrace As String) As Boolean
+	Return True
+End Sub
+
+Sub init
+	'TextArea1.Text=$"(ROOT (S (S (SBAR (WHADVP (WRB When))(S (NP (DT the)(NN movie))(VP (VBD splashed)(PP (IN across)(NP (DT the)(NN silver)(NN screen)))(PP (IN in)(NP (CD 2004))))))(, ,)(NP (PRP it))(VP (VBD flashed)(NP (PRP me))(ADVP (RB back))(PP (TO to)(NP (NP (DT a)(NN time)(CC and)(NN place))(SBAR (WHADVP (WRB where))(S (NP (JJ comic)(NNS books))(VP (MD could)(VP (VB be)(VP (VBN had)(PP (IN for)(NP (DT a)(JJ few)(NNS cents))))))))))))(, ,)(CC and)(S (NP (NP (NNS spies))(CC and)(NP (PRP$ their)(JJ clever)(NNS gadgets)))(VP (VBD were)(ADVP (RB everywhere))(PP (IN in)(NP (NP (NN entertainment))(CC and)(NP (DT the)(JJ daily)(NN news))))))(. .)))"$
+	 TextArea1.Text=$"(ROOT (S (SBAR (IN If) (S (NP (DT the) (NN space) (NNS visitors)) (VP (VBP come)))) (, ,) (ADVP (RB Pooh)) (: --) (VP (VBP do) (RB n't) (VP (VB tell) (NP (PRP them)) (SBAR (WHADVP (WRB where)) (S (NP (PRP I)) (VP (VBP live)))))) (. !)))
+"$
+	
+End Sub
+
+Sub Button1_MouseClicked (EventData As MouseEvent)
+	ListView1.Items.Clear
+	Dim matcher As Matcher
+	matcher=Regex.Matcher(TextField1.Text,TextArea1.Text)
+    Do While matcher.Find
+		ListView1.Items.Add(matcher.Match)
+	Loop
+	'For Each item As String In Array As String("NP","VP","PP")
+		
+	'	Dim matcher As Matcher
+		'\(NP .*?\){2,}
+		'\(.*?
+		'\)
+	'	matcher=Regex.Matcher("\("&item&" .*\){2,}",TextArea1.Text)
+	'	Do While matcher.Find
+	'		ListView1.Items.Add(Regex.Replace("\(.*? |\)",matcher.Match,""))
+			'ListView1.Items.Add(matcher.Match)
+	'		Log(matcher.Match)
+	'	Loop
+	'Next
+End Sub

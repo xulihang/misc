@@ -1,0 +1,255 @@
+﻿AppType=JavaFX
+Build1=Default,b4j.example
+File1=main.bjl
+FileGroup1=Default Group
+Group=Default Group
+Library1=jcore
+Library2=jfx
+NumberOfFiles=1
+NumberOfLibraries=2
+NumberOfModules=0
+Version=6.51
+@EndOfDesignText@
+#Region Project Attributes 
+	#MainFormWidth: 600
+	#MainFormHeight: 600 
+#End Region
+
+Sub Process_Globals
+	Private fx As JFX
+	Private MainForm As Form
+	Private Button1 As Button
+	Private TextArea1 As TextArea
+	Private treeList As List
+	Private Button2 As Button
+	Private gramString As String
+	Private Space As String=""
+	Private result As String=""
+End Sub
+
+Sub AppStart (Form1 As Form, Args() As String)
+	MainForm = Form1
+	MainForm.RootPane.LoadLayout("main") 'Load the layout file.
+	MainForm.Show
+	'TextArea1.Text="(ROOT (S (NP (PRP I)) (VP (VBP love)  (NP (PRP you))) (. !)))"
+	TextArea1.Text=$"
+(ROOT
+  (S
+    (S
+      (SBAR
+        (WHADVP (WRB When))
+        (S
+          (NP (DT the) (NN movie))
+          (VP (VBD splashed)
+            (PP (IN across)
+              (NP (DT the) (NN silver) (NN screen)))
+            (PP (IN in)
+              (NP (CD 2004))))))
+      (, ,)
+      (NP (PRP it))
+      (VP (VBD flashed)
+        (NP (PRP me))
+        (ADVP (RB back))
+        (PP (TO to)
+          (NP
+            (NP (DT a) (NN time)
+              (CC and)
+              (NN place))
+            (SBAR
+              (WHADVP (WRB where))
+              (S
+                (NP (JJ comic) (NNS books))
+                (VP (MD could)
+                  (VP (VB be)
+                    (VP (VBN had)
+                      (PP (IN for)
+                        (NP (DT a) (JJ few) (NNS cents))))))))))))
+    (, ,)
+    (CC and)
+    (S
+      (NP
+        (NP (NNS spies))
+        (CC and)
+        (NP (PRP$ their) (JJ clever) (NNS gadgets)))
+      (VP (VBD were)
+        (ADVP (RB everywhere))
+        (PP (IN in)
+          (NP
+            (NP (NN entertainment))
+            (CC and)
+            (NP (DT the) (JJ daily) (NN news))))))
+    (. .)))"$
+End Sub
+
+'Return true to allow the default exceptions handler to handle the uncaught exception.
+Sub Application_Error (Error As Exception, StackTrace As String) As Boolean
+	Return True
+End Sub
+
+Sub Button1_MouseClicked (EventData As MouseEvent)
+	If TextArea1.Text.Contains(" ") Then
+		Space=" "
+	End If
+	Dim stack As List
+	stack.Initialize
+	Dim group As List
+	group.Initialize
+	Dim leaf As List
+	leaf.Initialize
+	group.Add("label")
+	group.Add(leaf)
+	stack.Add(group)
+    '[[label,[node]]]
+	Dim matcher As Matcher
+	matcher=Regex.Matcher("\(\s*([^\s\(\)]+)?|\)|([^\s\(\)]+)",TextArea1.Text)
+	Do While matcher.Find
+		Log(matcher.Match)
+		
+		If matcher.Match.CharAt(0)="(" Then
+			Dim lbl As String
+			lbl=matcher.Match.SubString2(1,matcher.Match.Length).Trim
+			Dim leaf As List
+			leaf.Initialize
+			Dim group As List
+			group.Initialize
+			group.Add(lbl)
+			group.Add(leaf)
+			stack.Add(group)
+			
+		else if matcher.Match=")" Then
+			Dim group As List
+			group=stack.Get(stack.Size-1)
+			stack.RemoveAt(stack.Size-1)
+			Dim newGroup As List
+			newGroup=stack.Get(stack.Size-1)
+			Dim leaf As List
+			leaf=newGroup.get(1)
+			leaf.Add(group)
+			newGroup.Set(1,leaf)
+			stack.Set(stack.Size-1,newGroup)
+		Else
+			Dim group As List
+			group=stack.Get(stack.Size-1)
+			group.Set(1,matcher.Match)
+			stack.Set(stack.Size-1,group)
+		End If
+		Log(stack)
+	Loop
+	Log(stack)
+	Dim group As List
+	group=stack.Get(0)
+    Dim tree As List
+	tree=group.Get(1)
+	Log(tree)
+	treeList=tree
+End Sub
+
+Sub Button2_MouseClicked (EventData As MouseEvent)
+	result=""
+	traverse(treeList)
+	Log(result)
+	Return
+	Dim treeListAsString As String
+	treeListAsString=treeList
+
+	Dim t As List
+	t=getSimpleTreeList(treeList)
+
+	Dim grams As List
+	grams=t.Get(1)
+	For Each gram As List In grams
+		Log(gram)
+		gramString=""
+		If isString(gram.Get(1))=False Then
+			getString(gram.Get(1),"")
+		Else
+			Log(gram.Get(1))
+		End If
+		Log(gramString)
+		
+	Next
+End Sub
+
+Sub getString(t As List, content As String) As String
+	'Log(t)
+	If isString(t.Get(0)) Then 'label
+		If t.Size>1 And isList(t.Get(1)) Then '[NP, [[PRP, you]]]
+            'Log(1)
+			getString(t.Get(1),content)
+		Else if t.Size>1 And isString(t.Get(1)) Then '[PRP, I]
+			'Log(2)
+			'Log(t.Get(1))
+			content=content&t.Get(1)
+			gramString=gramString&Space&t.Get(1)
+		End If
+	Else
+		'Log(3)
+		'[[VBP, love], [NP, [[PRP, you]]]]
+		Dim nextList As List
+		nextList=t
+		If isString(nextList.Get(0)) Then
+            'Log(nextList.Get(1))
+			content=content&nextList.Get(1)
+			gramString=gramString&Space&nextList.Get(1)
+		Else
+			For Each group As List In nextList
+				getString(group,content)
+			Next
+		End If
+	End If
+	
+End Sub
+
+Sub getSimpleTreeList(newList As List) As List
+	Dim t As List
+	t.Initialize
+	t.AddAll(newList)
+	If t.Size=1 Then
+		t=t.Get(0)
+		Return getSimpleTreeList(t)
+	Else if t.Get(0)<>"S" Then
+		t=t.Get(1)
+		Return getSimpleTreeList(t)
+	Else if t.Get(0)="S" Then
+		Return t
+	End If
+End Sub
+
+Sub isString(o As Object)
+	If GetType(o)="java.lang.String" Then
+		Return True
+	Else
+		Return False
+	End If
+End Sub
+
+Sub isList(o As Object)
+	If GetType(o)="java.util.ArrayList" Then
+		Return True
+	Else
+		Return False
+	End If
+End Sub
+
+Sub traverse(t As List)
+    If isString(t.get(0)) Then
+		result=result&"("&t.get(0)&" "
+		If isList(t.get(1)) And t.size>1 Then
+			Log(1)
+		    For Each child As Object In t
+			    If isList(child) Then
+				    traverse(child)
+				End If
+			Next
+		Else
+			result=result&t.Get(1)
+		End If
+	Else
+		For Each child As Object In t
+			If isList(child) Then
+				traverse(child)
+			End If
+			result=result&")"
+		Next
+    End If
+End Sub
