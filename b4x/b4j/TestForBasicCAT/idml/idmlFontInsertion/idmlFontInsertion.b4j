@@ -1,0 +1,88 @@
+﻿AppType=JavaFX
+Build1=Default,b4j.example
+File1=Fonts.xml
+File2=main.bjl
+FileGroup1=Default Group
+FileGroup2=Default Group
+Group=Default Group
+Library1=jcore
+Library2=jfx
+Library3=jxmlsax
+Library4=xmlbuilder
+Module1=Map2Xml
+Module2=Xml2Map
+NumberOfFiles=2
+NumberOfLibraries=4
+NumberOfModules=2
+Version=6.51
+@EndOfDesignText@
+#Region Project Attributes 
+	#MainFormWidth: 600
+	#MainFormHeight: 600 
+#End Region
+
+Sub Process_Globals
+	Private fx As JFX
+	Private MainForm As Form
+End Sub
+
+Sub AppStart (Form1 As Form, Args() As String)
+	MainForm = Form1
+	MainForm.RootPane.LoadLayout("main") 'Load the layout file.
+	MainForm.Show
+End Sub
+
+'Return true to allow the default exceptions handler to handle the uncaught exception.
+Sub Application_Error (Error As Exception, StackTrace As String) As Boolean
+	Return True
+End Sub
+
+Sub Button1_MouseClicked (EventData As MouseEvent)
+	Dim SourceHanSerifFontFamily As Map
+	SourceHanSerifFontFamily=getSourceHanSerifFontFamily(getXmlMap(File.ReadString(File.DirAssets,"Fonts.xml")))
+	Dim targetFonts As Map
+	targetFonts=getXmlMap(File.ReadString(File.DirApp,"Fonts.xml"))
+	Dim root As Map = targetFonts.Get("idPkg:Fonts")
+	Dim FontFamilies As List
+	FontFamilies=GetElements(root,"FontFamily")
+	FontFamilies.Add(SourceHanSerifFontFamily)
+	File.WriteString(File.DirApp,"out.xml",getXmlFromMap(targetFonts))
+End Sub
+
+Sub getSourceHanSerifFontFamily(ParsedData As Map) As Map
+	Dim root As Map = ParsedData.Get("idPkg:Fonts")
+	Dim FontFamilies As List
+	FontFamilies=GetElements(root,"FontFamily")
+	Log(FontFamilies.Get(2))
+	Return FontFamilies.Get(2)
+End Sub
+
+Sub getXmlMap(xmlstring As String) As Map
+	Dim ParsedData As Map
+	Dim xm As Xml2Map
+	xm.Initialize
+	ParsedData = xm.Parse(xmlstring)
+	Return ParsedData
+End Sub
+
+Sub getXmlFromMap(map1 As Map) As String
+	Dim result As String
+	Dim mx As Map2Xml
+	mx.Initialize
+	Return mx.MapToXml(map1)
+End Sub
+
+
+Sub GetElements (m As Map, key As String) As List
+	Dim res As List
+	If m.ContainsKey(key) = False Then
+		res.Initialize
+		Return res
+	Else
+		Dim value As Object = m.Get(key)
+		If value Is List Then Return value
+		res.Initialize
+		res.Add(value)
+		Return res
+	End If
+End Sub

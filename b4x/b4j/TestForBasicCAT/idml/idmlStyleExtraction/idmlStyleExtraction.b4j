@@ -1,0 +1,277 @@
+﻿AppType=JavaFX
+Build1=Default,b4j.example
+File1=main.bjl
+FileGroup1=Default Group
+Group=Default Group
+Library1=jcore
+Library2=jfx
+Library3=jxmlsax
+Library4=xmlbuilder
+Module1=Map2Xml
+Module2=Xml2Map
+NumberOfFiles=1
+NumberOfLibraries=4
+NumberOfModules=2
+Version=6.51
+@EndOfDesignText@
+#Region Project Attributes 
+	#MainFormWidth: 600
+	#MainFormHeight: 600 
+#End Region
+
+Sub Process_Globals
+	Private fx As JFX
+	Private MainForm As Form
+	Private ListView1 As ListView
+	Private ListView2 As ListView
+End Sub
+
+Sub AppStart (Form1 As Form, Args() As String)
+	MainForm = Form1
+	MainForm.RootPane.LoadLayout("main") 'Load the layout file.
+	MainForm.Show
+	
+End Sub
+
+'Return true to allow the default exceptions handler to handle the uncaught exception.
+Sub Application_Error (Error As Exception, StackTrace As String) As Boolean
+	Return True
+End Sub
+
+Sub Button2_MouseClicked (EventData As MouseEvent)
+	
+End Sub
+
+Sub Button1_MouseClicked (EventData As MouseEvent)
+	Dim xmlmap As Map
+	xmlmap=getXmlMap(File.ReadString(File.DirApp,"Styles.xml"))
+	changeFontsFromEnToZh(xmlmap)
+	'Log(getXmlFromMap(xmlmap))
+	'getCharacterStyleList(getXmlMap(File.ReadString(File.DirApp,"Styles.xml")))
+	'getParagraphStyleList(getXmlMap(File.ReadString(File.DirApp,"Styles.xml")))
+End Sub
+
+
+Sub changeFontsFromEnToZh(ParsedData As Map)
+	Dim GroupName,styleName As String
+	For i=0 To 1
+		If i=0 Then
+			GroupName="RootCharacterStyleGroup"
+			styleName="CharacterStyle"
+		Else
+			GroupName="RootParagraphStyleGroup"
+			styleName="ParagraphStyle"
+		End If
+
+		Dim root As Map = ParsedData.Get("idPkg:Styles")
+		Dim styleGroup As Map = root.Get(GroupName)
+		Dim styles As List
+		styles=GetElements(styleGroup,styleName)
+		For Each style As Map In styles
+			Dim attributes As Map
+			attributes=style.Get("Attributes")
+			Dim name As String
+			name=attributes.Get("Name")
+			Log(style)
+			Log(name)
+			ListView1.Items.Add(name)
+			If attributes.ContainsKey("FontStyle") Then
+				Dim FontStyle As String
+				FontStyle=attributes.Get("FontStyle")
+
+				If Regex.Matcher("[0-9]",FontStyle).Find Then
+					Dim weight As String
+					Dim matcher As Matcher
+					matcher=Regex.Matcher("[0-9]",FontStyle)
+					Do While matcher.Find
+						weight=weight&matcher.Match
+					Loop
+					FontStyle=FontWeightNumToNameForSourceHS(weight)
+					
+				End If
+				FontStyle=FontWeightNameToNameForSourceHS(FontStyle)
+				attributes.Put("FontStyle",FontStyle)
+			End If
+			
+
+			If style.ContainsKey("Properties") Then
+				Dim Properties,AppliedFont As Map
+				Properties=style.Get("Properties")
+				If Properties.ContainsKey("AppliedFont") Then
+					AppliedFont=Properties.get("AppliedFont")
+					Log("font "&AppliedFont.Get("Text"))
+					AppliedFont.Put("Text","思源宋体")
+					'Properties.Put("AppliedFont",AppliedFont)
+					'characterStyle.Put("Properties",Properties)
+				End If
+			End If
+		Next
+	Next
+	File.WriteString(File.DirApp,"out.xml",(getXmlFromMap(ParsedData)))
+End Sub
+
+Sub getCharacterStyleList(ParsedData As Map)
+	Dim root As Map = ParsedData.Get("idPkg:Styles")
+	Dim characterStyleGroup As Map = root.Get("RootCharacterStyleGroup")
+	Dim characterStyles As List
+	characterStyles=GetElements(characterStyleGroup,"CharacterStyle")
+	Log(characterStyles.Size)
+	For Each characterStyle As Map In characterStyles
+		Dim attributes As Map
+		attributes=characterStyle.Get("Attributes")
+		
+		If attributes.ContainsKey("FontStyle") Then
+			Dim FontStyle As String
+			FontStyle=attributes.Get("FontStyle")
+
+			If Regex.Matcher("[0-9]",FontStyle).Find Then
+				Dim weight As String
+				Dim matcher As Matcher
+				matcher=Regex.Matcher("[0-9]",FontStyle)
+				Do While matcher.Find
+					weight=weight&matcher.Match
+				Loop
+				FontStyle=FontWeightNumToNameForSourceHS(weight)
+				
+			End If
+			FontStyle=FontWeightNameToNameForSourceHS(FontStyle)
+			attributes.Put("FontStyle",FontStyle)
+
+		End If
+		Dim name As String
+		name=attributes.Get("Name")
+		Log(characterStyle)
+		Log(name)
+		
+		If characterStyle.ContainsKey("Properties") Then
+			Dim Properties,AppliedFont As Map
+			Properties=characterStyle.Get("Properties")
+			If Properties.ContainsKey("AppliedFont") Then
+				AppliedFont=Properties.get("AppliedFont")
+				Log("font "&AppliedFont.Get("Text"))
+				AppliedFont.Put("Text","宋体")
+				'Properties.Put("AppliedFont",AppliedFont)
+				'characterStyle.Put("Properties",Properties)
+			End If
+		End If
+	Next
+	
+	ListView1.Items.Clear
+	ListView1.Items.Addall(characterStyles)
+	Log(getXmlFromMap(ParsedData))
+End Sub
+
+Sub getParagraphStyleList(ParsedData As Map)
+	Dim root As Map = ParsedData.Get("idPkg:Styles")
+	Dim paragraphStyleGroup As Map = root.Get("RootParagraphStyleGroup")
+	Dim paragraphStyles As List
+	paragraphStyles=GetElements(paragraphStyleGroup,"ParagraphStyle")
+
+	For Each paragraphStyle As Map In paragraphStyles
+		Dim attributes As Map
+		attributes=paragraphStyle.Get("Attributes")
+		
+		If attributes.ContainsKey("FontStyle") Then
+			Dim FontStyle As String
+			FontStyle=attributes.Get("FontStyle")
+
+			If Regex.Matcher("[0-9]",FontStyle).Find Then
+				Dim weight As String
+				Dim matcher As Matcher
+				matcher=Regex.Matcher("[0-9]",FontStyle)
+				Do While matcher.Find
+					weight=weight&matcher.Match
+				Loop
+				FontStyle=FontWeightNumToNameForSourceHS(weight)
+				
+			End If
+			FontStyle=FontWeightNameToNameForSourceHS(FontStyle)
+			attributes.Put("FontStyle",FontStyle)
+
+		End If
+		Dim name As String
+		name=attributes.Get("Name")
+		Log(paragraphStyle)
+		Log(name)
+		
+		If paragraphStyle.ContainsKey("Properties") Then
+			Dim Properties,AppliedFont As Map
+			Properties=paragraphStyle.Get("Properties")
+			If Properties.ContainsKey("AppliedFont") Then
+				AppliedFont=Properties.get("AppliedFont")
+				Log("font "&AppliedFont.Get("Text"))
+				AppliedFont.Put("Text","宋体")
+				'Properties.Put("AppliedFont",AppliedFont)
+				'characterStyle.Put("Properties",Properties)
+			End If
+		End If
+	Next
+	ListView1.Items.Clear
+	ListView1.Items.Addall(paragraphStyles)
+	
+End Sub
+
+
+Sub GetElements (m As Map, key As String) As List
+	Dim res As List
+	If m.ContainsKey(key) = False Then
+		res.Initialize
+		Return res
+	Else
+		Dim value As Object = m.Get(key)
+		If value Is List Then Return value
+		res.Initialize
+		res.Add(value)
+		Return res
+	End If
+End Sub
+
+Sub getXmlMap(xmlstring As String) As Map
+	Dim ParsedData As Map
+	Dim xm As Xml2Map
+	xm.Initialize
+	ParsedData = xm.Parse(xmlstring)
+	Return ParsedData
+End Sub
+
+Sub getXmlFromMap(map1 As Map) As String
+	Dim result As String
+	Dim mx As Map2Xml
+	mx.Initialize
+	Return mx.MapToXml(map1)
+End Sub
+
+Sub FontWeightNumToNameForSourceHS(weight As Int) As String
+	Log(weight)
+	Select weight
+		Case 100
+			Return "ExtraLight"
+		Case 200
+			Return "ExtraLight"
+		Case 300
+			Return "Light"
+		Case 400
+			Return "Regular"
+		Case 500
+			Return "Medium"
+		Case 600
+			Return "SemiBold"
+		Case 700
+			Return "Bold"
+		Case 800
+			Return "Heavy"
+		Case 900
+			Return "Heavy"
+	End Select
+	Return "Regular"
+End Sub
+
+Sub FontWeightNameToNameForSourceHS(name As String) As String
+	Select name
+		Case "Normal"
+			Return "Regular"
+		Case "Black"
+			Return "Heavy"
+	End Select
+	Return name
+End Sub
