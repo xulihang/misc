@@ -26,7 +26,6 @@ Sub Process_Globals
 	Private order As List
 	Private paragraphStyles,characterStyles As List
 	Private taggedText As String
-	Private ListView1 As ListView
 	Private TextArea1 As TextArea
 End Sub
 
@@ -50,8 +49,8 @@ Sub Button1_MouseClicked (EventData As MouseEvent)
 	characterStyles=getStyleList(styleXmlMap,"character")
 	Log(paragraphStyles)
 	Log(characterStyles)
-	getBrContentOrder(File.Combine(File.DirApp,"Story_u19e67.xml"))
-	taggedText=getStoryContent(getXmlMap(File.ReadString(File.DirApp,"Story_u19e67.xml")))
+	getBrContentOrder(File.Combine(File.DirApp,"Story_u19e67-.xml"))
+	taggedText=getStoryContent(getXmlMap(File.ReadString(File.DirApp,"Story_u19e67-.xml")))
 	TextArea1.Text=taggedText
 End Sub
 
@@ -121,6 +120,7 @@ Sub getStoryContent(ParsedData As Map) As String
 					brcontentInOrder.Add("Content")
 				End If
 			Next
+
 			For i=0 To Max(0,size-1)
 				If order.Size=0 Then
 					Exit
@@ -151,6 +151,7 @@ Sub getStoryContent(ParsedData As Map) As String
 							End If
 						Next
 					Loop
+
 					For Each item As String In brcontentInOrder
 						characterStyleRangeContent=characterStyleRangeContent&item
 					Next
@@ -159,13 +160,14 @@ Sub getStoryContent(ParsedData As Map) As String
 				End If
 			Next
 			characterStyleRangeContent=characterStyleRangeContent.Replace(" ","") 'replace LSEP
-			If characterStyleRangeContent.EndsWith(CRLF) Then
-				characterStyleRangeContent=characterStyleRangeContent.SubString2(0,characterStyleRangeContent.Length-1)
-				characterStyleRangeContent="<c"&characterStyleIndex&">"&characterStyleRangeContent&"</c"&characterStyleIndex&">"&CRLF
-			Else
-				characterStyleRangeContent="<c"&characterStyleIndex&">"&characterStyleRangeContent&"</c"&characterStyleIndex&">"
-		    End If
-			
+			Log(characterStyleRangeContent)
+			'If characterStyleRangeContent.EndsWith(CRLF) Then
+			'	characterStyleRangeContent=characterStyleRangeContent.SubString2(0,characterStyleRangeContent.Length-1)
+			'	characterStyleRangeContent="<c"&characterStyleIndex&">"&characterStyleRangeContent&"</c"&characterStyleIndex&">"&CRLF
+			'Else
+			'	characterStyleRangeContent="<c"&characterStyleIndex&">"&characterStyleRangeContent&"</c"&characterStyleIndex&">"
+		    'End If
+			characterStyleRangeContent="<c"&characterStyleIndex&">"&characterStyleRangeContent&"</c"&characterStyleIndex&">"
 			paragraphStyleRangeContent=paragraphStyleRangeContent&characterStyleRangeContent
 		Next
 		
@@ -177,7 +179,7 @@ Sub getStoryContent(ParsedData As Map) As String
 		End If
 		content=content&paragraphStyleRangeContent
 	Next
-    Log(content)
+    'Log(content)
 	Return content
 End Sub
 
@@ -217,7 +219,6 @@ Sub getXmlMap(xmlstring As String) As Map
 End Sub
 
 Sub getXmlFromMap(map1 As Map) As String
-	Dim result As String
 	Dim mx As Map2Xml
 	mx.Initialize
 	Return mx.MapToXml(map1)
@@ -225,7 +226,7 @@ End Sub
 
 Sub Button2_MouseClicked (EventData As MouseEvent)
 	Dim storyMap As Map
-	storyMap=getXmlMap(File.ReadString(File.DirApp,"Story_u19e67.xml"))
+	storyMap=getXmlMap(File.ReadString(File.DirApp,"Story_u19e67-.xml"))
 	Dim root As Map = storyMap.Get("idPkg:Story")
 	Dim story As Map = root.Get("Story")
 	Dim ParagraphStyleRanges As List
@@ -266,12 +267,48 @@ Sub Button2_MouseClicked (EventData As MouseEvent)
 				pureText=pureText.Replace(tagMatcher.Match,"")
 			Loop
 			'Log(styleIndex)
-			characterMapsList.Add(CreateMap("Attributes":CreateMap("AppliedCharacterStyle":characterStyles.Get(styleIndex)),"Content":pureText))
+			Log(pureText)
+			If pureText.StartsWith("Z") Then
+				Log(pureText.Contains(CRLF))
+			End If
+
+
+			Dim list1 As List
+			list1=textToListInOrder(pureText)
+			characterMapsList.Add(CreateMap("Attributes":CreateMap("AppliedCharacterStyle":characterStyles.Get(styleIndex)),"Content":list1))
 		Next
 		paragraphMap.Put("CharacterStyleRange",characterMapsList)
+		Log(paragraphMap)
 		ParagraphStyleRanges.Add(paragraphMap)
 	Next
+	story.Put("ParagraphStyleRange",ParagraphStyleRanges)
 	TextArea1.Text=getXmlFromMap(storyMap)
+	TextArea1.Text=TextArea1.Text.Replace("<Content>"&CRLF&"</Content>","<Br />")
+End Sub
+
+Sub textToListInOrder(pureText As String) As List
+
+	Dim result As List
+	result.Initialize
+	Dim splitted As List
+	splitted.Initialize
+	splitted.Addall(Regex.Split(CRLF,pureText))
+
+	For i=0 To splitted.Size-1
+		Dim content As String
+		content=splitted.Get(i)
+		If content<>"" Then
+			result.Add(splitted.Get(i))
+		End If
+		If i<>splitted.Size-1 Then
+			result.Add(CRLF)
+		End If
+		If i=splitted.Size-1 And pureText.EndsWith(CRLF) Then
+			result.Add(CRLF)
+		End If
+	Next
+
+	Return result
 End Sub
 
 Sub getStyleIndex(text As String,styleType As String) As Int
