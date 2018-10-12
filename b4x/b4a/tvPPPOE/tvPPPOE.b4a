@@ -1,0 +1,191 @@
+﻿Build1=Default,org.xulihang.tvpppoe
+File1=main.bal
+FileGroup1=Default Group
+Group=Default Group
+IconFile=
+Library1=core
+Library2=phone
+Library3=okhttputils2
+ManifestCode='This code will be applied to the manifest file during compilation.~\n~'You do not need to modify it in most cases.~\n~'See this link for for more information: https://www.b4x.com/forum/showthread.php?p=78136~\n~AddManifestText(~\n~<uses-sdk android:minSdkVersion="5" android:targetSdkVersion="19"/>~\n~<supports-screens android:largeScreens="true" ~\n~    android:normalScreens="true" ~\n~    android:smallScreens="true" ~\n~    android:anyDensity="true"/>)~\n~SetApplicationAttribute(android:icon, "@drawable/icon")~\n~SetApplicationAttribute(android:label, "$LABEL$")~\n~'End of default text.~\n~
+Module1=Starter
+NumberOfFiles=1
+NumberOfLibraries=3
+NumberOfModules=1
+Version=7.8
+@EndOfDesignText@
+#Region  Project Attributes 
+	#ApplicationLabel: 网络拨号
+	#VersionCode: 1
+	#VersionName: 
+	'SupportedOrientations possible values: unspecified, landscape or portrait.
+	#SupportedOrientations: unspecified
+	#CanInstallToExternalStorage: False
+#End Region
+
+#Region  Activity Attributes 
+	#FullScreen: False
+	#IncludeTitle: True
+#End Region
+
+Sub Process_Globals
+	'These global variables will be declared once when the application starts.
+	'These variables can be accessed from all modules.
+	
+End Sub
+
+Sub Globals
+	'These global variables will be redeclared each time the activity is created.
+	'These variables can only be accessed from this module.
+
+	Private Button1 As Button
+	Private EditText1 As EditText
+	Private EditText2 As EditText
+	Private Button2 As Button
+	Private Button3 As Button
+	Private isKuandai=False As Boolean
+	
+	Private Button4 As Button
+End Sub
+
+Sub Activity_Create(FirstTime As Boolean)
+	'Do not forget to load the layout file created with the visual designer. For example:
+	Activity.LoadLayout("main")
+	startADBServer
+	init
+End Sub
+
+Sub init
+	EditText1.Text="jxl."
+	EditText2.Text=""
+	checkIsConnected
+End Sub
+
+public Sub startADBServer
+	Dim processStatus As String
+	processStatus=runWithoutArgs("ps")
+	Log(processStatus.IndexOf("adb"))
+	Log(processStatus.LastIndexOf("adb"))
+	If processStatus.IndexOf("adb")=processStatus.LastIndexOf("adb") Then
+		Msgbox("adb未启动，接下来启动adb将导致程序停止响应。请退出后重新运行本程序","")
+		runWithoutResult("busybox",Array As String("nohup","adb","nodaemon","server"))
+	Else
+		ToastMessageShow("adb已启动",False)
+	End If
+End Sub
+
+Sub Activity_Resume
+
+End Sub
+
+Sub Activity_Pause (UserClosed As Boolean)
+
+End Sub
+
+Sub setAccount
+	run("adb",Array As String("shell","setprop","pppoe.user",EditText1.Text))
+	run("adb",Array As String("shell","setprop","pppoe.passwd",EditText2.Text))
+End Sub
+
+Sub Button1_Click
+	If checkIsConnected=True Then
+		ToastMessageShow("请先断开连接",False)
+	    Return
+	End If
+	setAccount
+	Do While run("busybox",Array As String("ifconfig")).Contains("ppp0")=True
+		Msgbox("尚未断开连接，点确认后再次检测","")
+	Loop
+	Do While run("getprop",Array As String("pppoe.user")).Contains(EditText1.Text)<>True
+		Msgbox("尚未设置成功，点确认后再次检测","")
+	Loop
+	run("adb",Array As String("shell","busybox","nohup","/etc/ppp/ppp.connect"))
+	Do While run("busybox",Array As String("ifconfig")).Contains("ppp0")<>True
+		Msgbox("尚未连接，点确认后再次检测","")
+	Loop
+	run("adb",Array As String("shell","ip","route","del","default"))
+	run("adb",Array As String("shell","ip","route","add","default","dev","ppp0"))
+	Log("done")
+	If isKuandai=True Then
+		run("adb",Array As String("shell","am","start","com.dangbei.tvlauncher"))
+	End If
+	ToastMessageShow("已连接",False)
+End Sub
+
+Sub run(command As String,args() As String) As String
+	Dim ph As Phone
+	Dim result As Int
+	Dim stdout,stderr As StringBuilder
+	stdout.Initialize
+	stderr.Initialize
+	result=ph.Shell(command,args,stdout,stderr)
+	Log(result)
+	Log(stdout.ToString)
+	Log(stderr.ToString)
+	Return stdout
+End Sub
+
+Sub runWithoutResult(command As String,args() As String) As String
+	Dim ph As Phone
+	Dim stdout,stderr As StringBuilder
+	stdout.Initialize
+	stderr.Initialize
+	ph.Shell(command,args,stdout,stderr)
+	Log(stdout.ToString)
+	Log(stderr.ToString)
+	Return stdout
+End Sub
+
+Sub runWithoutArgs(command As String) As String
+	Dim ph As Phone
+	Dim result As Int
+	Dim stdout,stderr As StringBuilder
+	stdout.Initialize
+	stderr.Initialize
+	result=ph.Shell(command,Null,stdout,stderr)
+	Log(result)
+	Log(stdout.ToString)
+	Log(stderr.ToString)
+	Return stdout
+End Sub
+
+
+Sub checkIsConnected As Boolean
+	If run("busybox",Array As String("ifconfig")).Contains("ppp0")=True Then
+		Dim username As String
+		username=run("adb",Array As String("shell","getprop","pppoe.user"))
+		Dim result As Int
+		result=Msgbox2(username&"当前已经拨号，是否断开？","","好","","否",Null)
+		If result=DialogResponse.POSITIVE Then
+			run("adb",Array As String("shell","busybox","nohup","/etc/ppp/ppp.disconnect"))
+			If run("busybox",Array As String("ifconfig")).Contains("ppp0")<>True Then
+				run("adb",Array As String("shell","ip","route","del","default"))
+				run("adb",Array As String("shell","busybox","route","add","default","dev","wlan0","gw","192.168.1.1"))
+			End If
+			ToastMessageShow("已断开",False)
+			Return False
+		Else
+			ToastMessageShow("没有进行操作",False)
+			Return True
+		End If
+	Else
+		Return False
+	End If
+End Sub
+
+Sub Button3_Click
+	EditText1.Text="@itv"
+	EditText2.Text="111111"
+	isKuandai=False
+End Sub
+
+Sub Button2_Click
+	EditText1.Text="jxl."
+	EditText2.Text=""
+	isKuandai=True
+End Sub
+
+Sub Button4_Click
+	run("adb",Array As String("shell","ip","route","del","default"))
+	run("adb",Array As String("shell","ip","route","add","default","dev","ppp0"))
+	ToastMessageShow("已完成",False)
+End Sub
