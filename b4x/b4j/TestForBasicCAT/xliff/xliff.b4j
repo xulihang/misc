@@ -1,0 +1,125 @@
+﻿AppType=JavaFX
+Build1=Default,b4j.example
+File1=main.bjl
+FileGroup1=Default Group
+Group=Default Group
+Library1=jcore
+Library2=jfx
+Library3=jxmlsax
+Library4=xmlbuilder
+Module1=Utils
+Module2=Map2Xml
+Module3=Xml2Map
+NumberOfFiles=1
+NumberOfLibraries=4
+NumberOfModules=3
+Version=6.51
+@EndOfDesignText@
+#Region Project Attributes 
+	#MainFormWidth: 600
+	#MainFormHeight: 600 
+#End Region
+
+Sub Process_Globals
+	Private fx As JFX
+	Private MainForm As Form
+	Private TextArea1 As TextArea
+End Sub
+
+Sub AppStart (Form1 As Form, Args() As String)
+	MainForm = Form1
+	MainForm.RootPane.LoadLayout("main") 'Load the layout file.
+	MainForm.Show
+End Sub
+
+'Return true to allow the default exceptions handler to handle the uncaught exception.
+Sub Application_Error (Error As Exception, StackTrace As String) As Boolean
+	Return True
+End Sub
+
+Sub Button1_MouseClicked (EventData As MouseEvent)
+	
+	Dim files As List
+	files=getFilesList(escapedText(File.ReadString(File.DirApp,"out.xlf")))
+	For Each fileMap As Map In files
+		Try
+			Dim body As Map
+			body=fileMap.Get("body")
+		Catch
+			Continue
+		End Try
+		For Each tu As List In getTransUnits(fileMap)
+			Log(tu.Get(0))
+			Log(tu.Get(1))
+		Next
+	Next
+End Sub
+
+
+Sub getTransUnits(fileMap As Map) As List
+	Dim body As Map
+	body=fileMap.Get("body")
+	Dim tidyTransUnits As List
+	tidyTransUnits.Initialize
+	Dim transUnits As List
+	transUnits=Utils.GetElements(body,"trans-unit")
+	For Each transUnit As Map In transUnits
+		Log(transUnit)
+		Dim attributes As Map
+		attributes=transUnit.Get("Attributes")
+		Dim id As String
+		id=attributes.Get("id")
+		Dim source As Map
+		source=transUnit.Get("source")
+		Dim text As String
+		text=source.Get("Text")
+		Dim oneTransUnit As List
+		oneTransUnit.Initialize
+		oneTransUnit.Add(text)
+		oneTransUnit.Add(id)
+		tidyTransUnits.Add(oneTransUnit)
+	Next
+	Return tidyTransUnits
+End Sub
+
+Sub getFilesList(xmlstring As String) As List
+	Dim xmlMap As Map
+	xmlMap=Utils.getXmlMap(xmlstring)
+	Dim xliffMap As Map
+	xliffMap=xmlMap.Get("xliff")
+	Return Utils.GetElements(xliffMap,"file")
+End Sub
+
+Sub escapedText(xmlstring As String) As String
+	Dim new As String
+	new=xmlstring
+	Dim sourceMatcher As Matcher
+	sourceMatcher=Regex.Matcher2("<source.*?>(.*?)</source>",32,new)
+	Do While sourceMatcher.Find
+		'Log(sourceMatcher.Group(1))
+		If containsTag(sourceMatcher.Group(1))= False Then
+		    Exit
+		End If
+		Dim before As String
+		before=new.SubString2(0,sourceMatcher.GetStart(1))
+		Dim mid As String
+		mid=escapeInlineTag(sourceMatcher.Group(1))
+		Dim after As String
+		after=new.SubString2(sourceMatcher.GetEnd(1),new.Length)
+		new=before&mid&after
+		'Log(new)
+		sourceMatcher=Regex.Matcher2("<source.*?>(.*?)</source>",32,new)
+	Loop
+	Return new
+End Sub
+
+Sub escapeInlineTag(text As String) As String
+	text=text.Replace($"""$,"&quot;")
+	text=text.Replace("<","&lt;")
+	text=text.Replace(">","&gt;")
+	Return text
+End Sub
+
+Sub containsTag(text As String) As Boolean
+	Return Regex.Matcher($"["<>]"$,text).Find
+End Sub

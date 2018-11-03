@@ -1,0 +1,110 @@
+﻿AppType=JavaFX
+Build1=Default,b4j.example
+File1=main.bjl
+FileGroup1=Default Group
+Group=Default Group
+Library1=jcore
+Library2=jfx
+NumberOfFiles=1
+NumberOfLibraries=2
+NumberOfModules=0
+Version=6.51
+@EndOfDesignText@
+#Region Project Attributes 
+	#MainFormWidth: 600
+	#MainFormHeight: 600 
+#End Region
+
+Sub Process_Globals
+	Private fx As JFX
+	Private MainForm As Form
+	Private TextArea1 As TextArea
+End Sub
+
+Sub AppStart (Form1 As Form, Args() As String)
+	MainForm = Form1
+	MainForm.RootPane.LoadLayout("main") 'Load the layout file.
+	MainForm.Show
+End Sub
+
+'Return true to allow the default exceptions handler to handle the uncaught exception.
+Sub Application_Error (Error As Exception, StackTrace As String) As Boolean
+	Return True
+End Sub
+
+Sub Button1_MouseClicked (EventData As MouseEvent)
+	fillPO(readPO)
+End Sub
+
+Sub readPO As List
+	Dim msgidList As List
+
+	msgidList.Initialize
+
+	Dim textReader As TextReader
+	textReader.Initialize(File.OpenInput(File.DirApp,"out.po"))
+	Dim line As String
+	line=textReader.ReadLine
+	
+	Dim msgid As String
+	Dim isMsgid As Boolean=False
+	Do While line<>Null
+		Dim contentMatcher As Matcher
+		contentMatcher=Regex.Matcher($""(.*?[^\\])""$,line)
+		If line.StartsWith("msgid") Then
+			isMsgid=True
+			If contentMatcher.Find Then
+				msgid=contentMatcher.Group(1)
+			End If
+		Else
+			If line.StartsWith($"""$) And isMsgid Then
+				If contentMatcher.Find Then
+					msgid=msgid&contentMatcher.Group(1)
+				End If
+			Else
+				If isMsgid Then
+					msgidList.Add(msgid)
+					msgid=""
+				End If
+				isMsgid=False
+			End If
+		End If
+		line=textReader.ReadLine
+	Loop
+	textReader.Close
+	Log(msgidList)
+	Return msgidList
+End Sub
+
+Sub fillPO(msgstrList As List)
+	Dim content As String
+	
+	Dim textReader As TextReader
+	textReader.Initialize(File.OpenInput(File.DirApp,"out.po"))
+	Dim line As String
+	line=textReader.ReadLine
+
+	Do While line<>Null
+		If line.StartsWith("msgstr") Then
+			Dim msgstr As String
+			msgstr=msgstrList.Get(0)
+			If msgstr.Contains("\n") Then
+				Log(True)
+				msgstr=handleMultiline(msgstr)
+			End If
+			content=content&"msgstr "&Chr(34)&msgstr&Chr(34)&CRLF&CRLF
+			msgstrList.RemoveAt(0)
+		Else
+			content=content&line&CRLF
+		End If
+		line=textReader.ReadLine
+	Loop
+	textReader.Close
+	Log(content)
+End Sub
+
+Sub handleMultiline(text As String) As String
+	text=Chr(34)&CRLF&Chr(34)&text
+	text=text.Replace("\n","\n"&Chr(34)&CRLF&Chr(34))
+	Return text
+End Sub

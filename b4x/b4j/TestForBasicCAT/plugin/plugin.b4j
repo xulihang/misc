@@ -1,0 +1,64 @@
+﻿AppType=JavaFX
+Build1=Default,b4j.example
+File1=main.bjl
+FileGroup1=Default Group
+Group=Default Group
+Library1=jcore
+Library2=jfx
+Library3=abplugin
+NumberOfFiles=1
+NumberOfLibraries=3
+NumberOfModules=0
+Version=6.51
+@EndOfDesignText@
+#Region Project Attributes 
+	#MainFormWidth: 600
+	#MainFormHeight: 600 
+#End Region
+
+Sub Process_Globals
+	Private fx As JFX
+	Private MainForm As Form
+	Private Button1 As Button
+	Private ComboBox1 As ComboBox
+	Private plugin As ABPlugin
+	Private list1 As List
+End Sub
+
+Sub AppStart (Form1 As Form, Args() As String)
+	MainForm = Form1
+	MainForm.RootPane.LoadLayout("main") 'Load the layout file.
+	MainForm.Show
+	plugin.Initialize("plugin",File.Combine(File.DirApp, "plugins"), "MyKey")
+	plugin.Start(5000)
+	
+	list1.Initialize
+	
+End Sub
+
+'Return true to allow the default exceptions handler to handle the uncaught exception.
+Sub Application_Error (Error As Exception, StackTrace As String) As Boolean
+	Return True
+End Sub
+
+Sub Button1_MouseClicked (EventData As MouseEvent)
+	'plugin.RunPlugin("test","calculate",Null)
+	Log(plugin.GetAvailablePlugins)
+	Dim params As Map
+	params.Initialize
+	params.Put("list",list1)
+	params.Put("main",Me)
+	plugin.RunPlugin("test","calculate2",params)
+	Log(list1)
+End Sub
+
+Sub plugin_PluginsChanged()
+	Log("plugins have changed!")
+	Log(plugin.GetAvailablePlugins)
+	plugin.Stop
+End Sub
+
+
+Public Sub show
+	Log("show")
+End Sub
