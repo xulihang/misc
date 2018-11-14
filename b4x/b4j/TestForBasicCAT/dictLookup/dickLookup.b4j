@@ -1,0 +1,63 @@
+﻿AppType=JavaFX
+Build1=Default,b4j.example
+File1=dictList.txt
+File2=dictWebview.bjl
+File3=main.bjl
+FileGroup1=Default Group
+FileGroup2=Default Group
+FileGroup3=Default Group
+Group=Default Group
+Library1=jcore
+Library2=jfx
+Library3=javaobject
+Module1=dictWebView
+Module2=onlineDictionary
+NumberOfFiles=3
+NumberOfLibraries=3
+NumberOfModules=2
+Version=6.51
+@EndOfDesignText@
+#Region Project Attributes 
+	#MainFormWidth: 600
+	#MainFormHeight: 600 
+#End Region
+
+Sub Process_Globals
+	Private fx As JFX
+	Private MainForm As Form
+	Private ListView1 As ListView
+	Private TextField1 As TextField
+	Public dw As dictWebView
+End Sub
+
+Sub AppStart (Form1 As Form, Args() As String)
+	MainForm = Form1
+	MainForm.RootPane.LoadLayout("main") 'Load the layout file.
+	MainForm.Show
+	init
+End Sub
+
+'Return true to allow the default exceptions handler to handle the uncaught exception.
+Sub Application_Error (Error As Exception, StackTrace As String) As Boolean
+	Return True
+End Sub
+
+Sub init
+	ListView1.Items.AddAll(File.ReadList(File.DirAssets,"dictList.txt"))
+	dw.Initialize
+End Sub
+
+Sub ListView1_MouseClicked (EventData As MouseEvent)
+	If ListView1.SelectedItem<>Null Then
+		Dim item As String=ListView1.SelectedItem
+		Dim url As String
+		url=Regex.Split("	",item)(1)
+		url=url.Replace("*",TextField1.Text)
+		dw.show
+		dw.loadUrl(url)
+	End If
+End Sub
+
+Sub test(selection As String)
+	Log(selection)
+End Sub
