@@ -1,0 +1,140 @@
+﻿AppType=JavaFX
+Build1=Default,b4j.example
+File1=main.bjl
+FileGroup1=Default Group
+Group=Default Group
+Library1=jcore
+Library2=jfx
+Library3=jpoi
+Library4=json
+NumberOfFiles=1
+NumberOfLibraries=4
+NumberOfModules=0
+Version=7.8
+@EndOfDesignText@
+#Region Project Attributes 
+	#MainFormWidth: 600
+	#MainFormHeight: 600 
+#End Region
+
+Sub Process_Globals
+	Private fx As JFX
+	Private MainForm As Form
+	Private ListView1 As ListView
+	Private operations() As String=Array As String("localization.json","imageclassification.json")
+End Sub
+
+Sub AppStart (Form1 As Form, Args() As String)
+	MainForm = Form1
+	MainForm.RootPane.LoadLayout("main") 'Load the layout file.
+	MainForm.Show
+End Sub
+
+'Return true to allow the default exceptions handler to handle the uncaught exception.
+Sub Application_Error (Error As Exception, StackTrace As String) As Boolean
+	Return True
+End Sub
+
+Sub Button2_MouseClicked (EventData As MouseEvent)
+	Dim rowNumber As Int=0
+	Dim wb As PoiWorkbook
+	wb.InitializeNew(True)
+	Dim sheet1 As PoiSheet=wb.AddSheet("Sheet1",0)
+
+	For Each one As List In ListView1.Items
+		Dim data As Map
+		data.Initialize
+		Dim dirPath As String=one.Get(1)
+		For Each operation As String In operations
+			readJsonToMap(operation,dirPath,data)
+		Next
+		For Each imgName As String In NamesList(operations(0),dirPath)
+			Dim m As Map=data.Get(imgName)
+			Dim row As PoiRow = sheet1.CreateRow(rowNumber)
+			row.CreateCellString(0,File.GetName(File.GetFileParent(File.Combine(dirPath,imgName))))
+			row.CreateCellString(1,imgName)
+			statisticsToCell(row,m)
+			rowNumber=rowNumber+1
+		Next
+	Next
+	wb.Save(File.DirApp,"out.xlsx")
+End Sub
+
+Sub statisticsToCell(row As PoiRow,data As Map)
+	Dim index As Int=2
+	For Each operationName As String In operations
+		Dim operationData As Map=data.Get(operationName)
+		Dim startTime,endTime As Long
+		startTime=operationData.Get("startTime")
+		endTime=operationData.Get("endTime")
+		Dim seconds As Double=(endTime - startTime)/1000
+		row.CreateCellString(index,seconds)
+		index=index+1
+		If index=4 Then
+			row.CreateCellString(3,operationData.Get("width"))
+			row.CreateCellString(4,operationData.Get("height"))
+		End If
+	Next
+End Sub
+
+Sub NamesList(operationName As String,dirPath As String) as list
+	Dim json As JSONParser
+	json.Initialize(File.ReadString(dirPath,operationName))
+	Dim imgList As List=json.NextArray
+	Dim imgNamesList As List
+	imgNamesList.Initialize
+	For Each one As Map In imgList
+		imgNamesList.Add(one.Get("imgName"))
+	Next
+	Return imgNamesList
+End Sub
+
+Sub readJsonToMap(operationName As String,dirPath As String,data As Map)
+	Dim json As JSONParser
+	json.Initialize(File.ReadString(dirPath,operationName))
+	Dim imgList As List=json.NextArray
+	For Each operationData As Map In imgList
+		Dim imgName As String=operationData.Get("imgName")
+		Dim one As Map
+		one.Initialize
+		If data.ContainsKey(imgName) Then
+			one=data.Get(imgName)
+		End If
+		one.Put(operationName,operationData)
+		data.Put(imgName,one)
+	Next
+End Sub
+
+Sub Button1_MouseClicked (EventData As MouseEvent)
+	Dim dc As DirectoryChooser
+	dc.Initialize
+	Dim dirPath As String=dc.Show(MainForm)
+	import(dirPath)
+End Sub
+
+
+Public Sub import(dirPath As String)
+	Dim filesList As List
+	filesList.Initialize
+	importDir(dirPath,filesList)
+	For Each one As List  In filesList
+		ListView1.Items.Add(one)
+	Next
+End Sub
+
+Sub importDir(dirPath As String,filesList As List)
+	Dim files As List=File.ListFiles(dirPath)
+	For Each filename As String In files
+		If File.IsDirectory(dirPath,filename) Then
+			importDir(File.Combine(dirPath,filename),filesList)
+		End If
+		Dim lowerCaseName As String=filename.ToLowerCase
+		If lowerCaseName.EndsWith(".itp") Then
+			Dim one As List
+			one.Initialize
+			one.Add(filename)
+			one.Add(dirPath)
+			filesList.Add(one)
+		End If
+	Next
+End Sub
