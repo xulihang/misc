@@ -7,9 +7,10 @@ Library1=jcore
 Library2=jfx
 Library3=jpoi
 Library4=json
+Module1=Utils
 NumberOfFiles=1
 NumberOfLibraries=4
-NumberOfModules=0
+NumberOfModules=1
 Version=7.8
 @EndOfDesignText@
 #Region Project Attributes 
@@ -36,14 +37,28 @@ Sub Application_Error (Error As Exception, StackTrace As String) As Boolean
 End Sub
 
 Sub Button2_MouseClicked (EventData As MouseEvent)
-	Dim rowNumber As Int=0
+	Dim rowNumber As Int=1
 	Dim wb As PoiWorkbook
 	wb.InitializeNew(True)
 	Dim sheet1 As PoiSheet=wb.AddSheet("Sheet1",0)
-
+	
+    Dim head As PoiRow = sheet1.CreateRow(0)
+	Dim heads As List
+	heads.Initialize
+	heads.AddAll(Array As String("文件夹","图片名","定位时间","分类时间","宽度","高度"))
+    heads.AddAll(Array As String("检测到的正确的区域","检测到的区域"))
+	heads.AddAll(Array As String("检测到的正确的区域","GroundTruth区域"))
+	heads.AddAll(Array As String("检测到的非译元素区域","GroundTruth中的非译元素","检测到的拟声词","GroundTruth中的拟声词"))
+	heads.AddAll(Array As String("检测到的正确的区域","检测到的区域"))
+	heads.AddAll(Array As String("检测到的正确的区域","GroundTruth区域"))
+	heads.AddAll(Array As String("检测到的非译元素区域","GroundTruth中的非译元素","检测到的拟声词","GroundTruth中的拟声词"))
+	For i=0 To heads.Size-1
+		head.CreateCellString(i,heads.Get(i))
+	Next
 	For Each one As List In ListView1.Items
 		Dim data As Map
 		data.Initialize
+		Dim projectName As String=one.Get(0)
 		Dim dirPath As String=one.Get(1)
 		For Each operation As String In operations
 			readJsonToMap(operation,dirPath,data)
@@ -51,16 +66,30 @@ Sub Button2_MouseClicked (EventData As MouseEvent)
 		For Each imgName As String In NamesList(operations(0),dirPath)
 			Dim m As Map=data.Get(imgName)
 			Dim row As PoiRow = sheet1.CreateRow(rowNumber)
-			row.CreateCellString(0,File.GetName(File.GetFileParent(File.Combine(dirPath,imgName))))
-			row.CreateCellString(1,imgName)
-			statisticsToCell(row,m)
+			Dim cells As List
+			cells.Initialize
+			cells.Add(File.GetName(File.GetFileParent(File.Combine(dirPath,imgName))))
+			cells.Add(imgName)
+			statisticsToCell(cells,m)
+			Dim groundTruth As List=getBoxes(dirPath,projectName,imgName)
+			Dim detected As List=getBoxes(dirPath,projectName&".bak",imgName)
+			excludeLowProbability(groundTruth)
+			getAccuracy(groundTruth,detected,cells,False)
+			getRecall(groundTruth,detected,cells,False)
+			AddSpecialAreasNum(groundTruth,detected,cells,False)
+			getAccuracy(groundTruth,detected,cells,True)
+			getRecall(groundTruth,detected,cells,True)
+			AddSpecialAreasNum(groundTruth,detected,cells,False)
+			For cellIndex=0 To cells.Size-1
+				row.CreateCellString(cellIndex,cells.Get(cellIndex))
+			Next
 			rowNumber=rowNumber+1
 		Next
 	Next
 	wb.Save(File.DirApp,"out.xlsx")
 End Sub
 
-Sub statisticsToCell(row As PoiRow,data As Map)
+Sub statisticsToCell(cells As List,data As Map)
 	Dim index As Int=2
 	For Each operationName As String In operations
 		Dim operationData As Map=data.Get(operationName)
@@ -68,16 +97,208 @@ Sub statisticsToCell(row As PoiRow,data As Map)
 		startTime=operationData.Get("startTime")
 		endTime=operationData.Get("endTime")
 		Dim seconds As Double=(endTime - startTime)/1000
-		row.CreateCellString(index,seconds)
+		cells.Add(seconds)
 		index=index+1
 		If index=4 Then
-			row.CreateCellString(3,operationData.Get("width"))
-			row.CreateCellString(4,operationData.Get("height"))
+			cells.Add(operationData.Get("width"))
+			cells.Add(operationData.Get("height"))
 		End If
 	Next
 End Sub
 
-Sub NamesList(operationName As String,dirPath As String) as list
+Sub getBoxes(dirPath As String,filename As String,imgName As String) As List
+	Dim json As JSONParser
+	json.Initialize(File.ReadString(dirPath,filename))
+	Dim project As Map = json.NextObject
+	Dim imgMap As Map = project.Get("images")
+	Dim oneImg As Map=imgMap.Get(imgName)
+	Dim boxes As List=oneImg.Get("boxes")
+	Return boxes
+End Sub
+
+Sub getAccuracy(pGroundTruth As List,pDetected As List,cells As List,afterClassification As Boolean)
+	'减去非译元素的正确的文字区域/(检测到的区域减去非译元素)
+	Dim groundTruth As List
+	groundTruth.Initialize
+	groundTruth.AddAll(pGroundTruth)
+	Dim detected As List
+	detected.Initialize
+	detected.AddAll(pDetected)
+	If afterClassification Then
+		excludeLowProbability(detected)
+	End If
+	
+	
+	'Dim fontsyles As List
+	'fontsyles.Initialize
+	'fontsyles.AddAll(Array As String("非译元素"))
+	'SubtractDetected(groundTruth,detected,fontsyles)
+	'excludeFontstyles(groundTruth,fontsyles)
+	
+	Dim hits As Int=0
+	Dim areas As Int=0
+	For Each box1 As Map In groundTruth
+		For Each box2 As Map In detected
+			If isHit(box1,box2) Then
+				hits=hits+1
+				Exit
+			End If
+		Next
+	Next
+    
+
+	areas=detected.Size
+	
+	cells.Add(hits)
+	cells.Add(areas)
+End Sub
+
+Sub excludeLowProbability(list1 As List)
+	Dim newList As List
+	newList.Initialize
+	For Each box As Map In list1
+		If box.GetDefault("probability",1)>=0.5 Then
+			newList.Add(box)
+		End If
+	Next
+	list1.Clear
+	list1.AddAll(newList)
+End Sub
+
+Sub excludeFontstyles(list1 As List,fontstyles As List)
+	Dim newList As List
+	newList.Initialize
+	For Each box As Map In list1
+		If fontstyles.IndexOf(box.GetDefault("fontstyle",""))=-1 Then
+			newList.Add(box)
+		End If
+	Next
+	list1.Clear
+	list1.AddAll(newList)
+End Sub
+
+Sub SubtractDetected(pGroundTruth As List,detected As List,fontStyles As List)
+	Dim groundTruth As List
+	groundTruth.Initialize
+	groundTruth.AddAll(pGroundTruth)
+	Dim newBoxes As List
+	newBoxes.Initialize
+	For Each box1 As Map In detected
+		Dim remove As Boolean=False
+		For Each box2 As Map In groundTruth
+			If fontStyles.IndexOf(box2.GetDefault("fontstyle",""))<>-1 Then
+			    If isHit(box1,box2) Then
+					remove=True
+					groundTruth.RemoveAt(groundTruth.IndexOf(box2))
+				    Exit
+			    End If
+			End If
+		Next
+		If remove=False Then
+			newBoxes.Add(box1)
+		End If
+	Next
+	detected.Clear
+	detected.AddAll(newBoxes)
+End Sub
+
+Sub SpecialAreaInDetected(pGroundTruth As List,detected As List,styleName As String) As Int
+	Dim num As Int=0
+	Dim groundTruth As List
+	groundTruth.Initialize
+	groundTruth.AddAll(pGroundTruth)
+	For Each box1 As Map In detected
+		Dim isSoundWord As Boolean=False
+		For Each box2 As Map In groundTruth
+			If box2.GetDefault("fontstyle","")=styleName Then
+				If isHit(box1,box2) Then
+					isSoundWord=True
+					groundTruth.RemoveAt(groundTruth.IndexOf(box2))
+					Exit
+				End If
+			End If
+		Next
+		If isSoundWord Then
+			num=num+1
+		End If
+	Next
+	Return num
+End Sub
+
+Sub SpecialAreasInGroundTruth(groundTruth As List,styleName As String) As Int
+	Dim num As Int=0
+	For Each box As Map In groundTruth
+		If box.GetDefault("fontstyle","")=styleName Then
+			num=num+1
+		End If
+	Next
+	Return num
+End Sub
+
+Sub getRecall(pGroundTruth As List,pDetected As List,cells As List,afterClassification As Boolean)
+	'减去非译的检测到的正确的文字区域/减去非译的所有文字区域
+	Dim GroundTruth As List
+	GroundTruth.Initialize
+	GroundTruth.AddAll(pGroundTruth)
+	Dim Detected As List
+	Detected.Initialize
+	Detected.AddAll(pDetected)
+	If afterClassification Then
+		excludeLowProbability(Detected)
+	End If
+	Dim hits As Int=0
+	Dim areas As Int=0
+	
+	'Dim fontsyles As List
+	'fontsyles.Initialize
+	'fontsyles.AddAll(Array As String("非译元素"))
+	'SubtractDetected(GroundTruth,Detected,fontsyles)
+	'excludeFontstyles(GroundTruth,fontsyles)
+	
+	For Each box1 As Map In GroundTruth
+		For Each box2 As Map In Detected
+			If isHit(box1,box2) Then
+				hits=hits+1
+				Exit
+			End If
+		Next
+	Next
+	
+	areas=GroundTruth.Size
+	
+
+	cells.Add(hits)
+	cells.Add(areas)
+End Sub
+
+Sub isHit(box1 As Map,box2 As Map) As Boolean
+	Dim boxGeometry1, boxGeometry2 As Map
+	boxGeometry1=box1.Get("geometry")
+	boxGeometry2=box2.Get("geometry")
+	If Utils.OverlappingPercent(boxGeometry1,boxGeometry2)>0.7 Then
+		Return True
+	Else
+		Return False
+	End If
+End Sub
+
+Sub AddSpecialAreasNum(pGroundTruth As List,pDetected As List,cells As List,afterClassification As Boolean)
+	Dim groundTruth As List
+	groundTruth.Initialize
+	groundTruth.AddAll(pGroundTruth)
+	Dim detected As List
+	detected.Initialize
+	detected.AddAll(pDetected)
+	If afterClassification Then
+		excludeLowProbability(detected)
+	End If
+	cells.Add(SpecialAreaInDetected(groundTruth,detected,"非译元素"))
+	cells.Add(SpecialAreasInGroundTruth(groundTruth,"非译元素"))
+	cells.Add(SpecialAreasInGroundTruth(groundTruth,"拟声词"))
+	cells.Add(SpecialAreasInGroundTruth(groundTruth,"拟声词"))
+End Sub
+
+Sub NamesList(operationName As String,dirPath As String) As List
 	Dim json As JSONParser
 	json.Initialize(File.ReadString(dirPath,operationName))
 	Dim imgList As List=json.NextArray
@@ -135,6 +356,18 @@ Sub importDir(dirPath As String,filesList As List)
 			one.Add(filename)
 			one.Add(dirPath)
 			filesList.Add(one)
+		End If
+	Next
+End Sub
+
+Sub Button3_MouseClicked (EventData As MouseEvent)
+	For Each one As List In ListView1.Items
+		Dim dirPath As String=one.Get(1)
+		Dim projectName As String=one.Get(0)
+		If File.Exists(dirPath,projectName&".bak")=False Then
+			File.Copy(dirPath,projectName,dirPath,projectName&".bak")
+		Else
+			fx.Msgbox(MainForm,"已经备份过了，不进行操作。","")
 		End If
 	Next
 End Sub
