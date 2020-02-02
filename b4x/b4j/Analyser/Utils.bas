@@ -9,7 +9,6 @@ Sub Process_Globals
 	Private fx As JFX
 End Sub
 
-
 Sub OverlappingPercent(boxGeometry1 As Map,boxGeometry2 As Map) As Double
 	'Log("boxGeometry1"&boxGeometry1)
 	'Log("boxGeometry2"&boxGeometry2)
@@ -54,12 +53,12 @@ Sub OverlappingPercent(boxGeometry1 As Map,boxGeometry2 As Map) As Double
 		Dim area1,area2 As Double
 		area1=W1*H1
 		area2=W2*H2
-		Dim theSmallArea As Int=theSmallerOne(area1,area2)
+		'Dim theSmallArea As Int=theSmallerOne(area1,area2)
 		'Log("overlappingArea:"&overlappingArea)
 		'Log("theSmallArea:"&theSmallArea)
 		'Log("overlapping percent:")
 		'Log(overlappingArea/theSmallArea)
-		Return overlappingArea/theSmallArea
+		Return Min(overlappingArea/area1,overlappingArea/area2)
 	Else
 		Return 0
 	End If

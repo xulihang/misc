@@ -4,6 +4,6 @@ ModuleBreakpoints0=
 ModuleBreakpoints1=
 ModuleClosedNodes0=1
 ModuleClosedNodes1=
-NavigationStack=Main,SpecialAreasInGroundTruth,200,2,Main,excludeLowProbability,140,0,Main,SpecialAreaInDetected,193,3,Main,statisticsToCell,72,5,Main,getRecall,257,6,Main,SubtractDetected,163,6,Main,getAccuracy,103,6,Main,isHit,266,6,Main,AddSpecialAreasNum,268,6,Main,Button2_MouseClicked,73,6
+NavigationStack=Main,getRecall,287,6,Main,Process_Globals,9,0,Main,Button2_MouseClicked,66,6,Main,AddSpecialAreasNum,314,6,Main,AddPercent,102,6,Utils,Process_Globals,3,0,Utils,OverlappingPercent,54,6,Main,isHit,297,6
 SelectedBuild=0
 VisibleModules=1

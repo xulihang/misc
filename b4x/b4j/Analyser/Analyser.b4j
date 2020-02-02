@@ -43,15 +43,17 @@ Sub Button2_MouseClicked (EventData As MouseEvent)
 	Dim sheet1 As PoiSheet=wb.AddSheet("Sheet1",0)
 	
     Dim head As PoiRow = sheet1.CreateRow(0)
+	Dim basicInfo As List
+	basicInfo.Initialize
+	basicInfo.AddAll(Array As String("dir","imgName","localization","imageclassification","width","height"))
+	Dim accuracyAndRecall As List
+	accuracyAndRecall.Initialize
+	accuracyAndRecall.AddAll(Array As String("hits","detected","accuracy","accuracyWithoutSound","hits","groundTruth","recall","recallWithoutSound","soundRecall","nonTrans","nonTransGround","sound","soundGround"))
 	Dim heads As List
 	heads.Initialize
-	heads.AddAll(Array As String("文件夹","图片名","定位时间","分类时间","宽度","高度"))
-    heads.AddAll(Array As String("检测到的正确的区域","检测到的区域"))
-	heads.AddAll(Array As String("检测到的正确的区域","GroundTruth区域"))
-	heads.AddAll(Array As String("检测到的非译元素区域","GroundTruth中的非译元素","检测到的拟声词","GroundTruth中的拟声词"))
-	heads.AddAll(Array As String("检测到的正确的区域","检测到的区域"))
-	heads.AddAll(Array As String("检测到的正确的区域","GroundTruth区域"))
-	heads.AddAll(Array As String("检测到的非译元素区域","GroundTruth中的非译元素","检测到的拟声词","GroundTruth中的拟声词"))
+	heads.AddAll(basicInfo)
+	heads.AddAll(accuracyAndRecall)
+	heads.AddAll(accuracyAndRecall)
 	For i=0 To heads.Size-1
 		head.CreateCellString(i,heads.Get(i))
 	Next
@@ -66,30 +68,63 @@ Sub Button2_MouseClicked (EventData As MouseEvent)
 		For Each imgName As String In NamesList(operations(0),dirPath)
 			Dim m As Map=data.Get(imgName)
 			Dim row As PoiRow = sheet1.CreateRow(rowNumber)
-			Dim cells As List
+			Dim cells As Map
 			cells.Initialize
-			cells.Add(File.GetName(File.GetFileParent(File.Combine(dirPath,imgName))))
-			cells.Add(imgName)
+			cells.Put("dir",File.GetName(File.GetFileParent(File.Combine(dirPath,imgName))))
+			cells.Put("imgName",imgName)
 			statisticsToCell(cells,m)
+			wirteToRow(cells,row,basicInfo)
 			Dim groundTruth As List=getBoxes(dirPath,projectName,imgName)
 			Dim detected As List=getBoxes(dirPath,projectName&".bak",imgName)
 			excludeLowProbability(groundTruth)
 			getAccuracy(groundTruth,detected,cells,False)
 			getRecall(groundTruth,detected,cells,False)
 			AddSpecialAreasNum(groundTruth,detected,cells,False)
+			AddPercent(cells)
+			wirteToRow(cells,row,accuracyAndRecall)
 			getAccuracy(groundTruth,detected,cells,True)
 			getRecall(groundTruth,detected,cells,True)
-			AddSpecialAreasNum(groundTruth,detected,cells,False)
-			For cellIndex=0 To cells.Size-1
-				row.CreateCellString(cellIndex,cells.Get(cellIndex))
-			Next
+			AddSpecialAreasNum(groundTruth,detected,cells,True)
+			AddPercent(cells)
+			wirteToRow(cells,row,accuracyAndRecall)
 			rowNumber=rowNumber+1
 		Next
 	Next
 	wb.Save(File.DirApp,"out.xlsx")
 End Sub
 
-Sub statisticsToCell(cells As List,data As Map)
+Sub wirteToRow(cells As Map,row As PoiRow,order As List)
+	For Each key As String In order
+		row.CreateCellString(row.Cells.Size,cells.Get(key))
+	Next
+	cells.Clear
+End Sub
+
+Sub AddPercent(cells As Map)
+	'hit, areas,nonTrans,nonTransGround,sound,soundGround
+	Dim accuracy,accuracyWithoutSound As Double
+	Dim recall,recallWithoutSound As Double
+	Dim hits,detected,groundTruth,nonTrans,nonTransGround,sound,soundGround As Int
+	hits=cells.Get("hits")
+	detected=cells.Get("detected")
+	groundTruth=cells.Get("groundTruth")
+	nonTrans=cells.Get("nonTrans")
+	nonTransGround=cells.Get("nonTransGround")
+	sound=cells.Get("sound")
+	soundGround=cells.Get("soundGround")
+	accuracy = (hits-nonTrans)/(detected-nonTrans)
+	accuracyWithoutSound = (hits-nonTrans-sound)/(detected-nonTrans-sound)
+	recall = (hits-nonTrans)/(groundTruth-nonTransGround)
+	recallWithoutSound = (hits-nonTrans-sound)/(groundTruth-nonTransGround-soundGround)
+	cells.Put("accuracy",accuracy)
+	cells.Put("accuracyWithoutSound",accuracyWithoutSound)
+	cells.Put("recall",recall)
+	cells.Put("recallWithoutSound",recallWithoutSound)
+	Dim soundRecall As Double=sound/soundGround
+	cells.Put("soundRecall",soundRecall)
+End Sub
+
+Sub statisticsToCell(cells As Map,data As Map)
 	Dim index As Int=2
 	For Each operationName As String In operations
 		Dim operationData As Map=data.Get(operationName)
@@ -97,11 +132,11 @@ Sub statisticsToCell(cells As List,data As Map)
 		startTime=operationData.Get("startTime")
 		endTime=operationData.Get("endTime")
 		Dim seconds As Double=(endTime - startTime)/1000
-		cells.Add(seconds)
+		cells.Put(operationName.Replace(".json",""),seconds)
 		index=index+1
 		If index=4 Then
-			cells.Add(operationData.Get("width"))
-			cells.Add(operationData.Get("height"))
+			cells.put("width",operationData.Get("width"))
+			cells.Put("height",operationData.Get("height"))
 		End If
 	Next
 End Sub
@@ -116,7 +151,7 @@ Sub getBoxes(dirPath As String,filename As String,imgName As String) As List
 	Return boxes
 End Sub
 
-Sub getAccuracy(pGroundTruth As List,pDetected As List,cells As List,afterClassification As Boolean)
+Sub getAccuracy(pGroundTruth As List,pDetected As List,cells As Map,afterClassification As Boolean)
 	'减去非译元素的正确的文字区域/(检测到的区域减去非译元素)
 	Dim groundTruth As List
 	groundTruth.Initialize
@@ -149,8 +184,8 @@ Sub getAccuracy(pGroundTruth As List,pDetected As List,cells As List,afterClassi
 
 	areas=detected.Size
 	
-	cells.Add(hits)
-	cells.Add(areas)
+	cells.Put("hits",hits)
+	cells.Put("detected",areas)
 End Sub
 
 Sub excludeLowProbability(list1 As List)
@@ -235,7 +270,7 @@ Sub SpecialAreasInGroundTruth(groundTruth As List,styleName As String) As Int
 	Return num
 End Sub
 
-Sub getRecall(pGroundTruth As List,pDetected As List,cells As List,afterClassification As Boolean)
+Sub getRecall(pGroundTruth As List,pDetected As List,cells As Map,afterClassification As Boolean)
 	'减去非译的检测到的正确的文字区域/减去非译的所有文字区域
 	Dim GroundTruth As List
 	GroundTruth.Initialize
@@ -267,8 +302,8 @@ Sub getRecall(pGroundTruth As List,pDetected As List,cells As List,afterClassifi
 	areas=GroundTruth.Size
 	
 
-	cells.Add(hits)
-	cells.Add(areas)
+	cells.Put("hits",hits)
+	cells.Put("groundTruth",areas)
 End Sub
 
 Sub isHit(box1 As Map,box2 As Map) As Boolean
@@ -282,7 +317,7 @@ Sub isHit(box1 As Map,box2 As Map) As Boolean
 	End If
 End Sub
 
-Sub AddSpecialAreasNum(pGroundTruth As List,pDetected As List,cells As List,afterClassification As Boolean)
+Sub AddSpecialAreasNum(pGroundTruth As List,pDetected As List,cells As Map,afterClassification As Boolean)
 	Dim groundTruth As List
 	groundTruth.Initialize
 	groundTruth.AddAll(pGroundTruth)
@@ -292,10 +327,10 @@ Sub AddSpecialAreasNum(pGroundTruth As List,pDetected As List,cells As List,afte
 	If afterClassification Then
 		excludeLowProbability(detected)
 	End If
-	cells.Add(SpecialAreaInDetected(groundTruth,detected,"非译元素"))
-	cells.Add(SpecialAreasInGroundTruth(groundTruth,"非译元素"))
-	cells.Add(SpecialAreasInGroundTruth(groundTruth,"拟声词"))
-	cells.Add(SpecialAreasInGroundTruth(groundTruth,"拟声词"))
+	cells.Put("nonTrans",SpecialAreaInDetected(groundTruth,detected,"非译元素"))
+	cells.Put("nonTransGround",SpecialAreasInGroundTruth(groundTruth,"非译元素"))
+	cells.put("sound",SpecialAreaInDetected(groundTruth,detected,"拟声词"))
+	cells.put("soundGround",SpecialAreasInGroundTruth(groundTruth,"拟声词"))
 End Sub
 
 Sub NamesList(operationName As String,dirPath As String) As List
