@@ -1,0 +1,429 @@
+﻿AppType=JavaFX
+Build1=Default,b4j.example
+File1=languagesWithoutSpace.txt
+File2=main.bjl
+File3=ta.bjl
+FileGroup1=Default Group
+FileGroup2=Default Group
+FileGroup3=Default Group
+Group=Default Group
+Library1=jcore
+Library2=jfx
+Library3=jsql
+Library4=jrandomaccessfile
+Library5=javaobject
+Library6=jstringutils
+Library7=jpoi
+Library8=json
+Library9=jsoup
+Module1=LanguageUtils
+Module2=DB
+Module3=Utils
+NumberOfFiles=3
+NumberOfLibraries=9
+NumberOfModules=3
+Version=7.8
+@EndOfDesignText@
+#Region Project Attributes 
+	#MainFormWidth: 600
+	#MainFormHeight: 600 
+#End Region
+
+#AdditionalJar: sqlite-jdbc-3.23.1
+#AdditionalJar: bcprov-jdk15on-154
+#AdditionalJar: snowball-stemmer-1.3.0.581.1
+
+Sub Process_Globals
+	Private fx As JFX
+	Private MainForm As Form
+	Private imitatives As List
+	Private ListView1 As ListView
+End Sub
+
+Sub AppStart (Form1 As Form, Args() As String)
+	MainForm = Form1
+	MainForm.RootPane.LoadLayout("main") 'Load the layout file.
+	MainForm.Show
+	imitatives.Initialize
+End Sub
+
+'Return true to allow the default exceptions handler to handle the uncaught exception.
+Sub Application_Error (Error As Exception, StackTrace As String) As Boolean
+	Return True
+End Sub
+
+Sub Button2_MouseClicked (EventData As MouseEvent)
+	dictToJson
+	'Dim entries As List=cleanedEntries
+	'File.WriteList(File.DirApp,"clean.txt",entries)
+	'imitatives.AddAll(entries)
+End Sub
+
+Sub dictToJson
+	Dim dict As Map
+	dict.Initialize
+	For Each entry As String In File.ReadList(File.DirApp,"imitatives.txt")
+		Dim entryMap As Map
+		entryMap.Initialize
+		Dim word As String=Regex.Split("\t",entry)(0)
+		Dim content As String=Regex.Split("\t",entry)(1)
+		Dim explainations As List
+		explainations.Initialize
+		Dim examples As List
+		examples.Initialize
+		Dim explainations As List
+		Dim sentences As List
+		explainations=getElements(content,"JX|GZ")
+		sentences=getElements(content,"LY|LS")
+		entryMap.Put("explainations",explainations)
+		entryMap.Put("sentences",sentences)
+		dict.Put(word,entryMap)
+	Next
+	Dim json As JSONGenerator
+	json.Initialize(dict)
+	File.WriteString(File.DirApp,"out.json",json.ToPrettyString(4))
+End Sub
+
+Sub getElements(content As String,pattern As String) As List
+	Dim result As List
+	result.Initialize
+	Dim soup As jSoup
+	Dim elements As List=soup.getElementsByAttributeValueMatching(content,"class",pattern)
+	Dim sb As StringBuilder
+	sb.Initialize
+	Dim num As Int=0
+	For Each element In elements
+		num=num+1
+		If num Mod 2=0 Then
+			sb.Append("	")
+			sb.Append(cleanedEntry(element))
+			result.Add(sb.ToString)
+			sb.Initialize
+		Else
+			sb.Append(cleanedEntry(element))
+		End If
+	Next
+	If sb.ToString.Trim<>"" Then
+		result.Add(sb.ToString)
+	End If
+	
+	Return result
+End Sub
+
+Sub cleanedEntry(entry As String) As String
+	entry=Regex.Replace($"<span class="DC">.*?</span>"$,entry,"")
+	entry=Regex.Replace("<.*?>",entry,CRLF)
+	entry=entry.Replace("\n","")
+	entry=entry.Replace("■","")
+	Dim matcher As Matcher
+	matcher=Regex.Matcher(CRLF&CRLF,entry)
+	Do While matcher.Find
+		entry=Regex.Replace(CRLF&CRLF,entry,CRLF)
+		matcher=Regex.Matcher(CRLF&CRLF,entry)
+	Loop
+	Return entry.Trim
+End Sub
+
+Sub cleanedEntries As List
+	Dim newList As List
+	newList.Initialize
+	Dim entries As List
+	entries=File.ReadList(File.DirApp,"imitatives.txt")
+	For Each entry As String In entries
+		entry=cleanedEntry(entry)
+		newList.Add(entry)
+	Next
+	Return newList
+End Sub
+
+Sub Button1_MouseClicked (EventData As MouseEvent)
+	Dim entries As List
+	entries=File.ReadList(File.DirApp,"out.txt")
+	Dim newList As List
+	newList.Initialize
+	Dim knownWords As Map=readKnownWords
+	For Each entry As String In entries
+		If entry.Contains("语源") Then
+			
+			Try
+				Dim word As String
+				word=Regex.Split("\t",entry)(0).Trim
+				Dim splited As String
+				splited=entry.Replace($"<span class="section_title">语源</span>"$,CRLF)
+				Dim etymology As String = Regex.Split(CRLF,splited)(1)
+				If etymology.Contains("imitative") Or knownWords.ContainsKey(word) Then
+					newList.Add(entry)
+				End If
+			Catch
+				Log(LastException)
+			End Try
+
+		End If
+	Next
+	File.WriteList(File.DirApp,"imitatives.txt",newList)
+End Sub
+
+Sub Button3_MouseClicked (EventData As MouseEvent)
+	Dim json As JSONParser
+	json.Initialize(File.ReadString(File.DirApp,"out.json"))
+	Dim dict As Map=json.NextObject
+	Dim wb As PoiWorkbook
+	wb.InitializeNew(True)
+	Dim sheet1 As PoiSheet = wb.AddSheet("Sheet1",0)
+	Dim entries As List
+	entries=File.ReadList(File.DirApp,"imitatives.txt")
+	Dim row As PoiRow = sheet1.CreateRow(0)
+	row.CreateCellString(0,"word")
+	row.CreateCellString(1,"raw")
+	row.CreateCellString(2,"json")
+	For Each entry As String In entries
+		Try
+			Dim word,content As String
+			word=Regex.Split("\t",entry)(0).Trim
+			content=Regex.Split("\t",entry)(1).Trim
+			Dim entryMap As Map=dict.Get(word)
+			Dim jsonG As JSONGenerator
+			jsonG.Initialize(entryMap)
+			Dim row As PoiRow = sheet1.CreateRow(sheet1.LastRowNumber+1)
+			row.CreateCellString(0,word)
+			row.CreateCellString(1,content)
+			row.CreateCellString(2,jsonG.ToPrettyString(4))
+		Catch
+			Log(LastException)
+		End Try
+	Next
+	wb.Save(File.DirApp,"out.xlsx")
+End Sub
+
+Sub Button4_MouseClicked (EventData As MouseEvent)
+    Dim wb As PoiWorkbook
+	wb.InitializeExisting(File.DirApp,"out.xlsx","")
+	Dim sheet1 As PoiSheet = wb.GetSheet(0)
+
+	
+	Dim data As List
+	data.Initialize
+	Dim index As Int=0
+	For Each row As PoiRow In sheet1.Rows		
+		index=index+1
+		If index=1 Then
+			Continue
+		End If
+		data.Add(row.Cells)
+	Next
+	Dim newWb As PoiWorkbook
+	newWb.InitializeNew(True)
+	Dim sheet1 As PoiSheet = newWb.AddSheet("Sheet1",0)
+	Dim row As PoiRow = sheet1.CreateRow(0)
+	Dim heads As List
+	heads.Initialize
+	heads.AddAll(Array As String("word","content","raw"))
+	insertHeads(heads)
+	For i=0 To heads.Size-1
+		row.CreateCellString(i,heads.Get(i))
+	Next
+	For Each r As List In data
+		Dim cleaned As String=cleanedEntry(r.Get(1))
+		Dim splited As String=getStringForIndex(cleaned)
+		Dim jsonString As String=r.Get(2)
+		Dim newRow As List
+		newRow.Initialize
+		newRow.Add(r.Get(0))
+		newRow.Add(splited)
+		newRow.Add(r.Get(1))
+		insertResults(newRow,jsonString)
+		Dim row As PoiRow = sheet1.CreateRow(sheet1.LastRowNumber+1)
+		For i=0 To newRow.Size-1
+			row.CreateCellString(i,newRow.Get(i))
+		Next
+	Next
+	newWb.Save(File.DirApp,"import.xlsx")
+End Sub
+
+Sub insertHeads(heads As List)
+	For Each pane As Pane In ListView1.Items
+		Dim ta1 As TextArea
+		ta1=pane.GetNode(0)
+		heads.InsertAt(heads.Size-2,ta1.Text)
+	Next
+End Sub
+
+Sub insertResults(r As List,jsonString As String)
+	'Log(jsonString)
+	Dim json As JSONParser
+	json.Initialize(jsonString)
+	Dim map1 As Map=json.NextObject
+	Dim explainations As List
+	explainations=map1.Get("explainations")
+	For Each pane As Pane In ListView1.Items
+		Dim ta2,ta3 As TextArea
+		ta2=pane.GetNode(1)
+		ta3=pane.GetNode(2)
+		r.InsertAt(r.Size-2,infer(ta2.Text,ta3.Text,explainations))
+	Next
+End Sub
+
+Sub infer(positive As String,negative As String,explainations As List) As String
+	Dim score As Int=0
+	For Each content As String In explainations
+		content=content.Replace("	"," ")
+		content=content.ToLowerCase
+		content=getStringForIndex(content)
+		Dim map1 As Map
+		map1.Initialize
+		For Each key As String In Regex.Split(" ",content)
+			If key.Trim="" Then
+				Continue
+			End If
+			key=porterStem(key)
+			map1.Put(key,"")
+		Next
+		For Each word As String In Regex.Split(",",positive)
+			If word.Trim="" Then
+				Continue
+			End If
+			word=porterStem(word)
+			If map1.ContainsKey(word)  Then
+				score=score+1
+			End If
+		Next
+		For Each word As String In Regex.Split(",",negative)
+			If word.Trim="" Then
+				Continue
+			End If
+			word=porterStem(word)
+			If map1.ContainsKey(word) Then
+				score=score-1
+			End If
+		Next
+	Next
+	
+	If score>0 Then
+		Return "POSITIVE"
+	else if score<0 Then
+		Return "NEGATIVE"
+	Else
+		Return "NEUTRAL"
+	End If
+End Sub
+
+Sub Button5_MouseClicked (EventData As MouseEvent)
+	Dim wb As PoiWorkbook
+	wb.InitializeExisting(File.DirApp,"cat.xlsx","")
+	Dim sheet1 As PoiSheet = wb.GetSheet(0)
+	For Each row As PoiRow In sheet1.Rows
+		If row.RowNumber=0 Then
+			Continue
+		End If
+		Dim category As String
+		Dim PositiveWords As String
+		Dim NegativeWords As String
+		Try
+			category=row.GetCell(0).ValueString
+			PositiveWords=row.GetCell(1).ValueString
+			NegativeWords=row.GetCell(2).ValueString
+		Catch
+			Log(LastException)
+		End Try
+
+		Dim pane1 As Pane
+		pane1.Initialize("")
+		pane1.LoadLayout("ta")
+		pane1.SetSize(ListView1.Width-20,80)
+		Dim ta1,ta2,ta3 As TextArea
+		ta1=pane1.GetNode(0)
+		ta2=pane1.GetNode(1)
+		ta3=pane1.GetNode(2)
+		ta1.Text=category
+		ta2.Text=PositiveWords
+		ta3.Text=NegativeWords
+		ListView1.Items.Add(pane1)
+	Next
+End Sub
+
+Sub getStringForIndex(text As String) As String
+	text=text.Replace(CRLF," ")
+	Dim sb As StringBuilder
+	sb.Initialize
+	Dim words As List
+	words.Initialize
+	words.AddAll(LanguageUtils.TokenizedList(text,"en"))
+	'Log(words)
+	LanguageUtils.removeChineseWords(words)
+	words.AddAll(LanguageUtils.TokenizedList(text,"zh"))
+	LanguageUtils.removeCharacters(words)
+	'Log(words)
+	For index =0 To words.Size-1
+		sb.Append(words.Get(index)).Append(" ")
+	Next
+	Return sb.ToString.Trim
+End Sub
+
+Sub exportToSQLite
+	Dim db1 As DB
+	db1.Initialize(File.DirApp,"1.db")
+	db1.Put(imitatives)
+	db1.Close
+End Sub
+
+Sub porterStem(word As String) As String
+	Dim jo As JavaObject
+	jo.InitializeNewInstance("org.tartarus.snowball.ext.englishStemmer",Null)
+	jo.RunMethod("setCurrent",Array(word))
+	jo.RunMethod("stem",Null)
+	Return jo.RunMethod("getCurrent",Null)
+End Sub
+
+Sub readKnownWords As Map
+	Dim words As Map
+	words.Initialize
+	Dim wb As PoiWorkbook
+	wb.InitializeExisting(File.DirApp,"known.xlsx","")
+	Dim sheet1 As PoiSheet = wb.GetSheet(0)
+	For Each row As PoiRow In sheet1.Rows
+		words.Put(row.GetCell(0).ValueString,"")
+	Next
+	Return words
+End Sub
+
+Sub Button6_MouseClicked (EventData As MouseEvent)
+	Dim json As JSONParser
+	json.Initialize(File.ReadString(File.DirApp,"moby_thesaurus.txt"))
+	Dim dict As Map
+	dict=json.NextObject
+	For Each pane As Pane In ListView1.Items
+		Dim ta2,ta3 As TextArea
+		ta2=pane.GetNode(1)
+		ta3=pane.GetNode(2)
+		Dim PositiveWords,NegativeWords As String
+		PositiveWords=ta2.Text
+		NegativeWords=ta3.Text
+		ta2.Text=synonymsString(PositiveWords,dict)
+		ta3.Text=synonymsString(NegativeWords,dict)
+	Next
+End Sub
+
+Sub synonymsString(words As String,dict As Map) As String
+	Dim wordsMap As Map
+	wordsMap.Initialize
+	For Each word As String In Regex.Split(",",words)
+		wordsMap.Put(word,"")
+		If dict.ContainsKey(word) Then
+			Dim synonyms As List=dict.Get(word)
+			For Each synonym As String In synonyms
+				wordsMap.Put(synonym,"")
+			Next
+		End If
+	Next
+	Dim sb As StringBuilder
+	sb.Initialize
+	Dim index As Int=0
+	For Each word As String In wordsMap.Keys
+		sb.Append(word)
+		If index<wordsMap.Size-1 Then
+			sb.Append(",")
+		End If
+		index=index+1
+	Next
+	Return sb.ToString
+End Sub
