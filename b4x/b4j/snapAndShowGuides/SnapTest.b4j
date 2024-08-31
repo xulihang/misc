@@ -24,11 +24,10 @@ Sub Process_Globals
 	Private xui As XUI 
 	Private Button1 As Button
 	Private Button2 As Button
-	Type PositionData (PressedX As Double, PressedY As Double)
+	Type PositionData (PressedX As Double, PressedY As Double,linesShown As Boolean)
 	Type Line (X0 As Double, Y0 As Double, X1 As Double, Y1 As Double)
 	Private ImageView1 As ImageView
 	Private Pane1 As Pane
-	Type DraggingData (pd as PositionData,lineShown as Boolean)
 End Sub
 
 Sub AppStart (Form1 As Form, Args() As String)
@@ -58,24 +57,23 @@ End Sub
 Private Sub HandleButtonPressed(btn As Button,EventData As MouseEvent)
 	Dim btn As Button = Sender
 	Dim pd As PositionData
-	Dim dd As DraggingData
+
 	Dim event As JavaObject = EventData
 	pd.PressedX = event.RunMethod("getSceneX",Null)
 	pd.PressedY = event.RunMethod("getSceneY",Null)
-	dd.pd = pd
-	btn.Tag = dd
+	pd.linesShown = False
+	btn.Tag = pd
 End Sub
 
 Private Sub HandleButtonDragged(btn As Button,EventData As MouseEvent)
 	Dim btn As Button = Sender
 	Dim event As JavaObject = EventData
-	Dim dd As DraggingData = btn.Tag
-	Dim pd As PositionData = dd.pd
+	Dim pd As PositionData = btn.Tag
 	Dim XDiff As Double= event.RunMethod("getSceneX",Null) - pd.pressedX
 	Dim YDiff As Double= event.RunMethod("getSceneY",Null) - pd.pressedY
 	btn.Left = XDiff+btn.Left
 	btn.Top = YDiff+btn.Top
-	If dd.lineShown = True Then
+	If pd.linesShown = True Then
 		If XDiff < 0 Then
 			XDiff = XDiff - 2
 		Else
@@ -86,13 +84,13 @@ Private Sub HandleButtonDragged(btn As Button,EventData As MouseEvent)
 		Else
 			YDiff = YDiff + 2
 		End If
-		dd.lineShown = False
+		pd.linesShown = False
 	End If
 	pd.PressedX = event.RunMethod("getSceneX",Null)
 	pd.PressedY = event.RunMethod("getSceneY",Null)
 	Dim snapped As Boolean = SnapAndShowGuideLines(btn,XDiff,YDiff)
 	If snapped Then
-		dd.lineShown = True
+		pd.linesShown = True
 	End If
 End Sub
 
