@@ -2,6 +2,7 @@ import os
 import re
 import csv
 from pathlib import Path
+import unicodedata
 
 def extract_links_from_markdown(md_file_path):
     """Extract all internal links from a Markdown file.
@@ -53,11 +54,46 @@ def check_anchor_in_file(file_path, anchor):
                 if match:
                     header_text = match.group(1).strip().lower()
                     # Convert header to likely anchor format
-                    header_anchor = re.sub(r'[^\w-]', '-', header_text).strip('-')
+                    header_anchor = markdown_header_to_anchor(header_text)
+
                     if header_anchor == anchor.lower():
                         return True
     return False
-
+    
+def markdown_header_to_anchor(header_text):
+    """
+    Convert Markdown header text to HTML anchor text.
+    Examples:
+    - "DeviceObject.acquireImage()" → "deviceobjectacquireimage"
+    - "`some_code` example" → "somecode-example"
+    - "Dynamsoft.DWT.EnumDWT_PixelType" → "dynamsoftdwtenumdwt_pixeltype"
+    """
+    # Convert to lowercase
+    anchor = header_text.lower()
+    
+    # Remove backticks (`) first
+    anchor = anchor.replace('`', '')
+    
+    # Replace dots with nothing (to handle cases like Dynamsoft.DWT...)
+    anchor = anchor.replace('.', '')
+    
+    # Remove punctuation except underscores and hyphens
+    anchor = re.sub(r'[^\w\s_-]', '', anchor)
+    
+    # Replace spaces with hyphens
+    anchor = re.sub(r'[\s]+', '-', anchor)
+    
+    # Remove consecutive hyphens (but preserve underscores)
+    anchor = re.sub(r'-+', '-', anchor)
+    
+    # Strip hyphens/underscores from start/end (but keep internal ones)
+    anchor = anchor.strip('-')
+    
+    # Convert Unicode to ASCII approximations
+    anchor = unicodedata.normalize('NFKD', anchor).encode('ascii', 'ignore').decode('ascii')
+    
+    return anchor
+    
 def resolve_link_path(base_file_path, link_url, root_dir):
     """Resolve the absolute path of a link relative to the base file.
     
