@@ -3,6 +3,7 @@ import re
 import csv
 from pathlib import Path
 import unicodedata
+from urllib.parse import urlparse, parse_qs, unquote
 
 def extract_links_from_markdown(md_file_path):
     """Extract all internal links from a Markdown file.
@@ -27,6 +28,21 @@ def extract_links_from_markdown(md_file_path):
     
     return internal_links
 
+
+def extract_text_from_url_fragment(url_fragment):
+    # sample: ":~:text=Dynamic%20Web%20TWAIN%20Service"
+    if not url_fragment.startswith(":~:text="):
+        return None
+    
+    # text
+    text_part = url_fragment[len(":~:text="):]
+    
+    # url decode
+    decoded_text = unquote(text_part)
+    
+    return decoded_text
+
+
 def check_anchor_in_file(file_path, anchor):
     """Check if an anchor exists in the specified file.
     
@@ -39,26 +55,35 @@ def check_anchor_in_file(file_path, anchor):
     """
     if not os.path.exists(file_path):
         return False
-    
-    # Patterns for Markdown headers that might become anchors
-    header_patterns = [
-        r'^#+\s+(.*)$',          # # Header
-        r'^.*\s*\{\#(.*)\}.*$',  # Header {#anchor}
-    ]
-    
-    with open(file_path, 'r', encoding='utf-8') as f:
-        for line in f:
-            line = line.strip()
-            for pattern in header_patterns:
-                match = re.match(pattern, line)
-                if match:
-                    header_text = match.group(1).strip().lower()
-                    # Convert header to likely anchor format
-                    header_anchor = markdown_header_to_anchor(header_text)
+        
+    # Check for text fragment anchor (e.g., #:~:text=...)
+    if anchor.startswith(':~:text='):
+        text = extract_text_from_url_fragment(anchor)
+        with open(file_path, 'r', encoding='utf-8') as f:
+            for line in f:
+                if line.find(text) != -1:
+                    return True
+        return False
+    else:
+        # Patterns for Markdown headers that might become anchors
+        header_patterns = [
+            r'^#+\s+(.*)$',          # # Header
+            r'^.*\s*\{\#(.*)\}.*$',  # Header {#anchor}
+        ]
+        
+        with open(file_path, 'r', encoding='utf-8') as f:
+            for line in f:
+                line = line.strip()
+                for pattern in header_patterns:
+                    match = re.match(pattern, line)
+                    if match:
+                        header_text = match.group(1).strip().lower()
+                        # Convert header to likely anchor format
+                        header_anchor = markdown_header_to_anchor(header_text)
 
-                    if header_anchor == anchor.lower():
-                        return True
-    return False
+                        if header_anchor == anchor.lower():
+                            return True
+        return False
     
 def markdown_header_to_anchor(header_text):
     """
