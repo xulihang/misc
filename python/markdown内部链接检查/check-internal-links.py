@@ -113,7 +113,7 @@ def check_markdown_links(root_dir, output_csv):
         for link_text, link_url, line_num in links:
             # Resolve the link path
             resolved_path, anchor = resolve_link_path(md_file, link_url, root_dir)
-            
+
             # Check if file exists
             file_exists = os.path.exists(resolved_path)
             anchor_exists = False
@@ -157,7 +157,7 @@ def check_markdown_links(root_dir, output_csv):
 
 if __name__ == "__main__":
     # Configuration
-    ROOT_DIR = "_articles"  # Directory containing Markdown files
+    ROOT_DIR = "./"  # Directory containing Markdown files
     OUTPUT_CSV = "link_check_results.csv"  # Output CSV file
     
     # Run the check
