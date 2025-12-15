@@ -1,0 +1,101 @@
+﻿AppType=JavaFX
+Build1=Default,b4j.example
+File1=ImageView.bjl
+File2=Layout1.bjl
+FileGroup1=Default Group
+FileGroup2=Default Group
+Group=Default Group
+Library1=jcore
+Library2=jfx
+Library3=jreflection
+Library4=jxui
+Library5=javaobject
+NumberOfFiles=2
+NumberOfLibraries=5
+NumberOfModules=0
+Version=10
+@EndOfDesignText@
+#Region Project Attributes 
+	#MainFormWidth: 600
+	#MainFormHeight: 600 
+#End Region
+
+Sub Process_Globals
+	Private fx As JFX
+	Private MainForm As Form
+	Private xui As XUI 
+	Private Button1 As B4XView
+	Private ScrollPane1 As ScrollPane
+	Private ImageView1 As ImageView
+	Private percentage As Int = 100
+	Private XPercent As Double = 0
+	Private YPercent As Double = 0
+	Private CheckBox1 As CheckBox
+End Sub
+
+Sub AppStart (Form1 As Form, Args() As String)
+	MainForm = Form1
+	MainForm.RootPane.LoadLayout("Layout1")
+	MainForm.Show
+	ScrollPane1.LoadLayout("ImageView",600,600)
+	ImageView1.SetImage(fx.LoadImage(File.DirApp,"test.jpg"))
+	Dim r As Reflector
+	r.Target = ScrollPane1
+	r.AddEventFilter("scroll", "javafx.scene.input.ScrollEvent.SCROLL")
+	
+	Log(ScrollPane1.InnerNode)
+	Dim jo As JavaObject = ScrollPane1.InnerNode
+	Dim e As Object = jo.CreateEventFromUI("javafx.event.EventHandler", "mousemoved", Null)
+	jo.RunMethod("setOnMouseMoved", Array(e))
+End Sub
+
+Sub scroll_Filter (EventData As Event)
+	Dim scrollevent As JavaObject = EventData
+	scrollevent.RunMethod("consume",Null)
+	Dim DeltaY As Int=scrollevent.RunMethod("getDeltaY", Null)
+	Dim img As Image = ImageView1.GetImage
+	If DeltaY>0 Then
+		percentage = percentage + 5
+	Else
+		percentage = percentage - 5
+	End If
+	ImageView1.Width=img.Width*percentage/100
+	ImageView1.Height=img.Height*percentage/100
+	ScrollPane1.InnerNode.PrefHeight=ImageView1.Height
+	ScrollPane1.InnerNode.PrefWidth=ImageView1.Width
+	
+	'Sleep(0)
+	If CheckBox1.Checked Then
+		ScrollPane1.HPosition = XPercent
+		ScrollPane1.VPosition = YPercent
+	End If
+End Sub
+
+Sub mousemoved_Event (MethodName As String, Args() As Object) As Object
+	Log(MethodName)
+	Log(Args(0))
+	Dim EventData As MouseEvent = Args(0)
+	Log("X: "&EventData.X)
+	Log("Y: "&EventData.Y)
+	XPercent = (EventData.X) / ImageView1.Width
+	YPercent = (EventData.Y) / ImageView1.Height
+	Log(XPercent)
+	Log(YPercent)
+	Return Null
+End Sub
+
+
+Sub Button1_Click
+	xui.MsgboxAsync("Hello World!", "B4X")
+End Sub
+
+Private Sub ImageView1_MouseMoved (EventData As MouseEvent)
+
+End Sub
+
+Private Sub ScrollPane1_MouseMoved (EventData As MouseEvent)
+	
+End Sub
+
+
+
