@@ -1,0 +1,51 @@
+﻿AppType=JavaFX
+Build1=Default,b4j.example
+File1=Layout1.bjl
+FileGroup1=Default Group
+Group=Default Group
+Library1=jcore
+Library2=jfx
+Library3=jxui
+Library4=javaobject
+NumberOfFiles=1
+NumberOfLibraries=4
+NumberOfModules=0
+Version=10
+@EndOfDesignText@
+#Region Project Attributes 
+	#MainFormWidth: 600
+	#MainFormHeight: 600 
+#End Region
+
+Sub Process_Globals
+	Private fx As JFX
+	Private MainForm As Form
+	Private xui As XUI 
+	Private Button1 As B4XView
+	Private WebView1 As WebView
+End Sub
+
+Sub AppStart (Form1 As Form, Args() As String)
+	MainForm = Form1
+	MainForm.RootPane.LoadLayout("Layout1")
+	MainForm.Show
+	WebView1.LoadUrl("http://127.0.0.1:8000")
+	Dim xui As XUI
+	Dim blendMode As JavaObject
+	blendMode.InitializeStatic("javafx.scene.effect.BlendMode")
+	Dim v As B4XView
+	v = WebView1
+	WebView1.PickOnBounds = False
+	v.Color = xui.Color_Transparent
+    Dim jo As JavaObject
+	jo = v
+	jo.RunMethod("setBlendMode",Array(blendMode.GetField("DARKEN")))
+	Dim img As B4XBitmap = WebView1.Snapshot
+	Dim out As OutputStream = File.OpenOutput(File.DirApp,"out.png",False)
+	img.WriteToStream(out,100,"PNG")
+	out.Close
+End Sub
+
+Sub Button1_Click
+	xui.MsgboxAsync("Hello World!", "B4X")
+End Sub
