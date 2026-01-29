@@ -1,0 +1,64 @@
+﻿AppType=JavaFX
+Build1=Default,b4j.example
+File1=Layout1.bjl
+FileGroup1=Default Group
+Group=Default Group
+Library1=javaobject
+Library2=jcore
+Library3=jfx
+Library4=jxui
+Library5=jbitmapcreator
+Module1=PDFRenderer
+NumberOfFiles=1
+NumberOfLibraries=5
+NumberOfModules=1
+Version=8.8
+@EndOfDesignText@
+#Region Project Attributes 
+	#MainFormWidth: 600
+	#MainFormHeight: 600 
+#End Region
+'-------- for pdfbox
+#AdditionalJar: pdfbox-2.0.31
+#AdditionalJar: fontbox-2.0.31
+#AdditionalJar: jbig2-imageio-3.0.4
+#AdditionalJar: commons-logging-1.2
+Sub Process_Globals
+	Private fx As JFX
+	Private MainForm As Form
+	Private xui As XUI 
+	Private Button1 As B4XView
+	Private ImageView1 As ImageView
+End Sub
+
+Sub AppStart (Form1 As Form, Args() As String)
+	MainForm = Form1
+	MainForm.RootPane.LoadLayout("Layout1")
+	MainForm.Show
+	Dim rect As B4XRect
+	rect.Initialize(212,150,386,239)
+	Dim r As PDFRenderer
+	r.Initialize(File.Combine(File.DirApp,"test.pdf"))
+	Log(r.GetPageWidth(0)) 'size at 72 DPI
+	Log(r.GetPageHeight(0))
+	Dim rectInPoint As B4XRect = ConvertRectToPDFCoordinate(rect,r,0,72)
+	wait for (r.Render(0,1.0,rectInPoint)) complete (image As B4XBitmap)
+	ImageView1.SetImage(image)
+End Sub
+
+Public Sub ConvertRectToPDFCoordinate(rect As B4XRect,r As PDFRenderer,pageIndex As Int,imgDPI As Int) As B4XRect
+	Dim scale As Double = imgDPI / 72
+	Dim pageHeight As Int = r.GetPageHeight(pageIndex)
+	Dim X,Y,width,height As Int
+	X = rect.Left / scale
+	Y = pageHeight - (rect.Top + rect.Height) / scale
+	width = rect.Width / scale
+	height = rect.Height / scale
+	Dim converted As B4XRect
+	converted.Initialize(X,Y,X+width,Y+height)
+	Return converted
+End Sub
+
+Sub Button1_Click
+	xui.MsgboxAsync("Hello World!", "B4X")
+End Sub

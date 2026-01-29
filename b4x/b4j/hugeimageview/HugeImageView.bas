@@ -87,6 +87,23 @@ Private Sub ScrollChanged_Event (MethodName As String, Args() As Object) As Obje
 	Return Null
 End Sub
 
+Public Sub SetSize(width As Double,height As Double)
+	Log("set size")
+	Log(width)
+	Log(height)
+	mBase.SetLayoutAnimated(0,mBase.Left,mBase.Top,width,height)
+	pnl.SetLayoutAnimated(0,0,0,width,height)
+	ZoomOutImageView.SetLayoutAnimated(0,0,0,width,height)
+End Sub
+
+Public Sub getWidth As Int
+	Return mBase.Width
+End Sub
+
+Public Sub getHeight As Int
+	Return mBase.Height
+End Sub
+
 
 Public Sub SetBitmap(Dir As String, Filename As String)
 	'存储图片路径和文件名
