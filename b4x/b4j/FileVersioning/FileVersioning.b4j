@@ -1,0 +1,109 @@
+﻿AppType=JavaFX
+Build1=Default,b4j.example
+File1=Layout1.bjl
+FileGroup1=Default Group
+Group=Default Group
+Library1=jcore
+Library2=jfx
+Library3=jxui
+Module1=FileUtils
+NumberOfFiles=1
+NumberOfLibraries=3
+NumberOfModules=1
+Version=10
+@EndOfDesignText@
+#Region Project Attributes 
+	#MainFormWidth: 600
+	#MainFormHeight: 600 
+#End Region
+
+Sub Process_Globals
+	Private fx As JFX
+	Private MainForm As Form
+	Private xui As XUI 
+	Private FilePathsTextArea As TextArea
+	Private Folder1TextField As TextField
+	Private Folder2TextField As TextField
+End Sub
+
+Sub AppStart (Form1 As Form, Args() As String)
+	MainForm = Form1
+	MainForm.RootPane.LoadLayout("Layout1")
+	MainForm.Show
+End Sub
+
+Private Sub CopyChangedButton_Click
+	Dim dc As DirectoryChooser
+	dc.Initialize
+	Dim outPath As String = dc.Show(MainForm)
+	If outPath <> "" Then
+		Dim paths As List = Regex.Split(CRLF,FilePathsTextArea.Text)
+		For Each path As String In paths
+			Dim relativePath As String = path.SubString2(Folder1TextField.Text.Length,path.Length)
+			Dim targetPath As String = File.Combine(outPath,relativePath)
+			FileUtils.createNonExistingDir(targetPath)
+			File.Copy(Folder1TextField.Text,relativePath,outPath,relativePath)
+		Next
+	End If
+End Sub
+
+Private Sub CompareButton_Click
+	Compare(Folder1TextField.Text,Folder2TextField.Text)
+End Sub
+
+Private Sub ChooseFolder2Button_Click
+	PickFolder(Folder2TextField)
+End Sub
+
+Private Sub ChooseFolder1Button_Click
+	PickFolder(Folder1TextField)
+End Sub
+
+Private Sub PickFolder(target As TextField)
+	Dim dc As DirectoryChooser
+	dc.Initialize
+	Dim path As String = dc.Show(MainForm)
+	If path <> "" Then
+		target.Text = path
+	End If
+End Sub
+
+Private Sub Compare(folder1 As String,folder2 As String)
+	Dim changedFiles As List
+	changedFiles.Initialize
+	Dim files1 As List
+	files1.Initialize
+	GetAllFilesInAFolder(folder1,files1)
+	Dim files2 As List
+	files2.Initialize
+	GetAllFilesInAFolder(folder2,files2)
+	Log(files1)
+	Log(files2)
+	Dim sb As StringBuilder
+	sb.Initialize
+	For Each path As String In files1
+		Dim pathInFolder2 As String
+		pathInFolder2 = File.Combine(folder2,path.SubString2(folder1.Length,path.Length))
+		If files2.IndexOf(pathInFolder2) <> -1 Then
+			Dim text1 As String = File.ReadString(path,"")
+			Dim text2 As String = File.ReadString(pathInFolder2,"")
+			If text1 <> text2 Then
+				changedFiles.Add(path)
+				sb.Append(path)
+				sb.Append(CRLF)
+			End If
+		End If
+	Next
+	FilePathsTextArea.Text = sb.ToString
+End Sub
+
+Private Sub GetAllFilesInAFolder(folder As String,files As List)
+	For Each filename In File.ListFiles(folder)
+		Dim path As String = File.Combine(folder,filename)
+		If File.IsDirectory(folder,filename) Then
+			GetAllFilesInAFolder(path,files)
+		Else
+			files.Add(path)
+		End If
+	Next
+End Sub
