@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>竖排文字 · 可拖动测试</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: #f2f5f9;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Noto Serif SC', 'Source Han Serif SC', 'SimSun', 'Songti SC', serif;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .card {
+            background: white;
+            border-radius: 32px;
+            box-shadow: 0 20px 40px -12px rgba(0, 20, 30, 0.25);
+            padding: 28px 32px 32px 32px;
+            transition: box-shadow 0.2s ease;
+            max-width: 95vw;
+        }
+
+        .card:hover {
+            box-shadow: 0 28px 48px -16px rgba(0, 20, 30, 0.35);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .card-header h1 {
+            font-size: 1.35rem;
+            font-weight: 500;
+            color: #1e293b;
+            letter-spacing: 0.02em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-header h1 small {
+            font-size: 0.8rem;
+            font-weight: 400;
+            color: #64748b;
+            background: #eef2f6;
+            padding: 0 12px;
+            border-radius: 30px;
+            line-height: 1.8;
+        }
+
+        .resize-hint {
+            font-size: 0.85rem;
+            color: #475569;
+            background: #f1f5f9;
+            padding: 6px 16px;
+            border-radius: 40px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid #dce2ec;
+        }
+
+        .resize-hint span {
+            font-size: 1.1rem;
+        }
+
+        /* 核心：可拖动尺寸的容器 */
+        .text-container {
+            width: 320px;               /* 初始宽度 —— 可拖动改变 */
+            height: 480px;              /* 初始高度 —— 可拖动改变 */
+            resize: both;               /* 允许用户拖动右下角改变宽高 */
+            overflow: auto;             /* 内容过多时滚动，保证可见 */
+            background: #fafcff;
+            border: 2px solid #cbd5e1;
+            border-radius: 18px;
+            padding: 24px 18px 18px 24px;
+            outline: none;
+            transition: border-color 0.15s;
+            min-width: 160px;
+            min-height: 180px;
+            max-width: 90vw;
+            max-height: 80vh;
+            box-shadow: inset 0 2px 6px rgba(0,0,0,0.02);
+            /* 竖排核心设置 */
+            writing-mode: vertical-rl;   /* 竖排：从右向左 */
+            text-orientation: mixed;     /* 混合方向（汉字直立，字母数字旋转） */
+            font-size: 24px;
+            line-height: 2.0;
+            letter-spacing: 0.06em;
+            color: #0b1e2e;
+            font-weight: 400;
+            font-family: 'Noto Serif SC', 'Source Han Serif SC', 'SimSun', 'Songti SC', 'KaiTi', serif;
+        }
+
+        /* 拖拽时边框高亮 */
+        .text-container:active {
+            border-color: #7e8b9e;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.03), 0 0 0 3px rgba(148, 163, 184, 0.2);
+        }
+
+        .text-container::-webkit-resizer {
+            background: linear-gradient(135deg, transparent 60%, #94a3b8 60%, #94a3b8 80%, transparent 80%);
+            border-radius: 0 0 12px 0;
+        }
+
+        /* 自定义滚动条保持整洁 */
+        .text-container::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+        .text-container::-webkit-scrollbar-track {
+            background: #e9edf3;
+            border-radius: 20px;
+            margin: 6px 0;
+        }
+        .text-container::-webkit-scrollbar-thumb {
+            background: #b9c4d4;
+            border-radius: 20px;
+            border: 2px solid #e9edf3;
+        }
+        .text-container::-webkit-scrollbar-thumb:hover {
+            background: #9aaec6;
+        }
+
+        /* 示例文字 —— 包含各类标点和常见竖排测试字符 */
+        .text-container p {
+            margin: 0;
+            padding: 0;
+            text-indent: 0;
+            white-space: normal;
+            word-break: normal;
+            line-height: 2.0;
+        }
+
+        /* 为方便观察行首标点，单独给一些段落做标记（不影响标点规则） */
+        .text-container .note {
+            font-size: 0.65rem;
+            color: #4b5b6e;
+            opacity: 0.7;
+            letter-spacing: 0.1em;
+            margin-top: 1.2em;
+            border-top: 1px dashed #d0d9e6;
+            padding-top: 1em;
+            font-weight: 300;
+        }
+
+        /* 控制区：显示当前尺寸 + 重置按钮 */
+        .control-panel {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 22px;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .size-indicator {
+            font-size: 0.9rem;
+            background: #f1f6fc;
+            padding: 8px 18px;
+            border-radius: 50px;
+            color: #1e2a3a;
+            border: 1px solid #dce3ed;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 0.02em;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .size-indicator span {
+            font-weight: 500;
+            color: #0f2940;
+        }
+
+        .reset-btn {
+            background: white;
+            border: 1px solid #ccd7e6;
+            padding: 6px 22px;
+            border-radius: 60px;
+            font-size: 0.9rem;
+            color: #1e3a5f;
+            font-weight: 450;
+            cursor: pointer;
+            transition: 0.15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+        }
+
+        .reset-btn:hover {
+            background: #f8faff;
+            border-color: #9eb0cc;
+            box-shadow: 0 4px 8px -8px rgba(0, 20, 40, 0.2);
+        }
+
+        .reset-btn:active {
+            background: #e9f0fa;
+            transform: scale(0.96);
+        }
+
+        .footer-hint {
+            font-size: 0.8rem;
+            color: #5f728b;
+            margin-top: 12px;
+            border-top: 1px solid #e5ecf5;
+            padding-top: 14px;
+            text-align: center;
+            letter-spacing: 0.02em;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .footer-hint code {
+            background: #ecf2f9;
+            padding: 2px 12px;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            color: #1e3d5e;
+            font-family: 'SF Mono', 'JetBrains Mono', monospace;
+        }
+
+        @media (max-width: 600px) {
+            .card {
+                padding: 16px;
+            }
+            .text-container {
+                width: 260px;
+                height: 380px;
+                font-size: 20px;
+                padding: 18px 12px 12px 18px;
+            }
+            .card-header h1 {
+                font-size: 1.1rem;
+            }
+            .resize-hint {
+                font-size: 0.75rem;
+                padding: 4px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <div class="card-header">
+        <h1>
+            📜 竖排标点·拖动测试
+            <small>writing-mode: vertical-rl</small>
+        </h1>
+        <div class="resize-hint">
+            <span>↘</span> 拖动右下角
+        </div>
+    </div>
+
+    <!-- 可拖动尺寸的文字区域 -->
+    <div class="text-container" id="textContainer" title="拖动右下角改变尺寸，观察竖排标点行为">
+        <p>
+            横看成岭侧成峰，远近高低各不同。<br>
+            不识庐山真面目，只缘身在此山中。
+        </p>
+        <p>
+            「引号」与『双引号』；括号（注）及破折号——<br>
+            省略号…… 逗号，顿号、分号；冒号：问号？叹号！
+        </p>
+        <p>
+            行首能否出现标点？<br>
+            ，逗号在行首吗？ 。句号在行首吗？<br>
+            ？问号？ ！叹号！ 都测试一下。
+        </p>
+        <p>
+            《书名号》︽双书名︾ 单书名〈〉<br>
+            间隔号· 着重号 • 连接号 – 专名号（下划线）
+        </p>
+        <p class="note">
+            ⚡ 注意观察行首的标点符号 (如逗号、句号、问号、叹号、括号后半、引号后半)<br>
+            ⚡ 拖动右下角改变容器尺寸，浏览器会自动重排。
+        </p>
+    </div>
+
+    <div class="control-panel">
+        <div class="size-indicator" id="sizeIndicator">
+            <span>📐</span>
+            <span id="sizeDisplay">320 × 480</span>
+        </div>
+        <button class="reset-btn" id="resetSizeBtn">
+            <span>⟲</span> 重置尺寸
+        </button>
+    </div>
+    <div class="footer-hint">
+        <span>浏览器原生 <code>resize: both</code></span>
+        <span>标点规则：点号避行首 · 引号括号转向</span>
+        <span>GB/T 15834-2011</span>
+    </div>
+</div>
+
+<script>
+    (function() {
+        const container = document.getElementById('textContainer');
+        const sizeDisplay = document.getElementById('sizeDisplay');
+
+        // 初始尺寸（与 CSS 保持一致）
+        const DEFAULT_WIDTH = 320;
+        const DEFAULT_HEIGHT = 480;
+
+        // 更新尺寸显示
+        function updateSizeDisplay() {
+            const w = container.offsetWidth;
+            const h = container.offsetHeight;
+            sizeDisplay.textContent = `${w} × ${h}`;
+        }
+
+        // 使用 ResizeObserver 监听尺寸变化（更精确，包含拖动结束和中间过程）
+        if (window.ResizeObserver) {
+            const resizeObserver = new ResizeObserver(() => {
+                updateSizeDisplay();
+            });
+            resizeObserver.observe(container);
+        } else {
+            // 降级方案：监听 window resize 和滚动（实际上容器尺寸变化会触发 resize）
+            window.addEventListener('resize', updateSizeDisplay);
+            // 额外定时器作为保底（但性能不敏感，仅用于兼容）
+            let timer = null;
+            const fallbackUpdate = () => {
+                if (timer) clearTimeout(timer);
+                timer = setTimeout(() => {
+                    updateSizeDisplay();
+                    timer = null;
+                }, 80);
+            };
+            container.addEventListener('input', fallbackUpdate); // input 事件在某些浏览器上可触发
+            // 使用 MutationObserver 观察属性变化（不太可靠，但作为补充）
+            const observer = new MutationObserver(() => fallbackUpdate());
+            observer.observe(container, { attributes: true, attributeFilter: ['style', 'class'] });
+        }
+
+        // 初始显示
+        setTimeout(updateSizeDisplay, 20);
+
+        // 重置尺寸按钮
+        document.getElementById('resetSizeBtn').addEventListener('click', function() {
+            container.style.width = DEFAULT_WIDTH + 'px';
+            container.style.height = DEFAULT_HEIGHT + 'px';
+            // 强制重绘，更新显示
+            requestAnimationFrame(() => {
+                updateSizeDisplay();
+            });
+        });
+
+        // 额外：点击容器时显示尺寸 (方便)
+        container.addEventListener('click', function(e) {
+            // 但不干扰拖动
+            updateSizeDisplay();
+        });
+
+        // 当鼠标释放时更新（拖动结束更及时）
+        document.addEventListener('mouseup', function() {
+            updateSizeDisplay();
+        });
+        // 触摸结束更新
+        document.addEventListener('touchend', function() {
+            updateSizeDisplay();
+        });
+
+        // 窗口尺寸变化时也更新（因为容器尺寸可能会自适应变化，如果设置了 max/min 等）
+        window.addEventListener('resize', function() {
+            updateSizeDisplay();
+        });
+
+        // 额外在加载完全后更新
+        window.addEventListener('load', function() {
+            setTimeout(updateSizeDisplay, 40);
+        });
+
+        console.log('✅ 竖排测试已启动 — 拖动右下角改变尺寸，观察标点换行行为。');
+    })();
+</script>
+</body>
+</html>
