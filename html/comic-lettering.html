@@ -274,7 +274,7 @@ body {
   </div>
 </div>
 
-<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<script src="https://unpkg.com/html-to-image@1.11.11/dist/html-to-image.js"></script>
 <script>
 (function() {
   const $ = (s) => document.querySelector(s);
@@ -867,11 +867,9 @@ body {
     }
 
     try {
-      const canvas = await html2canvas(imageCanvas, {
-        backgroundColor: null,
-        scale: 1,
-        useCORS: true,
-        allowTaint: true,
+      const canvas = await htmlToImage.toCanvas(imageCanvas, {
+        pixelRatio: 1,
+        skipAutoScale: true,
       });
 
       canvas.toBlob(blob => {
