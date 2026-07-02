@@ -1,0 +1,909 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>漫画嵌字工具</title>
+<style>
+:root {
+  --bg: #1e1e2e;
+  --surface: #282840;
+  --surface2: #333355;
+  --border: #444466;
+  --text: #e0e0f0;
+  --text2: #a0a0c0;
+  --accent: #5b9cf5;
+  --accent-hover: #7ab4f8;
+  --danger: #e0556a;
+  --danger-hover: #f07080;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body {
+  font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  display:flex; flex-direction:column;
+  user-select:none; -webkit-user-select:none;
+  overflow:hidden;
+}
+
+/* Toolbar */
+#toolbar {
+  display:flex; align-items:center; gap:8px; padding:8px 12px;
+  background: var(--surface); border-bottom:1px solid var(--border);
+  flex-shrink:0; flex-wrap:wrap; z-index:100;
+}
+#toolbar button {
+  padding:6px 14px; border:1px solid var(--border); border-radius:6px;
+  background: var(--surface2); color: var(--text); cursor:pointer;
+  font-size:13px; white-space:nowrap; transition: background .15s;
+}
+#toolbar button:hover { background: var(--border); }
+#toolbar button.accent { background: var(--accent); border-color: var(--accent); color:#fff; }
+#toolbar button.accent:hover { background: var(--accent-hover); }
+#toolbar button.danger { background: transparent; border-color: var(--danger); color: var(--danger); }
+#toolbar button.danger:hover { background: var(--danger); color:#fff; }
+#toolbar .sep { width:1px; height:22px; background: var(--border); margin:0 4px; }
+#toolbar .zoom-label { font-size:13px; color: var(--text2); min-width:42px; text-align:center; }
+#toolbar select {
+  padding:6px 8px; border:1px solid var(--border); border-radius:6px;
+  background: var(--surface2); color: var(--text); font-size:13px; cursor:pointer;
+}
+#toolbar input[type="file"] { display:none; }
+
+/* Main */
+#main {
+  display:flex; flex:1; overflow:hidden;
+}
+
+/* Workspace */
+#workspace-wrap {
+  flex:1; overflow:auto; position:relative;
+  background: #1a1a24;
+  background-image:
+    linear-gradient(45deg, #222 25%, transparent 25%),
+    linear-gradient(-45deg, #222 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #222 75%),
+    linear-gradient(-45deg, transparent 75%, #222 75%);
+  background-size: 20px 20px;
+  background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+}
+#workspace-scroll {
+  position:relative; transform-origin:0 0;
+}
+#image-canvas {
+  position:relative; display:inline-block;
+}
+#image-canvas img { display:block; max-width:none; }
+
+/* Text box overlay */
+.text-box {
+  position:absolute; border:1.5px dashed transparent; cursor:move;
+  display:flex; align-items:center; justify-content:center;
+  overflow:hidden; word-break:break-all; line-height:1.4;
+  transition: border-color .15s;
+  min-width:20px; min-height:20px;
+}
+.text-box:hover { border-color: rgba(255,255,255,0.3); }
+.text-box.selected { border-color: var(--accent); border-style:solid; z-index:10; }
+.text-box .inner {
+  width:100%; height:100%; padding:4px; outline:none;
+  font: inherit; color: inherit; text-align: inherit;
+  overflow:hidden;
+}
+
+/* Resize handles */
+.handle {
+  position:absolute; width:10px; height:10px; background:#fff;
+  border:2px solid var(--accent); border-radius:2px; z-index:20;
+}
+.handle.nw { top:-5px; left:-5px; cursor:nw-resize; }
+.handle.n  { top:-5px; left:50%; margin-left:-5px; cursor:n-resize; }
+.handle.ne { top:-5px; right:-5px; cursor:ne-resize; }
+.handle.e  { top:50%; right:-5px; margin-top:-5px; cursor:e-resize; }
+.handle.se { bottom:-5px; right:-5px; cursor:se-resize; }
+.handle.s  { bottom:-5px; left:50%; margin-left:-5px; cursor:s-resize; }
+.handle.sw { bottom:-5px; left:-5px; cursor:sw-resize; }
+.handle.w  { top:50%; left:-5px; margin-top:-5px; cursor:w-resize; }
+
+/* Properties panel */
+#panel {
+  width:300px; background: var(--surface); border-left:1px solid var(--border);
+  overflow-y:auto; flex-shrink:0; padding:16px;
+}
+#panel h3 { font-size:15px; margin-bottom:12px; color: var(--text); }
+#panel .empty { color: var(--text2); font-size:13px; text-align:center; padding:40px 0; }
+#panel label {
+  display:block; font-size:12px; color: var(--text2); margin-bottom:4px; margin-top:12px;
+}
+#panel label:first-child { margin-top:0; }
+#panel textarea {
+  width:100%; height:100px; resize:vertical; padding:8px;
+  background: var(--bg); border:1px solid var(--border); border-radius:6px;
+  color: var(--text); font-size:13px; font-family: inherit;
+}
+#panel select, #panel input[type="number"], #panel input[type="text"] {
+  width:100%; padding:6px 8px; background: var(--bg); border:1px solid var(--border);
+  border-radius:6px; color: var(--text); font-size:13px;
+}
+#panel input[type="color"] {
+  width:32px; height:32px; padding:2px; border:1px solid var(--border);
+  border-radius:6px; cursor:pointer; background: var(--bg);
+}
+#panel .row { display:flex; gap:8px; align-items:center; }
+#panel .row > * { flex:1; }
+#panel input[type="range"] { width:100%; accent-color: var(--accent); }
+#panel button.wide {
+  width:100%; padding:8px; margin-top:12px; border:1px solid var(--border);
+  border-radius:6px; background: var(--surface2); color: var(--text);
+  cursor:pointer; font-size:13px;
+}
+#panel button.wide:hover { background: var(--border); }
+#panel button.wide.danger { border-color: var(--danger); color: var(--danger); }
+#panel button.wide.danger:hover { background: var(--danger); color:#fff; }
+
+/* Floating instructions */
+#instructions {
+  position:absolute; bottom:16px; left:50%; transform:translateX(-50%);
+  background: rgba(0,0,0,0.75); color:#ccc; font-size:12px;
+  padding:8px 14px; border-radius:20px; pointer-events:none;
+  z-index:50; transition: opacity .3s;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width:8px; height:8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius:4px; }
+::-webkit-scrollbar-thumb:hover { background: #555; }
+
+@media (max-width: 800px) {
+  #main { flex-direction:column; }
+  #panel { width:100%; max-height:40vh; border-left:none; border-top:1px solid var(--border); }
+}
+</style>
+</head>
+<body>
+
+<div id="toolbar">
+  <button class="accent" id="btn-open" title="打开漫画图片 (Ctrl+O)">📂 打开图片</button>
+  <input type="file" id="file-input" accept="image/*">
+  <button id="btn-add" title="添加文本框">＋ 添加文本框</button>
+  <button class="accent" id="btn-export" title="导出为PNG (Ctrl+S)">⬇ 导出</button>
+  <span class="sep"></span>
+  <button id="btn-zoom-out" title="缩小">－</button>
+  <span class="zoom-label" id="zoom-label">100%</span>
+  <button id="btn-zoom-in" title="放大">＋</button>
+  <button id="btn-zoom-fit" title="适应窗口 (Ctrl+0)">⊡</button>
+  <button id="btn-zoom-100" title="100% (Ctrl+1)">1:1</button>
+  <span class="sep"></span>
+  <button id="btn-duplicate" title="复制选中文本框 (Ctrl+D)">📋 复制</button>
+  <button class="danger" id="btn-delete-box" title="删除选中文本框 (Delete)">✕ 删除</button>
+</div>
+
+<div id="main">
+  <div id="workspace-wrap">
+    <div id="workspace-scroll">
+      <div id="image-canvas"></div>
+    </div>
+    <div id="instructions">拖拽鼠标创建文本框 | 点击选中文本框进行编辑 | 滚轮缩放</div>
+  </div>
+  <div id="panel">
+    <div class="empty" id="panel-empty">选择文本框以编辑属性<br><br>拖拽图片创建新文本框</div>
+    <div id="panel-content" style="display:none;">
+      <h3>文本框属性</h3>
+      <label>文本内容</label>
+      <textarea id="prop-text" placeholder="输入文本..."></textarea>
+      <label>字体</label>
+      <select id="prop-font">
+        <option value="Microsoft YaHei">微软雅黑</option>
+        <option value="SimHei">黑体</option>
+        <option value="SimSun">宋体</option>
+        <option value="KaiTi">楷体</option>
+        <option value="FangSong">仿宋</option>
+        <option value="Arial">Arial</option>
+        <option value="Times New Roman">Times New Roman</option>
+        <option value="Comic Sans MS">Comic Sans MS</option>
+        <option value="Impact">Impact</option>
+        <option value="sans-serif">无衬线体</option>
+        <option value="serif">衬线体</option>
+      </select>
+      <div class="row" style="margin-top:12px;">
+        <div>
+          <label>字号</label>
+          <input type="number" id="prop-size" min="4" max="500" value="24" step="1">
+        </div>
+        <div>
+          <label>行高</label>
+          <input type="number" id="prop-lineheight" min="0.5" max="3" value="1.4" step="0.1">
+        </div>
+      </div>
+      <div class="row" style="margin-top:12px;">
+        <div>
+          <label>文字颜色</label>
+          <input type="color" id="prop-color" value="#000000">
+        </div>
+        <div>
+          <label>背景颜色</label>
+          <input type="color" id="prop-bg" value="#ffffff">
+        </div>
+      </div>
+      <div class="row" style="margin-top:12px;">
+        <div>
+          <label>描边颜色</label>
+          <input type="color" id="prop-stroke" value="#000000">
+        </div>
+        <div>
+          <label>描边宽度</label>
+          <input type="number" id="prop-strokew" min="0" max="20" value="0" step="0.5">
+        </div>
+      </div>
+      <label>背景不透明度</label>
+      <input type="range" id="prop-bgopacity" min="0" max="100" value="100" step="1">
+      <div style="display:flex; gap:8px; margin-top:12px;">
+        <button id="prop-bold" title="加粗 (Ctrl+B)" style="flex:1; font-weight:bold;">B</button>
+        <button id="prop-italic" title="斜体 (Ctrl+I)" style="flex:1; font-style:italic;">I</button>
+        <button id="prop-align-left" title="左对齐" style="flex:1;">⫷</button>
+        <button id="prop-align-center" title="居中" style="flex:1;">≣</button>
+        <button id="prop-align-right" title="右对齐" style="flex:1;">⫸</button>
+      </div>
+      <label>垂直文字</label>
+      <input type="checkbox" id="prop-vertical">
+      <div class="row" style="margin-top:12px;">
+        <div>
+          <label>X</label>
+          <input type="number" id="prop-x" step="1">
+        </div>
+        <div>
+          <label>Y</label>
+          <input type="number" id="prop-y" step="1">
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label>宽</label>
+          <input type="number" id="prop-w" min="10" step="1">
+        </div>
+        <div>
+          <label>高</label>
+          <input type="number" id="prop-h" min="10" step="1">
+        </div>
+      </div>
+      <button class="wide danger" id="btn-delete-selected">✕ 删除此文本框</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<script>
+(function() {
+  const $ = (s) => document.querySelector(s);
+  const $$ = (s) => document.querySelectorAll(s);
+
+  // ── State ──────────────────────────────────────────
+  let textBoxes = [];
+  let selectedId = null;
+  let nextId = 1;
+  let image = null;
+  let scale = 1;
+  let imgNaturalW = 0, imgNaturalH = 0;
+
+  // Drag state
+  let dragging = null; // null | 'move' | 'create' | handleKey
+  let dragStartX, dragStartY;
+  let dragOrig = {}; // original box state during drag
+
+  // ── DOM refs ──────────────────────────────────────
+  const workspaceWrap = $('#workspace-wrap');
+  const workspaceScroll = $('#workspace-scroll');
+  const imageCanvas = $('#image-canvas');
+  const panelEmpty = $('#panel-empty');
+  const panelContent = $('#panel-content');
+
+  // ── Helpers ───────────────────────────────────────
+  function getWorkspacePos(e) {
+    const rect = imageCanvas.getBoundingClientRect();
+    return {
+      x: (e.clientX - rect.left) / scale,
+      y: (e.clientY - rect.top) / scale
+    };
+  }
+
+  function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+
+  function updateZoomLabel() {
+    $('#zoom-label').textContent = Math.round(scale * 100) + '%';
+  }
+
+  function applyZoom() {
+    workspaceScroll.style.transform = `scale(${scale})`;
+    if (imgNaturalW) {
+      workspaceScroll.style.width = imgNaturalW + 'px';
+      workspaceScroll.style.height = imgNaturalH + 'px';
+    }
+    updateZoomLabel();
+  }
+
+  // ── Text box rendering ────────────────────────────
+  function createBoxEl(box) {
+    const el = document.createElement('div');
+    el.className = 'text-box';
+    el.dataset.id = box.id;
+    el.style.cssText = `
+      left:${box.x}px; top:${box.y}px;
+      width:${box.w}px; height:${box.h}px;
+    `;
+    if (box.id === selectedId) el.classList.add('selected');
+
+    const inner = document.createElement('div');
+    inner.className = 'inner';
+    inner.textContent = box.text;
+    applyBoxStyle(box, el, inner);
+    el.appendChild(inner);
+
+    // Resize handles
+    if (box.id === selectedId) {
+      ['nw','n','ne','e','se','s','sw','w'].forEach(h => {
+        const hd = document.createElement('div');
+        hd.className = 'handle ' + h;
+        hd.dataset.handle = h;
+        el.appendChild(hd);
+      });
+    }
+
+    el.addEventListener('mousedown', (e) => onBoxMouseDown(e, box));
+    el.addEventListener('touchstart', (e) => onBoxTouchStart(e, box), {passive:false});
+    return el;
+  }
+
+  function applyBoxStyle(box, el, inner) {
+    let style = `
+      font-family:"${box.fontFamily}", sans-serif;
+      font-size:${box.fontSize}px;
+      color:${box.color};
+      font-weight:${box.bold ? 'bold' : 'normal'};
+      font-style:${box.italic ? 'italic' : 'normal'};
+      line-height:${box.lineHeight};
+      text-align:${box.textAlign};
+      background:${box.bgOpacity > 0 ? box.bgColor + Math.round(box.bgOpacity * 2.55).toString(16).padStart(2,'0') : 'transparent'};
+    `;
+    if (box.vertical) {
+      style += 'writing-mode:vertical-rl;';
+    }
+    if (box.strokeWidth > 0) {
+      // text-shadow simulates stroke in DOM
+      const sw = box.strokeWidth;
+      style += `--sw:${sw}px;--sc:${box.strokeColor};`;
+    }
+    el.style.cssText += style;
+    if (inner) {
+      inner.style.cssText = style;
+      if (box.strokeWidth > 0) {
+        const sw = box.strokeWidth;
+        const sc = box.strokeColor;
+        const shadows = [];
+        for (let dx = -1; dx <= 1; dx++) {
+          for (let dy = -1; dy <= 1; dy++) {
+            if (dx === 0 && dy === 0) continue;
+            shadows.push(`${dx*sw}px ${dy*sw}px 0 ${sc}`);
+          }
+        }
+        inner.style.textShadow = shadows.join(',');
+      } else {
+        inner.style.textShadow = 'none';
+      }
+    }
+  }
+
+  function renderAllBoxes() {
+    const existing = imageCanvas.querySelectorAll('.text-box');
+    existing.forEach(e => e.remove());
+    textBoxes.forEach(box => {
+      imageCanvas.appendChild(createBoxEl(box));
+    });
+  }
+
+  function refreshSelectedBox() {
+    const old = imageCanvas.querySelector('.text-box.selected');
+    if (old) {
+      old.classList.remove('selected');
+      old.querySelectorAll('.handle').forEach(h => h.remove());
+    }
+    const box = textBoxes.find(b => b.id === selectedId);
+    if (box) {
+      const el = imageCanvas.querySelector(`.text-box[data-id="${box.id}"]`);
+      if (el) {
+        el.classList.add('selected');
+        ['nw','n','ne','e','se','s','sw','w'].forEach(h => {
+          const hd = document.createElement('div');
+          hd.className = 'handle ' + h;
+          hd.dataset.handle = h;
+          el.appendChild(hd);
+        });
+        updateBoxElStyle(box, el);
+      }
+    }
+  }
+
+  function updateBoxElStyle(box, el) {
+    const inner = el.querySelector('.inner');
+    el.style.cssText = `
+      left:${box.x}px; top:${box.y}px;
+      width:${box.w}px; height:${box.h}px;
+    `;
+    el.classList.add('text-box');
+    if (box.id === selectedId) el.classList.add('selected');
+    applyBoxStyle(box, el, inner);
+    inner.textContent = box.text;
+  }
+
+  // ── Panel sync ────────────────────────────────────
+  let panelUpdating = false;
+  function syncPanelToBox(box) {
+    if (!box) {
+      panelEmpty.style.display = '';
+      panelContent.style.display = 'none';
+      return;
+    }
+    panelUpdating = true;
+    panelEmpty.style.display = 'none';
+    panelContent.style.display = '';
+    $('#prop-text').value = box.text;
+    $('#prop-font').value = box.fontFamily;
+    $('#prop-size').value = box.fontSize;
+    $('#prop-lineheight').value = box.lineHeight;
+    $('#prop-color').value = box.color;
+    $('#prop-bg').value = box.bgColor;
+    $('#prop-bgopacity').value = box.bgOpacity;
+    $('#prop-stroke').value = box.strokeColor;
+    $('#prop-strokew').value = box.strokeWidth;
+    $('#prop-vertical').checked = box.vertical;
+    $('#prop-x').value = Math.round(box.x);
+    $('#prop-y').value = Math.round(box.y);
+    $('#prop-w').value = Math.round(box.w);
+    $('#prop-h').value = Math.round(box.h);
+    // style buttons
+    $$('#panel .style-btn').forEach(b => b.style.background = '');
+    if (box.bold) $('#prop-bold').style.background = 'var(--accent)';
+    if (box.italic) $('#prop-italic').style.background = 'var(--accent)';
+    ['left','center','right'].forEach(a => {
+      if (box.textAlign === a) $(`#prop-align-${a}`).style.background = 'var(--accent)';
+    });
+    panelUpdating = false;
+  }
+
+  function applyPanelToBox(box) {
+    if (panelUpdating || !box) return;
+    box.text = $('#prop-text').value;
+    box.fontFamily = $('#prop-font').value;
+    box.fontSize = parseInt($('#prop-size').value) || 24;
+    box.lineHeight = parseFloat($('#prop-lineheight').value) || 1.4;
+    box.color = $('#prop-color').value;
+    box.bgColor = $('#prop-bg').value;
+    box.bgOpacity = parseInt($('#prop-bgopacity').value) || 0;
+    box.strokeColor = $('#prop-stroke').value;
+    box.strokeWidth = parseFloat($('#prop-strokew').value) || 0;
+    box.vertical = $('#prop-vertical').checked;
+    box.x = parseFloat($('#prop-x').value) || 0;
+    box.y = parseFloat($('#prop-y').value) || 0;
+    box.w = parseFloat($('#prop-w').value) || 100;
+    box.h = parseFloat($('#prop-h').value) || 50;
+    renderAllBoxes();
+    refreshSelectedBox();
+  }
+
+  // ── Default box ───────────────────────────────────
+  function makeDefaultBox(x, y) {
+    return {
+      id: nextId++,
+      x, y, w: 200, h: 60,
+      text: '输入文本',
+      fontFamily: 'Microsoft YaHei',
+      fontSize: 24,
+      lineHeight: 1.4,
+      color: '#000000',
+      bold: false,
+      italic: false,
+      textAlign: 'center',
+      bgColor: '#ffffff',
+      bgOpacity: 100,
+      strokeColor: '#000000',
+      strokeWidth: 0,
+      vertical: false,
+    };
+  }
+
+  // ── Selection ─────────────────────────────────────
+  let selectBox = function(id) {
+    selectedId = id;
+    refreshSelectedBox();
+    const box = textBoxes.find(b => b.id === id);
+    syncPanelToBox(box || null);
+  }
+
+  function deselectAll() {
+    selectedId = null;
+    refreshSelectedBox();
+    syncPanelToBox(null);
+  }
+
+  // ── Workspace events ──────────────────────────────
+  workspaceWrap.addEventListener('mousedown', (e) => {
+    if (e.target.closest('.text-box') || e.target.closest('#toolbar') || e.target.closest('#panel')) return;
+    if (e.button === 1 || !image) return; // middle click or no image loaded
+    deselectAll();
+    // Start creating new box
+    const pos = getWorkspacePos(e);
+    dragging = 'create';
+    dragStartX = pos.x;
+    dragStartY = pos.y;
+    // Create a temp box
+    const box = makeDefaultBox(pos.x, pos.y);
+    box.w = 1; box.h = 1;
+    textBoxes.push(box);
+    selectBox(box.id);
+    dragOrig = { boxId: box.id };
+    renderAllBoxes();
+    e.preventDefault();
+  });
+
+  workspaceWrap.addEventListener('mousemove', (e) => {
+    if (!dragging) return;
+    const pos = getWorkspacePos(e);
+    if (dragging === 'create') {
+      const box = textBoxes.find(b => b.id === dragOrig.boxId);
+      if (!box) return;
+      box.x = Math.min(pos.x, dragStartX);
+      box.y = Math.min(pos.y, dragStartY);
+      box.w = Math.abs(pos.x - dragStartX);
+      box.h = Math.abs(pos.y - dragStartY);
+      renderAllBoxes();
+      refreshSelectedBox();
+      syncPanelToBox(box);
+    } else if (dragging === 'move') {
+      const box = textBoxes.find(b => b.id === dragOrig.boxId);
+      if (!box) return;
+      const dx = pos.x - dragStartX;
+      const dy = pos.y - dragStartY;
+      box.x = dragOrig.x + dx;
+      box.y = dragOrig.y + dy;
+      renderAllBoxes();
+      refreshSelectedBox();
+      syncPanelToBox(box);
+    } else if (dragging && dragging.length === 2) {
+      // Handle resize
+      const box = textBoxes.find(b => b.id === dragOrig.boxId);
+      if (!box) return;
+      const dx = pos.x - dragStartX;
+      const dy = pos.y - dragStartY;
+      const h = dragging;
+      if (h.includes('e')) { box.w = clamp(dragOrig.w + dx, 20, 9999); }
+      if (h.includes('w')) { box.w = clamp(dragOrig.w - dx, 20, 9999); box.x = dragOrig.x + dx; }
+      if (h.includes('s')) { box.h = clamp(dragOrig.h + dy, 20, 9999); }
+      if (h.includes('n')) { box.h = clamp(dragOrig.h - dy, 20, 9999); box.y = dragOrig.y + dy; }
+      renderAllBoxes();
+      refreshSelectedBox();
+      syncPanelToBox(box);
+    }
+  });
+
+  window.addEventListener('mouseup', () => {
+    if (dragging === 'create') {
+      const box = textBoxes.find(b => b.id === dragOrig.boxId);
+      if (box && (box.w < 10 || box.h < 10)) {
+        textBoxes = textBoxes.filter(b => b.id !== box.id);
+        deselectAll();
+        renderAllBoxes();
+      }
+    }
+    dragging = null;
+  });
+
+  // ── Box interaction ───────────────────────────────
+  function onBoxMouseDown(e, box) {
+    if (e.button === 1) return;
+    e.stopPropagation();
+    selectBox(box.id);
+
+    const handleEl = e.target.closest('.handle');
+    if (handleEl) {
+      dragging = handleEl.dataset.handle;
+      dragStartX = getWorkspacePos(e).x;
+      dragStartY = getWorkspacePos(e).y;
+      dragOrig = { boxId: box.id, x: box.x, y: box.y, w: box.w, h: box.h };
+      e.preventDefault();
+      return;
+    }
+
+    // Move
+    dragging = 'move';
+    const pos = getWorkspacePos(e);
+    dragStartX = pos.x;
+    dragStartY = pos.y;
+    dragOrig = { boxId: box.id, x: box.x, y: box.y };
+    e.preventDefault();
+  }
+
+  function onBoxTouchStart(e, box) {
+    if (e.touches.length !== 1) return;
+    const touch = e.touches[0];
+    e.stopPropagation();
+    selectBox(box.id);
+
+    const handleEl = document.elementFromPoint(touch.clientX, touch.clientY)?.closest?.('.handle');
+    if (handleEl) {
+      dragging = handleEl.dataset.handle;
+      const fakeE = { clientX: touch.clientX, clientY: touch.clientY };
+      const pos = getWorkspacePos(fakeE);
+      dragStartX = pos.x;
+      dragStartY = pos.y;
+      dragOrig = { boxId: box.id, x: box.x, y: box.y, w: box.w, h: box.h };
+      e.preventDefault();
+      return;
+    }
+
+    dragging = 'move';
+    const fakeE = { clientX: touch.clientX, clientY: touch.clientY };
+    const pos = getWorkspacePos(fakeE);
+    dragStartX = pos.x;
+    dragStartY = pos.y;
+    dragOrig = { boxId: box.id, x: box.x, y: box.y };
+    e.preventDefault();
+  }
+
+  workspaceWrap.addEventListener('touchmove', (e) => {
+    if (!dragging) return;
+    const touch = e.touches[0];
+    const fakeE = { clientX: touch.clientX, clientY: touch.clientY };
+    // Dispatch to the same mousemove handler
+    workspaceWrap.dispatchEvent(new MouseEvent('mousemove', fakeE));
+    e.preventDefault();
+  }, {passive: false});
+
+  workspaceWrap.addEventListener('touchend', (e) => {
+    if (dragging) {
+      window.dispatchEvent(new MouseEvent('mouseup'));
+    }
+  });
+
+  // ── Zoom ──────────────────────────────────────────
+  workspaceWrap.addEventListener('wheel', (e) => {
+    if (!image) return;
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -0.1 : 0.1;
+    const newScale = clamp(scale + delta, 0.1, 5);
+    scale = newScale;
+    applyZoom();
+  }, {passive: false});
+
+  $('#btn-zoom-in').addEventListener('click', () => {
+    scale = clamp(scale + 0.2, 0.1, 5);
+    applyZoom();
+  });
+  $('#btn-zoom-out').addEventListener('click', () => {
+    scale = clamp(scale - 0.2, 0.1, 5);
+    applyZoom();
+  });
+  $('#btn-zoom-fit').addEventListener('click', fitToViewport);
+  $('#btn-zoom-100').addEventListener('click', () => {
+    scale = 1;
+    applyZoom();
+  });
+
+  function fitToViewport() {
+    if (!image) return;
+    const pw = workspaceWrap.clientWidth - 40;
+    const ph = workspaceWrap.clientHeight - 40;
+    scale = Math.min(pw / imgNaturalW, ph / imgNaturalH, 1);
+    applyZoom();
+  }
+
+  // ── Load image ────────────────────────────────────
+  function loadImage(file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const img = new Image();
+      img.onload = function() {
+        image = img;
+        imgNaturalW = img.naturalWidth;
+        imgNaturalH = img.naturalHeight;
+        textBoxes = [];
+        selectedId = null;
+        imageCanvas.innerHTML = '';
+        imageCanvas.appendChild(img);
+        imageCanvas.style.width = imgNaturalW + 'px';
+        imageCanvas.style.height = imgNaturalH + 'px';
+        fitToViewport();
+        syncPanelToBox(null);
+        $('#instructions').style.opacity = '1';
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  $('#file-input').addEventListener('change', function() {
+    if (this.files[0]) loadImage(this.files[0]);
+  });
+  $('#btn-open').addEventListener('click', () => $('#file-input').click());
+
+  // Drag & drop
+  workspaceWrap.addEventListener('dragover', e => { e.preventDefault(); });
+  workspaceWrap.addEventListener('drop', e => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) loadImage(file);
+  });
+
+  // ── Add / Delete / Duplicate ──────────────────────
+  $('#btn-add').addEventListener('click', () => {
+    if (!image) return;
+    const box = makeDefaultBox(
+      (imgNaturalW / 2 - 100) / scale,
+      (imgNaturalH / 2 - 30) / scale
+    );
+    textBoxes.push(box);
+    selectBox(box.id);
+    renderAllBoxes();
+  });
+
+  function deleteSelected() {
+    if (selectedId == null) return;
+    textBoxes = textBoxes.filter(b => b.id !== selectedId);
+    selectedId = null;
+    renderAllBoxes();
+    syncPanelToBox(null);
+  }
+
+  $('#btn-delete-box').addEventListener('click', deleteSelected);
+  $('#btn-delete-selected').addEventListener('click', deleteSelected);
+
+  $('#btn-duplicate').addEventListener('click', () => {
+    if (selectedId == null) return;
+    const box = textBoxes.find(b => b.id === selectedId);
+    if (!box) return;
+    const newBox = {...box, id: nextId++, x: box.x + 20, y: box.y + 20};
+    textBoxes.push(newBox);
+    selectBox(newBox.id);
+    renderAllBoxes();
+  });
+
+  // ── Panel event bindings ──────────────────────────
+  const panelInputs = [
+    '#prop-text', '#prop-font', '#prop-size', '#prop-lineheight',
+    '#prop-color', '#prop-bg', '#prop-bgopacity', '#prop-stroke',
+    '#prop-strokew', '#prop-vertical',
+    '#prop-x', '#prop-y', '#prop-w', '#prop-h'
+  ];
+  panelInputs.forEach(sel => {
+    $(sel).addEventListener('input', () => {
+      const box = textBoxes.find(b => b.id === selectedId);
+      if (box) applyPanelToBox(box);
+    });
+  });
+
+  ['bold','italic','align-left','align-center','align-right'].forEach(a => {
+    const btn = $(`#prop-${a}`);
+    btn.classList.add('style-btn');
+    btn.addEventListener('click', () => {
+      const box = textBoxes.find(b => b.id === selectedId);
+      if (!box) return;
+      if (a === 'bold') box.bold = !box.bold;
+      else if (a === 'italic') box.italic = !box.italic;
+      else if (a.startsWith('align-')) box.textAlign = a.replace('align-', '');
+      renderAllBoxes();
+      refreshSelectedBox();
+      syncPanelToBox(box);
+    });
+  });
+
+  // ── Keyboard shortcuts ────────────────────────────
+  window.addEventListener('keydown', (e) => {
+    const mod = e.ctrlKey || e.metaKey;
+    if (e.key === 'Delete' || e.key === 'Backspace') {
+      if (document.activeElement.tagName === 'TEXTAREA' || document.activeElement.tagName === 'INPUT') return;
+      deleteSelected();
+    }
+    if (mod && e.key === 'd') {
+      e.preventDefault();
+      $('#btn-duplicate').click();
+    }
+    if (mod && e.key === 'b') {
+      e.preventDefault();
+      $('#prop-bold').click();
+    }
+    if (mod && e.key === 'i') {
+      e.preventDefault();
+      $('#prop-italic').click();
+    }
+    if (mod && e.key === 'o') {
+      e.preventDefault();
+      $('#file-input').click();
+    }
+    if (mod && e.key === 's') {
+      e.preventDefault();
+      doExport();
+    }
+    if (mod && e.key === '0') {
+      e.preventDefault();
+      fitToViewport();
+    }
+    if (mod && e.key === '1') {
+      e.preventDefault();
+      scale = 1;
+      applyZoom();
+    }
+    // Arrow keys to nudge selected box
+    if (selectedId != null && ['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)) {
+      if (document.activeElement.tagName === 'TEXTAREA' || document.activeElement.tagName === 'INPUT') return;
+      e.preventDefault();
+      const box = textBoxes.find(b => b.id === selectedId);
+      if (!box) return;
+      const step = e.shiftKey ? 10 : 1;
+      if (e.key === 'ArrowLeft') box.x -= step;
+      if (e.key === 'ArrowRight') box.x += step;
+      if (e.key === 'ArrowUp') box.y -= step;
+      if (e.key === 'ArrowDown') box.y += step;
+      renderAllBoxes();
+      refreshSelectedBox();
+      syncPanelToBox(box);
+    }
+    // Escape
+    if (e.key === 'Escape') {
+      deselectAll();
+    }
+  });
+
+  // ── Export ────────────────────────────────────────
+  async function doExport() {
+    if (!image) { alert('请先打开一张图片'); return; }
+
+    const prevScale = scale;
+    if (prevScale !== 1) {
+      scale = 1;
+      applyZoom();
+      await new Promise(r => requestAnimationFrame(r));
+      await new Promise(r => requestAnimationFrame(r));
+    }
+
+    try {
+      const canvas = await html2canvas(imageCanvas, {
+        backgroundColor: null,
+        scale: 1,
+        useCORS: true,
+        allowTaint: true,
+      });
+
+      canvas.toBlob(blob => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'comic_edited.png';
+        a.click();
+        URL.revokeObjectURL(url);
+      });
+    } finally {
+      if (prevScale !== 1) {
+        scale = prevScale;
+        applyZoom();
+      }
+    }
+  }
+
+  $('#btn-export').addEventListener('click', doExport);
+
+  // ── Init ──────────────────────────────────────────
+  applyZoom();
+  syncPanelToBox(null);
+
+  // Hide instructions after first box creation
+  const _selectBox = selectBox;
+  selectBox = function(id) {
+    if (id != null) $('#instructions').style.opacity = '0';
+    _selectBox(id);
+  };
+
+})();
+</script>
+</body>
+</html>
