@@ -86,6 +86,39 @@ async function main() {
   interests.addToPage(page, { x: 160, y: y - 55, width: 200, height: 80 });
   y -= 110;
 
+  // 7. Signature field (pdf-lib has no createSignature, build via low-level API)
+  section('7. Signature');
+  label('Signature:');
+  {
+    const context = doc.context;
+    const sigName = 'Signature';
+    const sx = 160, sy = y - 25, sw = 220, sh = 40;
+    const fieldRef = context.nextRef();
+    const widgetRef = context.nextRef();
+    const pageRef = page.ref;
+    const widgetDict = context.obj({
+      Type: PDFLib.PDFName.of('Annot'),
+      Subtype: PDFLib.PDFName.of('Widget'),
+      Rect: context.obj([sx, sy, sx + sw, sy + sh]),
+      F: context.obj(4),
+      P: pageRef,
+      Parent: fieldRef,
+    });
+    const fieldDict = context.obj({
+      FT: PDFLib.PDFName.of('Sig'),
+      T: PDFLib.PDFString.of(sigName),
+      Ff: context.obj(0),
+      Kids: context.obj([widgetRef]),
+    });
+    context.assign(fieldRef, fieldDict);
+    context.assign(widgetRef, widgetDict);
+    form.acroForm.addField(fieldRef);
+    const annots = page.node.Annots();
+    if (annots) annots.push(widgetRef);
+    else page.node.set(PDFLib.PDFName.of('Annots'), context.obj([widgetRef]));
+  }
+  y -= 60;
+
   // Footer
   page.drawText('Test PDF for pdf-form-filler - covers all control types', {
     x: 50, y: 30, size: 9, font, color: PDFLib.rgb(0.5, 0.5, 0.5),

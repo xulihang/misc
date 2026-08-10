@@ -827,6 +827,13 @@
                                 name, type: 'select', rect: first.rect, pageIndex: first.pageIndex,
                                 value: sel, checked: false, source: 'annotation', choices,
                             });
+                        } else if (libType === 'PDFSignature' ||
+                                   (libType === '' && (jsType === 'signature' || String(first.type).toLowerCase() === 'sig'))) {
+                            // 签名字段：渲染成签名框，导出时把文字画到页面上
+                            fieldsToRender.push({
+                                name, type: 'signature', rect: first.rect, pageIndex: first.pageIndex,
+                                value: '', checked: false, source: 'annotation',
+                            });
                         } else {
                             // 文本 / 多行文本
                             let textVal = '';
@@ -1146,6 +1153,12 @@
                     element = document.createElement('select');
                     element.innerHTML = `<option value="">请选择</option><option value="1">选项1</option><option value="2">选项2</option>`;
                     break;
+                case 'signature':
+                    element = document.createElement('input');
+                    element.type = 'text';
+                    element.value = value || '';
+                    element.placeholder = '✍ 输入签名';
+                    break;
                 default:
                     element = document.createElement('input');
                     element.type = 'text';
@@ -1181,6 +1194,14 @@
             if (baseType === 'select') {
                 element.style.background = 'white';
                 element.style.minWidth = '80px';
+            }
+
+            if (baseType === 'signature') {
+                element.style.borderStyle = 'dashed';
+                element.style.fontFamily = '"Segoe Script", "Brush Script MT", cursive, cursive';
+                element.style.fontSize = '16px';
+                element.style.background = 'rgba(124, 58, 237, 0.05)';
+                element.style.padding = '2px 8px';
             }
 
             return element;
@@ -1277,48 +1298,34 @@
         // ============================================================
 
         function isCheckBox(field) {
-            // 有 check/uncheck 方法，且没有 getOptions（RadioGroup/Dropdown 才有 getOptions）
-            if (typeof field.check === 'function' &&
+            // 有 check/uncheck 方法，且没有 getOptions（RadioGroup/Dropdown 才有 getOptions）。
+            // ⚠️ 压缩版 pdf-lib 中构造函数名不可靠（复选框/签名/PDFName 都叫 'e'），只按方法判断。
+            return typeof field.check === 'function' &&
                 typeof field.uncheck === 'function' &&
-                typeof field.getOptions !== 'function') {
-                return true;
-            }
-            const name = field.constructor?.name || '';
-            if (name === 'PDFCheckBox' || name === 'e') return true;
-            return false;
+                typeof field.getOptions !== 'function';
         }
 
         function isTextField(field) {
-            // setText 是文本字段独有的方法（CheckBox/RadioGroup/Dropdown 都没有）
-            if (typeof field.setText === 'function') return true;
-            const name = field.constructor?.name || '';
-            if (name === 'PDFTextField' || name === 'PDFTextArea' || name === 'Xl') return true;
-            return false;
+            // setText 是文本字段独有的方法（CheckBox/RadioGroup/Dropdown/Signature 都没有）
+            return typeof field.setText === 'function';
         }
 
         function isRadioGroup(field) {
             // 单选组：有 getOptions/select，但没有 addOptions（dropdown/listbox 才有 addOptions）。
-            // ⚠️ 不能只靠构造函数名 'r' 判断 —— 压缩版 pdf-lib 中文本字段、下拉框也叫 'r'，
-            // 这会导致文本字段被误判为单选组，进而调用 getOptions() 报错。
-            if (typeof field.getOptions === 'function' &&
+            return typeof field.getOptions === 'function' &&
                 typeof field.select === 'function' &&
-                typeof field.addOptions !== 'function') {
-                return true;
-            }
-            const name = field.constructor?.name || '';
-            if (name === 'PDFRadioGroup') return true;
-            return false;
+                typeof field.addOptions !== 'function';
         }
 
         function isDropdown(field) {
-            if (typeof field.select === 'function' &&
+            return typeof field.select === 'function' &&
                 typeof field.getOptions === 'function' &&
-                typeof field.getSelected === 'function') {
-                return true;
-            }
-            const name = field.constructor?.name || '';
-            if (name === 'PDFDropdown' || name === 'PDFListBox' || name === 'PDFOptionList') return true;
-            return false;
+                typeof field.getSelected === 'function';
+        }
+
+        function isSignature(field) {
+            // needsAppearancesUpdate 是 PDFSignature 独有的方法
+            return typeof field.needsAppearancesUpdate === 'function';
         }
 
         function getFieldTypeName(field) {
@@ -1326,9 +1333,8 @@
             if (isTextField(field)) return 'PDFTextField';
             if (isRadioGroup(field)) return 'PDFRadioGroup';
             if (isDropdown(field)) return 'PDFDropdown';
-            const name = field.constructor?.name || 'unknown';
-            if (name === 'PDFDropdown' || name === 'PDFListBox' || name === 'PDFOptionList') return 'PDFDropdown';
-            return name;
+            if (isSignature(field)) return 'PDFSignature';
+            return 'unknown';
         }
 
         // --- 导出填充后的 PDF ---
@@ -1387,6 +1393,7 @@
                 let totalRadios = 0;
                 let totalTexts = 0;
                 let totalDropdowns = 0;
+                let totalSignatures = 0;
                 let totalOthers = 0;
 
                 for (const field of fields) {
@@ -1395,12 +1402,20 @@
                     else if (fType === 'PDFRadioGroup') totalRadios++;
                     else if (fType === 'PDFTextField') totalTexts++;
                     else if (fType === 'PDFDropdown') totalDropdowns++;
+                    else if (fType === 'PDFSignature') totalSignatures++;
                     else totalOthers++;
                 }
                 logDebug('📊 字段统计',
-                    `复选框:${totalCheckboxes}, 单选:${totalRadios}, 文本:${totalTexts}, 下拉:${totalDropdowns}, 其他:${totalOthers}`);
+                    `复选框:${totalCheckboxes}, 单选:${totalRadios}, 文本:${totalTexts}, 下拉:${totalDropdowns}, 签名:${totalSignatures}, 其他:${totalOthers}`);
 
                 let filledCount = 0;
+
+                // 签名字段：pdf-lib 无法直接 setText，改为把文字绘制到页面上（flatten）
+                const sigFieldInfoMap = {};
+                for (const fi of allFields) {
+                    if (fi.type === 'signature') sigFieldInfoMap[fi.name] = fi;
+                }
+                let sigFont = null;
 
                 // ✅ 遍历所有字段并填充
                 for (const field of fields) {
@@ -1462,6 +1477,35 @@
                                 filledCount++;
                             } catch (e) {
                                 logDebug(`⚠️ 下拉列表填充失败 ${fieldName}`, e.message);
+                            }
+                        } else if (fType === 'PDFSignature') {
+                            // 签名：把输入的文字画到页面字段位置上
+                            try {
+                                const textVal = String(value || '').trim();
+                                if (textVal !== '') {
+                                    if (!sigFont) sigFont = await pdfDocLib.embedFont(PDFLib.StandardFonts.Helvetica);
+                                    const info = sigFieldInfoMap[fieldName];
+                                    if (info && info.rawRect && info.rawRect.length === 4) {
+                                        const rect = info.rawRect;
+                                        const pages = pdfDocLib.getPages();
+                                        const page = pages[info.pageIndex] || pages[0];
+                                        if (page) {
+                                            const boxH = rect[3] - rect[1];
+                                            const size = Math.max(Math.min(boxH - 4, 14), 8);
+                                            page.drawText(textVal, {
+                                                x: rect[0] + 2,
+                                                y: rect[1] + (boxH - size) / 2,
+                                                size,
+                                                font: sigFont,
+                                                color: PDFLib.rgb(0, 0, 0),
+                                            });
+                                            filledCount++;
+                                            logDebug(`✍ 签名已绘制`, `${fieldName} = "${textVal.substring(0, 20)}"`, 'ok');
+                                        }
+                                    }
+                                }
+                            } catch (e) {
+                                logDebug(`⚠️ 签名绘制失败 ${fieldName}`, e.message);
                             }
                         } else {
                             // 未知类型，尝试通用方法
