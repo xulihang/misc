@@ -1,0 +1,1500 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PDF 表单编辑器 - 最终修复版</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js">
+    </script>
+    <style>
+        /* ... 样式同前，为节省空间省略 ... */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f0f2f5;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1500px;
+            margin: 0 auto;
+        }
+        .toolbar {
+            background: white;
+            border-radius: 12px;
+            padding: 12px 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .toolbar .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+        }
+        .toolbar .file-input-wrapper input[type="file"] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        .btn {
+            padding: 6px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-primary {
+            background: #1a73e8;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #1557b0;
+        }
+        .btn-success {
+            background: #34a853;
+            color: white;
+        }
+        .btn-success:hover {
+            background: #2d9249;
+        }
+        .btn-warning {
+            background: #fbbc04;
+            color: #333;
+        }
+        .btn-warning:hover {
+            background: #e5ac04;
+        }
+        .btn-danger {
+            background: #ea4335;
+            color: white;
+        }
+        .btn-danger:hover {
+            background: #d33426;
+        }
+        .btn-purple {
+            background: #7c3aed;
+            color: white;
+        }
+        .btn-purple:hover {
+            background: #6d28d9;
+        }
+        .btn-outline {
+            background: transparent;
+            color: #1a73e8;
+            border: 2px solid #1a73e8;
+        }
+        .btn-outline:hover {
+            background: #1a73e8;
+            color: white;
+        }
+        .btn-sm {
+            padding: 4px 10px;
+            font-size: 11px;
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .file-name {
+            color: #666;
+            font-size: 13px;
+            margin-left: 4px;
+        }
+        .main-layout {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+        }
+        .pdf-wrapper {
+            flex: 1;
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            min-height: 500px;
+            position: relative;
+            overflow: auto;
+        }
+        #pdf-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+        .pdf-page {
+            position: relative;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+            border-radius: 4px;
+            overflow: hidden;
+            background: white;
+        }
+        .pdf-page canvas {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+        .form-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        .form-overlay input,
+        .form-overlay textarea,
+        .form-overlay select {
+            pointer-events: auto;
+            border: 2px solid #7c3aed;
+            border-radius: 4px;
+            background: rgba(124, 58, 237, 0.1);
+            font-size: 12px;
+            padding: 1px 4px;
+            transition: all 0.2s;
+            outline: none;
+            min-width: 30px;
+            min-height: 20px;
+            box-sizing: border-box;
+            z-index: 20;
+        }
+        .form-overlay input:hover,
+        .form-overlay textarea:hover,
+        .form-overlay select:hover {
+            background: rgba(124, 58, 237, 0.2);
+            border-color: #6d28d9;
+        }
+        .form-overlay input:focus,
+        .form-overlay textarea:focus,
+        .form-overlay select:focus {
+            background: rgba(124, 58, 237, 0.18);
+            border-color: #5b21b6;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.25);
+        }
+        .form-overlay input[type="checkbox"],
+        .form-overlay input[type="radio"] {
+            width: 16px;
+            height: 16px;
+            min-width: 16px;
+            min-height: 16px;
+            border: 2px solid #7c3aed;
+            border-radius: 4px;
+            accent-color: #7c3aed;
+            cursor: pointer;
+            background: rgba(124, 58, 237, 0.08);
+        }
+        .form-overlay input[type="radio"] {
+            border-radius: 50%;
+        }
+        .form-overlay select {
+            background: white;
+            min-width: 60px;
+            padding: 1px 4px;
+        }
+        .form-field-label {
+            position: absolute;
+            font-size: 8px;
+            color: #7c3aed;
+            background: rgba(255, 255, 255, 0.92);
+            padding: 1px 4px;
+            border-radius: 2px;
+            pointer-events: none;
+            white-space: nowrap;
+            font-weight: 700;
+            border: 1px solid rgba(124, 58, 237, 0.25);
+            top: -14px;
+            left: 2px;
+            z-index: 10;
+            max-width: 150px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .field-debug-box {
+            position: absolute;
+            border: 1px dashed rgba(124, 58, 237, 0.2);
+            background: rgba(124, 58, 237, 0.03);
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .field-sidebar {
+            width: 340px;
+            min-width: 340px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            max-height: 700px;
+            display: flex;
+            flex-direction: column;
+            position: sticky;
+            top: 16px;
+        }
+        .field-sidebar-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid #e9ecef;
+            font-weight: 600;
+            color: #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+            font-size: 13px;
+        }
+        .field-sidebar-header .count {
+            background: #7c3aed;
+            color: white;
+            padding: 1px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+        }
+        .field-list {
+            overflow-y: auto;
+            padding: 4px 0;
+            flex: 1;
+            min-height: 80px;
+        }
+        .field-list .field-item {
+            padding: 2px 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 10px;
+            border-bottom: 1px solid #f1f3f5;
+            cursor: pointer;
+            transition: background 0.15s;
+            gap: 4px;
+        }
+        .field-list .field-item:hover {
+            background: #f5f0ff;
+        }
+        .field-list .field-item .name {
+            color: #333;
+            font-weight: 500;
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size: 10px;
+        }
+        .field-list .field-item .type {
+            color: #888;
+            font-size: 8px;
+            background: #f1f3f5;
+            padding: 1px 6px;
+            border-radius: 10px;
+            flex-shrink: 0;
+        }
+        .field-list .empty-msg {
+            padding: 30px 20px;
+            text-align: center;
+            color: #aaa;
+            font-size: 13px;
+        }
+        .field-sidebar-footer {
+            padding: 8px 12px;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            gap: 6px;
+            flex-shrink: 0;
+            flex-wrap: wrap;
+        }
+        .field-sidebar-footer .btn {
+            font-size: 10px;
+            padding: 3px 8px;
+            flex: 1;
+        }
+
+        .status-bar {
+            margin-top: 12px;
+            padding: 10px 16px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            font-size: 12px;
+            color: #555;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .debug-panel {
+            margin-top: 12px;
+            background: #1e1e1e;
+            border-radius: 8px;
+            color: #d4d4d4;
+            font-family: 'Courier New', monospace;
+            font-size: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 8px 12px;
+        }
+        .debug-panel .log-line {
+            padding: 1px 0;
+            border-bottom: 1px solid #2a2a2a;
+            display: flex;
+            gap: 8px;
+        }
+        .debug-panel .log-line .time {
+            color: #6a9955;
+            flex-shrink: 0;
+        }
+        .debug-panel .log-line .tag {
+            color: #569cd6;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        .debug-panel .log-line .value {
+            color: #ce9178;
+            word-break: break-all;
+        }
+        .debug-panel .log-line .value-ok {
+            color: #4ec9b0;
+        }
+        .debug-panel .log-line .value-error {
+            color: #f48771;
+        }
+
+        .offset-controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+            padding: 6px 12px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            margin: 4px 0;
+        }
+        .offset-controls label {
+            font-size: 11px;
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .offset-controls input[type="range"] {
+            width: 80px;
+            accent-color: #7c3aed;
+        }
+        .offset-controls .offset-value {
+            font-size: 11px;
+            font-weight: 600;
+            color: #7c3aed;
+            min-width: 30px;
+        }
+
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+            color: #888;
+            font-size: 15px;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .loading .spinner {
+            width: 36px;
+            height: 36px;
+            border: 4px solid #e9ecef;
+            border-top-color: #7c3aed;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .export-progress {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+        .export-progress.active {
+            display: flex;
+        }
+        .export-progress .box {
+            background: white;
+            padding: 40px 50px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+        }
+        .export-progress .box .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid #e9ecef;
+            border-top-color: #7c3aed;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 16px;
+        }
+        .export-progress .box .title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+        .export-progress .box .sub {
+            font-size: 13px;
+            color: #888;
+            margin-top: 6px;
+        }
+        .export-progress .box .error-text {
+            color: #ea4335;
+            font-size: 13px;
+            margin-top: 8px;
+        }
+
+        @media (max-width: 1024px) {
+            .main-layout {
+                flex-direction: column;
+            }
+            .field-sidebar {
+                width: 100%;
+                min-width: unset;
+                max-height: 350px;
+                position: static;
+            }
+        }
+        @media (max-width: 768px) {
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .offset-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="toolbar">
+            <div class="file-input-wrapper">
+                <button class="btn btn-primary">📄 选择 PDF</button>
+                <input type="file" id="fileInput" accept=".pdf" />
+            </div>
+            <span class="file-name" id="fileName">未选择文件</span>
+            <div style="flex:1"></div>
+            <button class="btn btn-purple" id="exportPdfBtn" disabled>📥 导出填充后的 PDF</button>
+            <button class="btn btn-success" id="exportJsonBtn" disabled>📋 导出 JSON</button>
+            <button class="btn btn-danger" id="resetBtn" disabled>↩️ 重置</button>
+        </div>
+
+        <div class="main-layout">
+            <div class="pdf-wrapper">
+                <div class="offset-controls" id="offsetControls" style="display:none;">
+                    <span style="font-size:11px;font-weight:600;color:#333;">📍 坐标微调</span>
+                    <label>
+                        X偏移
+                        <input type="range" id="offsetX" min="-50" max="50" value="0" step="1" />
+                        <span class="offset-value" id="offsetXVal">0</span>
+                    </label>
+                    <label>
+                        Y偏移
+                        <input type="range" id="offsetY" min="-50" max="50" value="0" step="1" />
+                        <span class="offset-value" id="offsetYVal">0</span>
+                    </label>
+                    <button class="btn btn-primary btn-sm" id="applyOffsetBtn">应用</button>
+                    <button class="btn btn-outline btn-sm" id="resetOffsetBtn">重置</button>
+                </div>
+
+                <div id="pdf-container">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <span>上传包含表单的 PDF 文件</span>
+                        <span style="font-size:13px;color:#aaa;">支持 AcroForm 表单</span>
+                    </div>
+                </div>
+                <div class="debug-panel" id="debugPanel">
+                    <div id="debugContent">等待加载 PDF...</div>
+                </div>
+            </div>
+
+            <div class="field-sidebar">
+                <div class="field-sidebar-header">
+                    <span>📋 表单字段</span>
+                    <span class="count" id="sidebarCount">0</span>
+                </div>
+                <div class="field-list" id="fieldList">
+                    <div class="empty-msg">暂无字段</div>
+                </div>
+                <div class="field-sidebar-footer">
+                    <button class="btn btn-warning" id="clearAllBtn">清空</button>
+                    <button class="btn btn-success" id="fillSampleBtn">填充示例</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="status-bar">
+            <span>📋 字段: <span id="fieldCount">0</span></span>
+            <span id="pageInfo">页码: -</span>
+            <span id="statusMessage">就绪</span>
+        </div>
+    </div>
+
+    <div class="export-progress" id="exportProgress">
+        <div class="box">
+            <div class="spinner"></div>
+            <div class="title" id="exportTitle">正在生成 PDF...</div>
+            <div class="sub" id="exportProgressText">请稍候</div>
+            <div class="error-text" id="exportError" style="display:none;"></div>
+        </div>
+    </div>
+
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+        // --- DOM ---
+        const container = document.getElementById('pdf-container');
+        const fileInput = document.getElementById('fileInput');
+        const fileName = document.getElementById('fileName');
+        const fieldCountEl = document.getElementById('fieldCount');
+        const sidebarCount = document.getElementById('sidebarCount');
+        const fieldList = document.getElementById('fieldList');
+        const pageInfoEl = document.getElementById('pageInfo');
+        const statusMessage = document.getElementById('statusMessage');
+        const exportPdfBtn = document.getElementById('exportPdfBtn');
+        const exportJsonBtn = document.getElementById('exportJsonBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const clearAllBtn = document.getElementById('clearAllBtn');
+        const fillSampleBtn = document.getElementById('fillSampleBtn');
+        const debugContent = document.getElementById('debugContent');
+        const offsetControls = document.getElementById('offsetControls');
+        const offsetX = document.getElementById('offsetX');
+        const offsetY = document.getElementById('offsetY');
+        const offsetXVal = document.getElementById('offsetXVal');
+        const offsetYVal = document.getElementById('offsetYVal');
+        const applyOffsetBtn = document.getElementById('applyOffsetBtn');
+        const resetOffsetBtn = document.getElementById('resetOffsetBtn');
+        const exportProgress = document.getElementById('exportProgress');
+        const exportProgressText = document.getElementById('exportProgressText');
+        const exportTitle = document.getElementById('exportTitle');
+        const exportError = document.getElementById('exportError');
+
+        // --- 状态 ---
+        let pdfDoc = null;
+        let allFields = [];
+        let fieldIdCounter = 0;
+        let debugLogs = [];
+        let currentFile = null;
+        let offsetXValue = 0;
+        let offsetYValue = 0;
+        let originalPdfData = null;
+
+        // --- 调试 ---
+        function logDebug(tag, value, type = 'info') {
+            const time = new Date().toLocaleTimeString();
+            debugLogs.push({ time, tag, value, type });
+            renderDebug();
+        }
+
+        function renderDebug() {
+            const html = debugLogs.map(log =>
+                `<div class="log-line">
+                            <span class="time">[${log.time}]</span>
+                            <span class="tag">${log.tag}:</span>
+                            <span class="value ${log.type === 'error' ? 'value-error' : log.type === 'ok' ? 'value-ok' : ''}">${typeof log.value === 'object' ? JSON.stringify(log.value, null, 2) : log.value}</span>
+                        </div>`
+            ).join('');
+            debugContent.innerHTML = html || '等待加载...';
+            const panel = document.getElementById('debugPanel');
+            panel.scrollTop = panel.scrollHeight;
+        }
+
+        // --- 工具 ---
+        function truncate(str, len = 20) {
+            if (!str) return '';
+            return str.length > len ? str.substring(0, len) + '...' : str;
+        }
+
+        function generateFieldId() {
+            return `field_${++fieldIdCounter}`;
+        }
+
+        // --- 坐标转换 ---
+        function pdfToCssRect(pdfRect, pageHeight, scale, offsetX = 0, offsetY = 0) {
+            if (!pdfRect || pdfRect.length < 4) return null;
+            const x1 = pdfRect[0];
+            const y1 = pdfRect[1];
+            const x2 = pdfRect[2];
+            const y2 = pdfRect[3];
+            let left = x1 * scale + offsetX;
+            let top = (pageHeight - y2) * scale + offsetY;
+            let width = (x2 - x1) * scale;
+            let height = (y2 - y1) * scale;
+            if (width < 8) width = 8;
+            if (height < 8) height = 8;
+            return {
+                left: Math.max(left, 0),
+                top: Math.max(top, 0),
+                width: width,
+                height: height
+            };
+        }
+
+        // --- 核心解析 ---
+        async function parsePDF(file, offsetX = 0, offsetY = 0) {
+            try {
+                debugLogs = [];
+                currentFile = file;
+                logDebug('📂 开始解析', file.name);
+
+                const arrayBuffer = await file.arrayBuffer();
+                originalPdfData = new Uint8Array(arrayBuffer);
+
+                logDebug('📄 文件大小', `${(originalPdfData.length / 1024).toFixed(1)} KB`);
+
+                const headerStr = new TextDecoder().decode(originalPdfData.slice(0, 8));
+                logDebug('📄 PDF 头部', headerStr);
+
+                if (!headerStr.startsWith('%PDF')) {
+                    const pdfStart = originalPdfData.indexOf('%PDF');
+                    if (pdfStart > 0) {
+                        originalPdfData = new Uint8Array(originalPdfData.slice(pdfStart));
+                        logDebug('🔧 修复', `从位置 ${pdfStart} 截取`, 'ok');
+                    }
+                }
+
+                pdfDoc = await pdfjsLib.getDocument({ data: originalPdfData.slice(0) }).promise;
+                logDebug('✅ PDF 加载成功', `共 ${pdfDoc.numPages} 页`, 'ok');
+
+                const pages = [];
+                for (let i = 1; i <= pdfDoc.numPages; i++) {
+                    const page = await pdfDoc.getPage(i);
+                    pages.push(page);
+                }
+
+                allFields = [];
+                fieldIdCounter = 0;
+
+                await renderPages(pdfDoc);
+
+                logDebug('🔍 从 annotations 提取');
+                let annotationFields = [];
+
+                for (let i = 0; i < pages.length; i++) {
+                    const page = pages[i];
+                    try {
+                        const annotations = await page.getAnnotations();
+                        for (const ann of annotations) {
+                            if (ann.subtype === 'Widget' || ann.fieldType) {
+                                if (ann.rect && ann.rect.length === 4) {
+                                    const valid = ann.rect.every(v => v !== 0 && isFinite(v) && v >= 0);
+                                    if (valid) {
+                                        annotationFields.push({
+                                            name: ann.fieldName || ann.name || `field_${i}_${annotationFields.length}`,
+                                            type: ann.fieldType || ann.subtype || 'text',
+                                            value: ann.fieldValue || ann.value || '',
+                                            rect: ann.rect,
+                                            pageIndex: i,
+                                            checked: ann.checked || false,
+                                            source: 'annotation',
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                    } catch (e) {
+                        logDebug(`⚠️ 页面 ${i+1} 错误`, e.message);
+                    }
+                }
+
+                logDebug(`📊 annotations`, `找到 ${annotationFields.length} 个有效字段`, annotationFields.length > 0 ? 'ok' : 'info');
+
+                let fieldNames = [];
+                try {
+                    const fieldObjects = await pdfDoc.getFieldObjects();
+                    if (fieldObjects) {
+                        fieldNames = Object.keys(fieldObjects);
+                        logDebug(`📊 getFieldObjects`, `${fieldNames.length} 个字段名`, fieldNames.length > 0 ? 'ok' : 'info');
+                        if (fieldNames.length > 0) {
+                            logDebug('📋 字段名示例', fieldNames.slice(0, 8).join(', '));
+                        }
+                    }
+                } catch (e) {
+                    logDebug('⚠️ getFieldObjects 失败', e.message);
+                }
+
+                let fieldsToRender = [];
+
+                if (annotationFields.length > 0) {
+                    fieldsToRender = annotationFields;
+                    logDebug('✅ 使用 annotations', `${fieldsToRender.length} 个字段 (有坐标)`, 'ok');
+                } else if (fieldNames.length > 0) {
+                    logDebug('🔄 使用字段名生成', `${fieldNames.length} 个字段 (无坐标)`);
+                    const firstPage = pages[0];
+                    const viewport = firstPage.getViewport({ scale: 1 });
+                    const pageWidth = viewport.width;
+
+                    for (let i = 0; i < fieldNames.length; i++) {
+                        const cols = 3;
+                        const row = Math.floor(i / cols);
+                        const col = i % cols;
+                        const x = 40 + col * (pageWidth / cols);
+                        const y = 40 + row * 35;
+                        fieldsToRender.push({
+                            name: fieldNames[i],
+                            type: 'text',
+                            value: '',
+                            rect: [x, y, x + 140, y + 28],
+                            pageIndex: 0,
+                            checked: false,
+                            source: 'generated',
+                        });
+                    }
+                    logDebug('✅ 生成完成', `${fieldsToRender.length} 个字段`, 'ok');
+                }
+
+                let rendered = 0;
+                const pageHeightMap = {};
+                for (let i = 0; i < pages.length; i++) {
+                    const vp = pages[i].getViewport({ scale: 1 });
+                    pageHeightMap[i] = vp.height;
+                }
+                const scale = 1.5;
+
+                for (const field of fieldsToRender) {
+                    const success = await renderField(field, pageHeightMap, scale, offsetX, offsetY);
+                    if (success) rendered++;
+                }
+
+                logDebug(`✅ 渲染完成`, `${rendered}/${fieldsToRender.length} 个字段`, 'ok');
+
+                fieldCountEl.textContent = allFields.length;
+                sidebarCount.textContent = allFields.length;
+                pageInfoEl.textContent = `共 ${pdfDoc.numPages} 页`;
+                statusMessage.textContent = `✅ 已加载 ${allFields.length} 个字段`;
+
+                exportPdfBtn.disabled = false;
+                exportJsonBtn.disabled = false;
+                resetBtn.disabled = false;
+                offsetControls.style.display = 'flex';
+
+                updateFieldList();
+
+                if (allFields.length === 0) {
+                    statusMessage.textContent = '⚠️ 未检测到表单字段';
+                }
+
+            } catch (error) {
+                console.error('解析失败:', error);
+                logDebug('❌ 解析失败', error.message, 'error');
+                statusMessage.textContent = '❌ 解析失败';
+            }
+        }
+
+        async function renderPages(doc) {
+            container.innerHTML = '';
+            const scale = 1.5;
+
+            for (let i = 1; i <= doc.numPages; i++) {
+                const page = await doc.getPage(i);
+                const viewport = page.getViewport({ scale });
+
+                const pageDiv = document.createElement('div');
+                pageDiv.className = 'pdf-page';
+                pageDiv.dataset.pageIndex = i - 1;
+
+                const canvas = document.createElement('canvas');
+                canvas.width = viewport.width;
+                canvas.height = viewport.height;
+                canvas.style.width = viewport.width + 'px';
+                canvas.style.height = viewport.height + 'px';
+
+                const context = canvas.getContext('2d');
+                await page.render({ canvasContext: context, viewport }).promise;
+
+                const overlay = document.createElement('div');
+                overlay.className = 'form-overlay';
+                overlay.style.width = viewport.width + 'px';
+                overlay.style.height = viewport.height + 'px';
+
+                pageDiv.appendChild(canvas);
+                pageDiv.appendChild(overlay);
+                container.appendChild(pageDiv);
+
+                pageDiv.dataset.pageHeight = viewport.height;
+                pageDiv.dataset.scale = scale;
+            }
+        }
+
+        async function renderField(field, pageHeightMap, scale, offsetX, offsetY) {
+            const pageIndex = field.pageIndex || 0;
+            const pageDiv = container.children[pageIndex];
+            if (!pageDiv) return false;
+
+            const pageHeight = pageHeightMap[pageIndex] || parseFloat(pageDiv.dataset.pageHeight);
+
+            let rect = field.rect;
+            let cssRect;
+
+            if (rect && rect.length === 4) {
+                cssRect = pdfToCssRect(rect, pageHeight, scale, offsetX, offsetY);
+            } else {
+                const idx = allFields.length;
+                const col = idx % 3;
+                const row = Math.floor(idx / 3);
+                cssRect = {
+                    left: 50 + col * 200 + offsetX,
+                    top: 50 + row * 40 + offsetY,
+                    width: 160,
+                    height: 28
+                };
+            }
+
+            cssRect.width = Math.max(cssRect.width, 30);
+            cssRect.height = Math.max(cssRect.height, 20);
+
+            const fieldType = field.type || 'text';
+            const fieldValue = field.value || '';
+
+            const debugBox = document.createElement('div');
+            debugBox.className = 'field-debug-box';
+            debugBox.style.left = cssRect.left + 'px';
+            debugBox.style.top = cssRect.top + 'px';
+            debugBox.style.width = cssRect.width + 'px';
+            debugBox.style.height = cssRect.height + 'px';
+
+            const element = createFormElement(fieldType, fieldValue, cssRect);
+
+            const label = document.createElement('span');
+            label.className = 'form-field-label';
+            label.textContent = truncate(field.name, 20);
+            label.style.left = cssRect.left + 'px';
+            label.style.top = (cssRect.top - 14) + 'px';
+
+            const overlay = pageDiv.querySelector('.form-overlay');
+            overlay.appendChild(debugBox);
+            overlay.appendChild(element);
+            overlay.appendChild(label);
+
+            const fieldId = generateFieldId();
+            const fieldInfo = {
+                id: fieldId,
+                pageIndex: pageIndex,
+                name: field.name,
+                type: fieldType,
+                value: fieldValue,
+                rect: cssRect,
+                rawRect: rect,
+                element: element,
+                label: label,
+                checked: field.checked || false,
+                source: field.source || 'unknown',
+            };
+            allFields.push(fieldInfo);
+
+            element.dataset.fieldId = fieldId;
+
+            element.addEventListener('change', function(e) {
+                updateFieldValue(fieldId, this);
+            });
+
+            return true;
+        }
+
+        function createFormElement(type, value, rect) {
+            let element;
+            const baseType = (type || 'text').toLowerCase();
+
+            switch (baseType) {
+                case 'text':
+                case 'tx':
+                    element = document.createElement('input');
+                    element.type = 'text';
+                    element.value = value || '';
+                    break;
+                case 'textarea':
+                    element = document.createElement('textarea');
+                    element.value = value || '';
+                    element.style.resize = 'none';
+                    break;
+                case 'checkbox':
+                    element = document.createElement('input');
+                    element.type = 'checkbox';
+                    if (typeof value === 'boolean') {
+                        element.checked = value;
+                    } else if (value === 'Yes' || value === 'On' || value === 'true' || value === '1') {
+                        element.checked = true;
+                    } else {
+                        element.checked = false;
+                    }
+                    break;
+                case 'radio':
+                    element = document.createElement('input');
+                    element.type = 'radio';
+                    element.checked = !!value;
+                    element.name = `radio_${Date.now()}`;
+                    break;
+                case 'select':
+                    element = document.createElement('select');
+                    element.innerHTML = `<option value="">请选择</option><option value="1">选项1</option><option value="2">选项2</option>`;
+                    break;
+                default:
+                    element = document.createElement('input');
+                    element.type = 'text';
+                    element.value = value || '';
+                    break;
+            }
+
+            element.style.position = 'absolute';
+            element.style.left = rect.left + 'px';
+            element.style.top = rect.top + 'px';
+            element.style.width = rect.width + 'px';
+            element.style.height = rect.height + 'px';
+            element.style.fontSize = '11px';
+            element.style.padding = '1px 4px';
+            element.style.zIndex = '20';
+            element.style.borderRadius = '3px';
+            element.style.border = '2px solid #7c3aed';
+            element.style.background = 'rgba(124, 58, 237, 0.1)';
+            element.style.outline = 'none';
+
+            if (baseType === 'checkbox' || baseType === 'radio') {
+                const size = Math.min(rect.width, rect.height, 20);
+                element.style.width = size + 'px';
+                element.style.height = size + 'px';
+                element.style.top = (rect.top + rect.height / 2 - size / 2) + 'px';
+                element.style.left = (rect.left + rect.width / 2 - size / 2) + 'px';
+                element.style.minWidth = size + 'px';
+                element.style.minHeight = size + 'px';
+                element.style.borderRadius = baseType === 'checkbox' ? '3px' : '50%';
+                element.style.accentColor = '#7c3aed';
+            }
+
+            if (baseType === 'select') {
+                element.style.background = 'white';
+                element.style.minWidth = '80px';
+            }
+
+            return element;
+        }
+
+        function updateFieldValue(fieldId, element) {
+            const field = allFields.find(f => f.id === fieldId);
+            if (!field) return;
+
+            if (element.type === 'checkbox') {
+                field.checked = element.checked;
+                field.value = element.checked;
+            } else if (element.type === 'radio') {
+                field.checked = element.checked;
+                field.value = element.checked;
+            } else if (element.tagName === 'SELECT') {
+                field.value = element.value;
+            } else {
+                field.value = element.value;
+            }
+
+            updateFieldList();
+        }
+
+        function updateFieldList() {
+            if (allFields.length === 0) {
+                fieldList.innerHTML = `<div class="empty-msg">暂无字段</div>`;
+                return;
+            }
+
+            let html = '';
+            for (const field of allFields) {
+                let displayValue;
+                if (field.type === 'checkbox') {
+                    displayValue = field.checked ? '☑ 已勾选' : '☐ 未勾选';
+                } else if (field.type === 'radio') {
+                    displayValue = field.checked ? '☑ 已选' : '☐ 未选';
+                } else {
+                    displayValue = truncate(String(field.value || ''), 8);
+                }
+
+                const sourceIcon = field.source === 'annotation' ? '📌' :
+                    field.source === 'matched_text' ? '🔗' : '🔄';
+
+                html += `
+                            <div class="field-item" data-field-id="${field.id}">
+                                <span>${sourceIcon}</span>
+                                <span class="name">${truncate(field.name, 18)}</span>
+                                <span class="type">${field.type}</span>
+                                <span>${displayValue}</span>
+                            </div>
+                        `;
+            }
+            fieldList.innerHTML = html;
+            sidebarCount.textContent = allFields.length;
+        }
+
+        // --- 获取表单数据 ---
+        function getFormData() {
+            const data = {};
+            for (const field of allFields) {
+                let key = field.name;
+                let suffix = 1;
+                let finalKey = key;
+                while (data[finalKey] !== undefined) {
+                    finalKey = `${key}_${suffix++}`;
+                }
+                if (field.type === 'checkbox' || field.type === 'radio') {
+                    data[finalKey] = field.checked === true;
+                } else {
+                    data[finalKey] = field.value || '';
+                }
+            }
+            return data;
+        }
+
+        // ============================================================
+        // ✅ 核心修复：可靠的字段类型检测（同时支持复选框和文本）
+        // ============================================================
+
+        function isCheckBox(field) {
+            // 有 check/uncheck 方法，且没有 getOptions（RadioGroup/Dropdown 才有 getOptions）
+            if (typeof field.check === 'function' &&
+                typeof field.uncheck === 'function' &&
+                typeof field.getOptions !== 'function') {
+                return true;
+            }
+            const name = field.constructor?.name || '';
+            if (name === 'PDFCheckBox' || name === 'e') return true;
+            return false;
+        }
+
+        function isTextField(field) {
+            // setText 是文本字段独有的方法（CheckBox/RadioGroup/Dropdown 都没有）
+            if (typeof field.setText === 'function') return true;
+            const name = field.constructor?.name || '';
+            if (name === 'PDFTextField' || name === 'PDFTextArea' || name === 'Xl') return true;
+            return false;
+        }
+
+        function isRadioGroup(field) {
+            // 单选组：有 getOptions/select，但没有 addOptions（dropdown/listbox 才有 addOptions）。
+            // ⚠️ 不能只靠构造函数名 'r' 判断 —— 压缩版 pdf-lib 中文本字段、下拉框也叫 'r'，
+            // 这会导致文本字段被误判为单选组，进而调用 getOptions() 报错。
+            if (typeof field.getOptions === 'function' &&
+                typeof field.select === 'function' &&
+                typeof field.addOptions !== 'function') {
+                return true;
+            }
+            const name = field.constructor?.name || '';
+            if (name === 'PDFRadioGroup') return true;
+            return false;
+        }
+
+        function isDropdown(field) {
+            if (typeof field.select === 'function' &&
+                typeof field.getOptions === 'function' &&
+                typeof field.getSelected === 'function') {
+                return true;
+            }
+            const name = field.constructor?.name || '';
+            if (name === 'PDFDropdown' || name === 'PDFListBox' || name === 'PDFOptionList') return true;
+            return false;
+        }
+
+        function getFieldTypeName(field) {
+            if (isCheckBox(field)) return 'PDFCheckBox';
+            if (isTextField(field)) return 'PDFTextField';
+            if (isRadioGroup(field)) return 'PDFRadioGroup';
+            if (isDropdown(field)) return 'PDFDropdown';
+            const name = field.constructor?.name || 'unknown';
+            if (name === 'PDFDropdown' || name === 'PDFListBox' || name === 'PDFOptionList') return 'PDFDropdown';
+            return name;
+        }
+
+        // --- 导出填充后的 PDF ---
+        async function exportFilledPDF() {
+            if (!originalPdfData || originalPdfData.length === 0) {
+                statusMessage.textContent = '❌ 没有原始 PDF 数据';
+                alert('请先上传 PDF 文件');
+                return;
+            }
+
+            exportProgress.classList.add('active');
+            exportTitle.textContent = '正在生成 PDF...';
+            exportProgressText.textContent = '加载 PDF 模板...';
+            exportError.style.display = 'none';
+
+            try {
+                const pdfBytesCopy = new Uint8Array(originalPdfData);
+
+                logDebug('📄 导出数据大小', `${pdfBytesCopy.length} 字节`);
+
+                const headerStr = new TextDecoder().decode(pdfBytesCopy.slice(0, 8));
+                logDebug('📄 导出头部', headerStr);
+
+                if (!headerStr.startsWith('%PDF')) {
+                    const pdfStart = pdfBytesCopy.indexOf('%PDF');
+                    if (pdfStart > 0) {
+                        const fixedData = new Uint8Array(pdfBytesCopy.slice(pdfStart));
+                        pdfBytesCopy.set(fixedData);
+                    } else {
+                        throw new Error('PDF 文件格式无效，找不到 %PDF 头部');
+                    }
+                }
+
+                exportProgressText.textContent = '正在解析 PDF 结构...';
+
+                let pdfDocLib;
+                try {
+                    pdfDocLib = await PDFLib.PDFDocument.load(pdfBytesCopy, {
+                        ignoreEncryption: true,
+                    });
+                } catch (loadError) {
+                    logDebug('⚠️ 加载失败', loadError.message, 'error');
+                    pdfDocLib = await PDFLib.PDFDocument.load(pdfBytesCopy);
+                }
+
+                const form = pdfDocLib.getForm();
+                const fields = form.getFields();
+
+                logDebug('📝 pdf-lib 字段', `${fields.length} 个`, 'ok');
+                exportProgressText.textContent = `找到 ${fields.length} 个表单字段，正在填充...`;
+
+                const formData = getFormData();
+
+                // ✅ 统计各类型字段数量
+                let totalCheckboxes = 0;
+                let totalRadios = 0;
+                let totalTexts = 0;
+                let totalDropdowns = 0;
+                let totalOthers = 0;
+
+                for (const field of fields) {
+                    const fType = getFieldTypeName(field);
+                    if (fType === 'PDFCheckBox') totalCheckboxes++;
+                    else if (fType === 'PDFRadioGroup') totalRadios++;
+                    else if (fType === 'PDFTextField') totalTexts++;
+                    else if (fType === 'PDFDropdown') totalDropdowns++;
+                    else totalOthers++;
+                }
+                logDebug('📊 字段统计',
+                    `复选框:${totalCheckboxes}, 单选:${totalRadios}, 文本:${totalTexts}, 下拉:${totalDropdowns}, 其他:${totalOthers}`);
+
+                let filledCount = 0;
+
+                // ✅ 遍历所有字段并填充
+                for (const field of fields) {
+                    const fieldName = field.getName();
+                    const value = formData[fieldName];
+                    const fType = getFieldTypeName(field);
+
+                    // 没有数据，跳过（保持原样）
+                    if (value === undefined || value === null) {
+                        continue;
+                    }
+
+                    // 复选框且值为空字符串，跳过
+                    if (fType === 'PDFCheckBox' && value === '') {
+                        continue;
+                    }
+
+                    try {
+                        if (fType === 'PDFTextField' || fType === 'PDFTextArea') {
+                            field.setText(String(value));
+                            filledCount++;
+                            logDebug(`📝 填充文本`, `${fieldName} = "${String(value).substring(0, 20)}"`, 'ok');
+                        } else if (fType === 'PDFCheckBox') {
+                            const shouldCheck = value === true ||
+                                value === 'true' ||
+                                value === 'Yes' ||
+                                value === 'on' ||
+                                value === '1';
+                            if (shouldCheck) {
+                                field.check();
+                            } else {
+                                field.uncheck();
+                            }
+                            filledCount++;
+                        } else if (fType === 'PDFRadioGroup') {
+                            try {
+                                const options = field.getOptions();
+                                if (options && options.length > 0) {
+                                    if (value === true || value === 'true' || value === 'Yes' || value === 'on') {
+                                        field.select(options[0]);
+                                    } else if (typeof value === 'string') {
+                                        let selected = null;
+                                        for (const opt of options) {
+                                            if (String(value).toLowerCase() === String(opt).toLowerCase()) {
+                                                selected = opt;
+                                                break;
+                                            }
+                                        }
+                                        if (selected) field.select(selected);
+                                    }
+                                    filledCount++;
+                                }
+                            } catch (e) {
+                                logDebug(`⚠️ Radio 填充失败 ${fieldName}`, e.message);
+                            }
+                        } else if (fType === 'PDFDropdown' || fType === 'PDFListBox') {
+                            try {
+                                field.select(String(value));
+                                filledCount++;
+                            } catch (e) {
+                                logDebug(`⚠️ 下拉列表填充失败 ${fieldName}`, e.message);
+                            }
+                        } else {
+                            // 未知类型，尝试通用方法
+                            try {
+                                if (field.setText) {
+                                    field.setText(String(value));
+                                    filledCount++;
+                                } else if (field.check && value === true) {
+                                    field.check();
+                                    filledCount++;
+                                } else if (field.uncheck && value !== true) {
+                                    field.uncheck();
+                                    filledCount++;
+                                }
+                            } catch (e) {
+                                logDebug(`⚠️ 未知类型填充失败 ${fieldName}`, e.message);
+                            }
+                        }
+                    } catch (e) {
+                        logDebug(`⚠️ 填充失败 ${fieldName}`, e.message);
+                    }
+                }
+
+                // ✅ 额外尝试：用 getField 直接获取字段（兜底）
+                for (const [key, value] of Object.entries(formData)) {
+                    if (value === undefined || value === null || value === '') continue;
+                    try {
+                        const field = form.getField(key);
+                        if (field) {
+                            const fType = getFieldTypeName(field);
+                            if (fType === 'PDFCheckBox') {
+                                const shouldCheck = value === true || value === 'true' || value === 'Yes' || value ===
+                                    'on' || value === '1';
+                                if (shouldCheck) field.check();
+                                else field.uncheck();
+                                filledCount++;
+                            } else if (fType === 'PDFTextField' || fType === 'PDFTextArea') {
+                                field.setText(String(value));
+                                filledCount++;
+                            } else if (fType === 'PDFDropdown') {
+                                field.select(String(value));
+                                filledCount++;
+                            }
+                        }
+                    } catch (e) {
+                        // 忽略不存在的字段
+                    }
+                }
+
+                exportProgressText.textContent = `已填充 ${filledCount} 个字段，正在生成 PDF...`;
+
+                const outputBytes = await pdfDocLib.save();
+
+                exportProgressText.textContent = '✅ 生成完成，正在下载...';
+
+                const blob = new Blob([outputBytes], { type: 'application/pdf' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                const baseName = currentFile ? currentFile.name.replace('.pdf', '') : 'form';
+                a.download = `${baseName}_filled.pdf`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                statusMessage.textContent = `✅ 已导出填充后的 PDF (${filledCount} 个字段)`;
+
+                setTimeout(() => {
+                    exportProgress.classList.remove('active');
+                }, 500);
+
+            } catch (error) {
+                console.error('导出 PDF 失败:', error);
+                logDebug('❌ 导出失败', error.message, 'error');
+
+                exportError.textContent = `❌ 导出失败: ${error.message}`;
+                exportError.style.display = 'block';
+                exportProgressText.textContent = '请尝试导出 JSON 作为替代';
+
+                statusMessage.textContent = '❌ 导出 PDF 失败';
+
+                setTimeout(() => {
+                    exportProgress.classList.remove('active');
+                }, 3000);
+            }
+        }
+
+        // --- 导出 JSON ---
+        function exportJSON() {
+            const data = getFormData();
+            const json = JSON.stringify(data, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `form_data_${new Date().toISOString().slice(0,10)}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            statusMessage.textContent = `✅ 已导出 ${Object.keys(data).length} 个字段的 JSON`;
+        }
+
+        // --- 其他操作 ---
+        function resetForm() {
+            for (const field of allFields) {
+                const el = field.element;
+                if (el.type === 'checkbox' || el.type === 'radio') {
+                    el.checked = false;
+                    field.checked = false;
+                    field.value = false;
+                } else if (el.tagName === 'SELECT') {
+                    el.selectedIndex = 0;
+                    field.value = el.value;
+                } else {
+                    el.value = '';
+                    field.value = '';
+                }
+            }
+            updateFieldList();
+            statusMessage.textContent = '已重置所有字段';
+        }
+
+        function fillSampleData() {
+            let idx = 0;
+            for (const field of allFields) {
+                const el = field.element;
+                if (el.type === 'checkbox') {
+                    const shouldCheck = idx % 2 === 0;
+                    el.checked = shouldCheck;
+                    field.checked = shouldCheck;
+                    field.value = shouldCheck;
+                    idx++;
+                } else if (el.type === 'radio') {
+                    el.checked = true;
+                    field.checked = true;
+                    field.value = true;
+                } else if (el.tagName === 'SELECT') {
+                    if (el.options.length > 1) {
+                        el.selectedIndex = 1;
+                        field.value = el.value;
+                    }
+                } else {
+                    const sample = `样本_${Math.floor(Math.random() * 1000)}`;
+                    el.value = sample;
+                    field.value = sample;
+                }
+            }
+            updateFieldList();
+            statusMessage.textContent = '已填充示例数据';
+        }
+
+        function clearAllFields() {
+            for (const field of allFields) {
+                const el = field.element;
+                if (el.type === 'checkbox' || el.type === 'radio') {
+                    el.checked = false;
+                    field.checked = false;
+                    field.value = false;
+                } else if (el.tagName === 'SELECT') {
+                    el.selectedIndex = 0;
+                    field.value = el.value;
+                } else {
+                    el.value = '';
+                    field.value = '';
+                }
+            }
+            updateFieldList();
+            statusMessage.textContent = '已清空所有字段';
+        }
+
+        // --- 坐标偏移 ---
+        function applyOffset() {
+            offsetXValue = parseInt(offsetX.value);
+            offsetYValue = parseInt(offsetY.value);
+            offsetXVal.textContent = offsetXValue;
+            offsetYVal.textContent = offsetYValue;
+            if (currentFile) {
+                parsePDF(currentFile, offsetXValue, offsetYValue);
+                statusMessage.textContent = `📍 应用偏移: X=${offsetXValue}, Y=${offsetYValue}`;
+            }
+        }
+
+        function resetOffset() {
+            offsetX.value = 0;
+            offsetY.value = 0;
+            offsetXVal.textContent = '0';
+            offsetYVal.textContent = '0';
+            applyOffset();
+        }
+
+        // --- 事件绑定 ---
+        fileInput.addEventListener('change', function(e) {
+            const file = this.files[0];
+            if (file) {
+                parsePDF(file, 0, 0);
+                fileName.textContent = file.name;
+            }
+        });
+
+        exportPdfBtn.addEventListener('click', exportFilledPDF);
+        exportJsonBtn.addEventListener('click', exportJSON);
+        resetBtn.addEventListener('click', resetForm);
+        clearAllBtn.addEventListener('click', clearAllFields);
+        fillSampleBtn.addEventListener('click', fillSampleData);
+
+        applyOffsetBtn.addEventListener('click', applyOffset);
+        resetOffsetBtn.addEventListener('click', resetOffset);
+
+        offsetX.addEventListener('input', function() {
+            offsetXVal.textContent = this.value;
+        });
+        offsetY.addEventListener('input', function() {
+            offsetYVal.textContent = this.value;
+        });
+
+        // 拖拽上传
+        document.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'copy';
+        });
+
+        document.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const files = e.dataTransfer.files;
+            if (files.length > 0 && files[0].type === 'application/pdf') {
+                parsePDF(files[0], 0, 0);
+                fileInput.files = files;
+                fileName.textContent = files[0].name;
+            }
+        });
+
+        console.log('✅ PDF 表单编辑器 (最终修复版) 已启动');
+        console.log('💡 修复了文本字段被误判为 Dropdown 的问题');
+    </script>
+</body>
+</html>
