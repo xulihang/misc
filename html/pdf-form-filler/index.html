@@ -731,10 +731,11 @@
                 logDebug(`📊 annotations`, `找到 ${annotationFields.length} 个有效字段`, annotationFields.length > 0 ? 'ok' : 'info');
 
                 let fieldNames = [];
+                let pdfFieldObjects = null;
                 try {
-                    const fieldObjects = await pdfDoc.getFieldObjects();
-                    if (fieldObjects) {
-                        fieldNames = Object.keys(fieldObjects);
+                    pdfFieldObjects = await pdfDoc.getFieldObjects();
+                    if (pdfFieldObjects) {
+                        fieldNames = Object.keys(pdfFieldObjects);
                         logDebug(`📊 getFieldObjects`, `${fieldNames.length} 个字段名`, fieldNames.length > 0 ? 'ok' : 'info');
                         if (fieldNames.length > 0) {
                             logDebug('📋 字段名示例', fieldNames.slice(0, 8).join(', '));
@@ -744,11 +745,100 @@
                     logDebug('⚠️ getFieldObjects 失败', e.message);
                 }
 
+                // 用 pdf-lib 解析字段结构（权威的类型 / 选项 / 当前值）
+                const libFieldMap = {};
+                try {
+                    const libDoc = await PDFLib.PDFDocument.load(originalPdfData.slice(0), { ignoreEncryption: true });
+                    const libForm = libDoc.getForm();
+                    for (const f of libForm.getFields()) {
+                        try { libFieldMap[f.getName()] = f; } catch (e) { /* 忽略单个字段异常 */ }
+                    }
+                    logDebug('📦 pdf-lib 结构解析', `${Object.keys(libFieldMap).length} 个字段`, 'ok');
+                } catch (e) {
+                    logDebug('⚠️ pdf-lib 结构解析失败', e.message, 'error');
+                }
+
+                // pdf.js fieldObjects 的友好类型兜底（pdf-lib 失败时用）
+                const jsTypeByField = {};
+                if (pdfFieldObjects) {
+                    for (const [k, objs] of Object.entries(pdfFieldObjects)) {
+                        const kid = objs.find(o => o.type);
+                        if (kid) jsTypeByField[k] = kid.type;
+                    }
+                }
+
                 let fieldsToRender = [];
 
                 if (annotationFields.length > 0) {
-                    fieldsToRender = annotationFields;
-                    logDebug('✅ 使用 annotations', `${fieldsToRender.length} 个字段 (有坐标)`, 'ok');
+                    // 按字段名分组（单选组有多个同名 annotation，对应多个选项）
+                    const annByField = {};
+                    for (const ann of annotationFields) {
+                        if (!annByField[ann.name]) annByField[ann.name] = [];
+                        annByField[ann.name].push(ann);
+                    }
+
+                    for (const [name, anns] of Object.entries(annByField)) {
+                        const first = anns[0];
+                        const libField = libFieldMap[name];
+                        const libType = libField ? getFieldTypeName(libField) : '';
+                        const jsType = jsTypeByField[name];
+
+                        if (libType === 'PDFRadioGroup' || (libType === '' && jsType === 'radiobutton')) {
+                            // 单选组：一个逻辑字段，多个选项
+                            const options = (libField && typeof libField.getOptions === 'function') ? (libField.getOptions() || []) : [];
+                            const radioOptions = anns.map((ann, i) => ({
+                                value: options[i] !== undefined ? options[i]
+                                    : (ann.buttonValue !== undefined ? String(ann.buttonValue) : String(i)),
+                                rect: ann.rect,
+                            }));
+                            let selected = '';
+                            if (libField && typeof libField.getSelected === 'function') {
+                                const s = libField.getSelected();
+                                if (typeof s === 'string') selected = s;
+                            }
+                            fieldsToRender.push({
+                                name, type: 'radio', rect: first.rect, pageIndex: first.pageIndex,
+                                value: selected, checked: selected !== '', source: 'annotation',
+                                radioOptions, choices: radioOptions.map(o => o.value),
+                            });
+                        } else if (libType === 'PDFCheckBox' || (libType === '' && jsType === 'checkbox')) {
+                            let checked = false;
+                            if (libField && typeof libField.isChecked === 'function') checked = libField.isChecked();
+                            else if (anns[0] && anns[0].fieldValue && String(anns[0].fieldValue) !== 'Off') checked = true;
+                            fieldsToRender.push({
+                                name, type: 'checkbox', rect: first.rect, pageIndex: first.pageIndex,
+                                checked, value: checked, source: 'annotation',
+                            });
+                        } else if (libType === 'PDFDropdown' || libType === 'PDFListBox' ||
+                                   (libType === '' && (jsType === 'combobox' || jsType === 'listbox'))) {
+                            let choices = [];
+                            if (libField && typeof libField.getOptions === 'function') choices = libField.getOptions() || [];
+                            if (choices.length === 0 && Array.isArray(first.options)) {
+                                choices = first.options.map(o => o.displayValue || o.exportValue);
+                            }
+                            let sel = '';
+                            if (libField && typeof libField.getSelected === 'function') {
+                                const s = libField.getSelected();
+                                sel = Array.isArray(s) ? (s[0] || '') : (s || '');
+                            } else if (Array.isArray(first.fieldValue)) {
+                                sel = first.fieldValue[0] || '';
+                            }
+                            fieldsToRender.push({
+                                name, type: 'select', rect: first.rect, pageIndex: first.pageIndex,
+                                value: sel, checked: false, source: 'annotation', choices,
+                            });
+                        } else {
+                            // 文本 / 多行文本
+                            let textVal = '';
+                            if (libField && typeof libField.getText === 'function') textVal = libField.getText() || '';
+                            else textVal = first.value || '';
+                            fieldsToRender.push({
+                                name, type: first.multiLine ? 'textarea' : 'text', rect: first.rect, pageIndex: first.pageIndex,
+                                value: textVal, checked: false, source: 'annotation',
+                            });
+                        }
+                    }
+                    logDebug('✅ 使用 annotations + pdf-lib', `${fieldsToRender.length} 个字段 (有坐标)`, 'ok');
                 } else if (fieldNames.length > 0) {
                     logDebug('🔄 使用字段名生成', `${fieldNames.length} 个字段 (无坐标)`);
                     const firstPage = pages[0];
@@ -877,6 +967,83 @@
             const fieldType = field.type || 'text';
             const fieldValue = field.value || '';
 
+            // 单选组：一个逻辑字段，渲染多个单选选项（共享 fieldId）
+            if (fieldType === 'radio' && Array.isArray(field.radioOptions) && field.radioOptions.length > 0) {
+                const fieldId = generateFieldId();
+                const overlay = pageDiv.querySelector('.form-overlay');
+                const groupName = `radio_${field.name}`;
+                const elements = [];
+                let groupCssRect = null;
+
+                for (const opt of field.radioOptions) {
+                    if (!opt || !opt.rect || opt.rect.length !== 4) continue;
+                    const optCss = pdfToCssRect(opt.rect, pageHeight, scale, offsetX, offsetY);
+                    if (!optCss) continue;
+                    if (!groupCssRect) groupCssRect = optCss;
+
+                    const size = Math.max(Math.min(optCss.width, optCss.height, 20), 12);
+                    const radio = document.createElement('input');
+                    radio.type = 'radio';
+                    radio.name = groupName;
+                    radio.value = opt.value;
+                    radio.checked = fieldValue !== '' && String(fieldValue) === String(opt.value);
+                    radio.style.position = 'absolute';
+                    radio.style.left = (optCss.left + optCss.width / 2 - size / 2) + 'px';
+                    radio.style.top = (optCss.top + optCss.height / 2 - size / 2) + 'px';
+                    radio.style.width = size + 'px';
+                    radio.style.height = size + 'px';
+                    radio.style.minWidth = size + 'px';
+                    radio.style.minHeight = size + 'px';
+                    radio.style.borderRadius = '50%';
+                    radio.style.accentColor = '#7c3aed';
+                    radio.style.zIndex = '20';
+                    radio.style.cursor = 'pointer';
+                    radio.dataset.fieldId = fieldId;
+                    radio.addEventListener('change', function() { updateRadioValue(fieldId, this); });
+                    overlay.appendChild(radio);
+                    elements.push(radio);
+                }
+
+                if (elements.length === 0) return false;
+
+                if (groupCssRect) {
+                    const debugBox = document.createElement('div');
+                    debugBox.className = 'field-debug-box';
+                    debugBox.style.left = groupCssRect.left + 'px';
+                    debugBox.style.top = groupCssRect.top + 'px';
+                    debugBox.style.width = Math.max(groupCssRect.width, 30) + 'px';
+                    debugBox.style.height = Math.max(groupCssRect.height, 20) + 'px';
+                    overlay.appendChild(debugBox);
+                }
+
+                const label = document.createElement('span');
+                label.className = 'form-field-label';
+                label.textContent = truncate(field.name, 20);
+                if (groupCssRect) {
+                    label.style.left = groupCssRect.left + 'px';
+                    label.style.top = (groupCssRect.top - 14) + 'px';
+                }
+                overlay.appendChild(label);
+
+                const fieldInfo = {
+                    id: fieldId,
+                    pageIndex: pageIndex,
+                    name: field.name,
+                    type: 'radio',
+                    value: fieldValue,
+                    rect: groupCssRect,
+                    rawRect: field.rect,
+                    element: elements[0],
+                    elements: elements,
+                    label: label,
+                    checked: fieldValue !== '',
+                    choices: field.choices || field.radioOptions.map(o => o.value),
+                    source: field.source || 'unknown',
+                };
+                allFields.push(fieldInfo);
+                return true;
+            }
+
             const debugBox = document.createElement('div');
             debugBox.className = 'field-debug-box';
             debugBox.style.left = cssRect.left + 'px';
@@ -885,6 +1052,26 @@
             debugBox.style.height = cssRect.height + 'px';
 
             const element = createFormElement(fieldType, fieldValue, cssRect);
+
+            // 下拉框/列表框：用 PDF 里的实际选项填充
+            if (element.tagName === 'SELECT' && Array.isArray(field.choices) && field.choices.length > 0) {
+                element.innerHTML = '';
+                const hasValue = fieldValue !== undefined && fieldValue !== null && fieldValue !== '';
+                if (!hasValue) {
+                    const ph = document.createElement('option');
+                    ph.value = '';
+                    ph.textContent = '请选择';
+                    element.appendChild(ph);
+                }
+                for (const opt of field.choices) {
+                    const o = document.createElement('option');
+                    o.value = opt;
+                    o.textContent = opt;
+                    if (hasValue && String(opt) === String(fieldValue)) o.selected = true;
+                    element.appendChild(o);
+                }
+                if (hasValue) element.value = fieldValue;
+            }
 
             const label = document.createElement('span');
             label.className = 'form-field-label';
@@ -1007,14 +1194,27 @@
                 field.checked = element.checked;
                 field.value = element.checked;
             } else if (element.type === 'radio') {
-                field.checked = element.checked;
-                field.value = element.checked;
+                // 单选组：仅在选中时记录选中的选项值
+                if (element.checked) {
+                    field.value = element.value;
+                    field.checked = true;
+                }
             } else if (element.tagName === 'SELECT') {
                 field.value = element.value;
             } else {
                 field.value = element.value;
             }
 
+            updateFieldList();
+        }
+
+        // 单选组选项变化（共享同一个 fieldId）
+        function updateRadioValue(fieldId, element) {
+            if (!element.checked) return;
+            const field = allFields.find(f => f.id === fieldId);
+            if (!field) return;
+            field.value = element.value;
+            field.checked = true;
             updateFieldList();
         }
 
@@ -1030,7 +1230,7 @@
                 if (field.type === 'checkbox') {
                     displayValue = field.checked ? '☑ 已勾选' : '☐ 未勾选';
                 } else if (field.type === 'radio') {
-                    displayValue = field.checked ? '☑ 已选' : '☐ 未选';
+                    displayValue = field.value ? '☑ ' + truncate(String(field.value), 8) : '☐ 未选';
                 } else {
                     displayValue = truncate(String(field.value || ''), 8);
                 }
@@ -1061,8 +1261,10 @@
                 while (data[finalKey] !== undefined) {
                     finalKey = `${key}_${suffix++}`;
                 }
-                if (field.type === 'checkbox' || field.type === 'radio') {
+                if (field.type === 'checkbox') {
                     data[finalKey] = field.checked === true;
+                } else if (field.type === 'radio') {
+                    data[finalKey] = field.value || '';
                 } else {
                     data[finalKey] = field.value || '';
                 }
@@ -1368,10 +1570,18 @@
         function resetForm() {
             for (const field of allFields) {
                 const el = field.element;
-                if (el.type === 'checkbox' || el.type === 'radio') {
+                if (el.type === 'checkbox') {
                     el.checked = false;
                     field.checked = false;
                     field.value = false;
+                } else if (field.type === 'radio') {
+                    if (Array.isArray(field.elements)) {
+                        for (const r of field.elements) r.checked = false;
+                    } else if (el) {
+                        el.checked = false;
+                    }
+                    field.checked = false;
+                    field.value = '';
                 } else if (el.tagName === 'SELECT') {
                     el.selectedIndex = 0;
                     field.value = el.value;
@@ -1394,10 +1604,12 @@
                     field.checked = shouldCheck;
                     field.value = shouldCheck;
                     idx++;
-                } else if (el.type === 'radio') {
-                    el.checked = true;
-                    field.checked = true;
-                    field.value = true;
+                } else if (field.type === 'radio') {
+                    if (Array.isArray(field.elements) && field.elements.length > 0) {
+                        field.elements[0].checked = true;
+                        field.value = field.elements[0].value;
+                        field.checked = true;
+                    }
                 } else if (el.tagName === 'SELECT') {
                     if (el.options.length > 1) {
                         el.selectedIndex = 1;
@@ -1416,10 +1628,18 @@
         function clearAllFields() {
             for (const field of allFields) {
                 const el = field.element;
-                if (el.type === 'checkbox' || el.type === 'radio') {
+                if (el.type === 'checkbox') {
                     el.checked = false;
                     field.checked = false;
                     field.value = false;
+                } else if (field.type === 'radio') {
+                    if (Array.isArray(field.elements)) {
+                        for (const r of field.elements) r.checked = false;
+                    } else if (el) {
+                        el.checked = false;
+                    }
+                    field.checked = false;
+                    field.value = '';
                 } else if (el.tagName === 'SELECT') {
                     el.selectedIndex = 0;
                     field.value = el.value;
