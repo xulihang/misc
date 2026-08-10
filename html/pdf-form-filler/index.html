@@ -1952,16 +1952,22 @@
                                 if (hasSigValue && !digitalSigRequested && field.acroField && field.acroField.dict) {
                                     const fieldDict = field.acroField.dict;
                                     try {
-                                        fieldDict.set(PDFLib.PDFName.of('ByteRange'), pdfDocLib.context.obj([
-                                            PDFLib.PDFNumber.of(0),
-                                            PDFLib.PDFName.of('**********'),
-                                            PDFLib.PDFName.of('**********'),
-                                            PDFLib.PDFName.of('**********'),
-                                        ]));
-                                        fieldDict.set(PDFLib.PDFName.of('Contents'),
-                                            PDFLib.PDFHexString.of('0'.repeat(SIG_PLACEHOLDER_HEX_LEN)));
-                                        fieldDict.set(PDFLib.PDFName.of('Filter'), PDFLib.PDFName.of('Adobe.PPKLite'));
-                                        fieldDict.set(PDFLib.PDFName.of('SubFilter'), PDFLib.PDFName.of('adbe.pkcs7.detached'));
+                                        // 签名字典作为独立的 /V 对象（Acrobat 识别要求，参照 UPDF 的结构）
+                                        const sigDictRef = pdfDocLib.context.nextRef();
+                                        const sigDict = pdfDocLib.context.obj({
+                                            Type: PDFLib.PDFName.of('Sig'),
+                                            ByteRange: pdfDocLib.context.obj([
+                                                PDFLib.PDFNumber.of(0),
+                                                PDFLib.PDFName.of('**********'),
+                                                PDFLib.PDFName.of('**********'),
+                                                PDFLib.PDFName.of('**********'),
+                                            ]),
+                                            Contents: PDFLib.PDFHexString.of('0'.repeat(SIG_PLACEHOLDER_HEX_LEN)),
+                                            Filter: PDFLib.PDFName.of('Adobe.PPKLite'),
+                                            SubFilter: PDFLib.PDFName.of('adbe.pkcs7.detached'),
+                                        });
+                                        pdfDocLib.context.assign(sigDictRef, sigDict);
+                                        fieldDict.set(PDFLib.PDFName.of('V'), sigDictRef);
                                         digitalSigRequested = true;
                                         logDebug('🔐 已准备数字签名占位符', fieldName, 'ok');
                                     } catch (sigErr) {
