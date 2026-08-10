@@ -158,6 +158,10 @@
             height: 100%;
             pointer-events: none;
         }
+        /* 签名画板是 div+canvas，不在 input/textarea/select 之列，需单独恢复可点击 */
+        .form-overlay .sig-field {
+            pointer-events: auto;
+        }
         .form-overlay input,
         .form-overlay textarea,
         .form-overlay select {
@@ -974,6 +978,11 @@
             const fieldType = field.type || 'text';
             const fieldValue = field.value || '';
 
+            // 签名字段：画板（手绘 / 上传图片 / 文字）
+            if (fieldType === 'signature') {
+                return renderSignatureField(field, pageHeight, scale, offsetX, offsetY, pageDiv, cssRect, pageIndex);
+            }
+
             // 单选组：一个逻辑字段，渲染多个单选选项（共享 fieldId）
             if (fieldType === 'radio' && Array.isArray(field.radioOptions) && field.radioOptions.length > 0) {
                 const fieldId = generateFieldId();
@@ -1116,6 +1125,217 @@
             return true;
         }
 
+        // 签名字段：画板，支持手绘 / 上传图片 / 输入文字
+        function renderSignatureField(field, pageHeight, scale, offsetX, offsetY, pageDiv, cssRect, pageIndex) {
+            const fieldId = generateFieldId();
+            const overlay = pageDiv.querySelector('.form-overlay');
+
+            // 容器
+            const container = document.createElement('div');
+            container.className = 'sig-field';
+            container.style.position = 'absolute';
+            container.style.left = cssRect.left + 'px';
+            container.style.top = cssRect.top + 'px';
+            container.style.width = cssRect.width + 'px';
+            container.style.height = cssRect.height + 'px';
+            container.style.border = '2px dashed #7c3aed';
+            container.style.borderRadius = '3px';
+            container.style.background = 'rgba(124, 58, 237, 0.05)';
+            container.style.zIndex = '20';
+            container.style.overflow = 'hidden';
+            container.style.boxSizing = 'border-box';
+
+            // 画布（高度留出底部工具栏）
+            const cw = Math.max(Math.floor(cssRect.width) - 4, 50);
+            const ch = Math.max(Math.floor(cssRect.height) - 24, 30);
+            const canvas = document.createElement('canvas');
+            canvas.width = cw;
+            canvas.height = ch;
+            canvas.style.position = 'absolute';
+            canvas.style.top = '0';
+            canvas.style.left = '0';
+            canvas.style.width = cw + 'px';
+            canvas.style.height = ch + 'px';
+            canvas.style.cursor = 'crosshair';
+            canvas.style.touchAction = 'none';
+            container.appendChild(canvas);
+            const ctx = canvas.getContext('2d');
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.strokeStyle = '#1a1a2e';
+
+            // 工具栏
+            const toolbar = document.createElement('div');
+            toolbar.style.position = 'absolute';
+            toolbar.style.bottom = '0';
+            toolbar.style.left = '0';
+            toolbar.style.right = '0';
+            toolbar.style.display = 'flex';
+            toolbar.style.background = '#fff';
+            toolbar.style.borderTop = '1px solid #ddd';
+            toolbar.style.zIndex = '22';
+            toolbar.innerHTML =
+                `<button type="button" data-act="draw" style="flex:1;font-size:10px;border:none;background:none;cursor:pointer" title="手绘">✏</button>` +
+                `<button type="button" data-act="upload" style="flex:1;font-size:10px;border:none;background:none;cursor:pointer" title="上传图片">🖼</button>` +
+                `<button type="button" data-act="text" style="flex:1;font-size:10px;border:none;background:none;cursor:pointer" title="输入文字">🔤</button>` +
+                `<button type="button" data-act="clear" style="flex:1;font-size:10px;border:none;background:none;cursor:pointer" title="清除">🗑</button>`;
+            container.appendChild(toolbar);
+
+            // 隐藏的文件上传
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/png,image/jpeg';
+            fileInput.style.display = 'none';
+            container.appendChild(fileInput);
+
+            // 隐藏的文字输入（文字模式）
+            const textInput = document.createElement('input');
+            textInput.type = 'text';
+            textInput.placeholder = '输入签名文字';
+            textInput.style.display = 'none';
+            textInput.style.position = 'absolute';
+            textInput.style.top = '0';
+            textInput.style.left = '0';
+            textInput.style.width = '100%';
+            textInput.style.height = ch + 'px';
+            textInput.style.border = 'none';
+            textInput.style.outline = 'none';
+            textInput.style.fontFamily = '"Segoe Script", "Brush Script MT", cursive';
+            textInput.style.fontSize = '16px';
+            textInput.style.background = 'transparent';
+            textInput.style.padding = '0 6px';
+            container.appendChild(textInput);
+
+            // 字段标签
+            const label = document.createElement('span');
+            label.className = 'form-field-label';
+            label.textContent = truncate(field.name, 20);
+            label.style.left = cssRect.left + 'px';
+            label.style.top = (cssRect.top - 14) + 'px';
+            overlay.appendChild(label);
+            overlay.appendChild(container);
+
+            const fieldInfo = {
+                id: fieldId,
+                pageIndex: pageIndex,
+                name: field.name,
+                type: 'signature',
+                value: '',           // 文字模式的内容
+                signatureImage: null, // 手绘/上传的 PNG dataURL
+                rect: cssRect,
+                rawRect: field.rect,
+                element: container,
+                elements: [container],
+                label: label,
+                checked: false,
+                source: field.source || 'unknown',
+                canvas: canvas,
+                ctx: ctx,
+                textInput: textInput,
+            };
+            allFields.push(fieldInfo);
+
+            // 手绘
+            let drawing = false;
+            const pos = (e) => {
+                const r = canvas.getBoundingClientRect();
+                return {
+                    x: (e.clientX - r.left) * (canvas.width / r.width),
+                    y: (e.clientY - r.top) * (canvas.height / r.height),
+                };
+            };
+            const capture = () => {
+                fieldInfo.signatureImage = canvas.toDataURL('image/png');
+                updateFieldList();
+            };
+            const start = (e) => {
+                drawing = true;
+                canvas.setPointerCapture && canvas.setPointerCapture(e.pointerId);
+                const p = pos(e);
+                ctx.beginPath();
+                ctx.moveTo(p.x, p.y);
+            };
+            const move = (e) => {
+                if (!drawing) return;
+                const p = pos(e);
+                ctx.lineTo(p.x, p.y);
+                ctx.stroke();
+            };
+            const stop = () => {
+                if (!drawing) return;
+                drawing = false;
+                capture();
+            };
+            canvas.addEventListener('pointerdown', start);
+            canvas.addEventListener('pointermove', move);
+            canvas.addEventListener('pointerup', stop);
+            canvas.addEventListener('pointerleave', stop);
+
+            const setDrawMode = () => {
+                canvas.style.display = 'block';
+                textInput.style.display = 'none';
+            };
+            const setTextMode = () => {
+                canvas.style.display = 'none';
+                textInput.style.display = 'block';
+                textInput.focus();
+                // 切到文字模式时，手绘图片作废
+                if (!fieldInfo.value) fieldInfo.signatureImage = null;
+            };
+
+            textInput.addEventListener('input', () => {
+                fieldInfo.value = textInput.value;
+                if (textInput.value.trim() === '') fieldInfo.signatureImage = null;
+                updateFieldList();
+            });
+
+            toolbar.addEventListener('click', (e) => {
+                const btn = e.target.closest('button');
+                if (!btn) return;
+                const act = btn.dataset.act;
+                if (act === 'clear') {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    fieldInfo.signatureImage = null;
+                    fieldInfo.value = '';
+                    textInput.value = '';
+                    setDrawMode();
+                    updateFieldList();
+                } else if (act === 'upload') {
+                    fileInput.click();
+                } else if (act === 'text') {
+                    setTextMode();
+                } else if (act === 'draw') {
+                    setDrawMode();
+                }
+            });
+
+            fileInput.addEventListener('change', () => {
+                const file = fileInput.files && fileInput.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        setDrawMode();
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        const s = Math.min(canvas.width / img.width, canvas.height / img.height, 1);
+                        const w = img.width * s;
+                        const h = img.height * s;
+                        ctx.drawImage(img, (canvas.width - w) / 2, (canvas.height - h) / 2, w, h);
+                        fieldInfo.signatureImage = canvas.toDataURL('image/png');
+                        fieldInfo.value = '';
+                        updateFieldList();
+                    };
+                    img.onerror = () => { logDebug('⚠️ 图片加载失败', file.name); };
+                    img.src = ev.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+
+            return true;
+        }
+
         function createFormElement(type, value, rect) {
             let element;
             const baseType = (type || 'text').toLowerCase();
@@ -1252,6 +1472,8 @@
                     displayValue = field.checked ? '☑ 已勾选' : '☐ 未勾选';
                 } else if (field.type === 'radio') {
                     displayValue = field.value ? '☑ ' + truncate(String(field.value), 8) : '☐ 未选';
+                } else if (field.type === 'signature') {
+                    displayValue = field.signatureImage ? '🖼 图片签名' : (field.value ? '✍ ' + truncate(String(field.value), 8) : '空');
                 } else {
                     displayValue = truncate(String(field.value || ''), 8);
                 }
@@ -1286,6 +1508,9 @@
                     data[finalKey] = field.checked === true;
                 } else if (field.type === 'radio') {
                     data[finalKey] = field.value || '';
+                } else if (field.type === 'signature') {
+                    // 图片签名带模式标记，文字签名存字符串
+                    data[finalKey] = field.signatureImage ? { mode: 'image', data: field.signatureImage } : (field.value || '');
                 } else {
                     data[finalKey] = field.value || '';
                 }
@@ -1479,14 +1704,41 @@
                                 logDebug(`⚠️ 下拉列表填充失败 ${fieldName}`, e.message);
                             }
                         } else if (fType === 'PDFSignature') {
-                            // 签名：把输入的文字画到页面字段位置上
+                            // 签名：优先嵌入手绘/上传的图片，否则把文字画到页面字段位置上
                             try {
-                                const textVal = String(value || '').trim();
-                                if (textVal !== '') {
-                                    if (!sigFont) sigFont = await pdfDocLib.embedFont(PDFLib.StandardFonts.Helvetica);
-                                    const info = sigFieldInfoMap[fieldName];
-                                    if (info && info.rawRect && info.rawRect.length === 4) {
-                                        const rect = info.rawRect;
+                                const info = sigFieldInfoMap[fieldName];
+                                const rect = (info && info.rawRect && info.rawRect.length === 4) ? info.rawRect : null;
+                                const imageDataUrl = info && info.signatureImage;
+
+                                if (imageDataUrl && rect) {
+                                    // 1) 图片签名：嵌入 PNG
+                                    const b64 = String(imageDataUrl).split(',')[1];
+                                    if (b64) {
+                                        const bin = atob(b64);
+                                        const imgBytes = new Uint8Array(bin.length);
+                                        for (let i = 0; i < bin.length; i++) imgBytes[i] = bin.charCodeAt(i);
+                                        const img = await pdfDocLib.embedPng(imgBytes);
+                                        const pages = pdfDocLib.getPages();
+                                        const page = pages[info.pageIndex] || pages[0];
+                                        if (page) {
+                                            const boxW = rect[2] - rect[0];
+                                            const boxH = rect[3] - rect[1];
+                                            const dims = img.scaleToFit(Math.max(boxW - 4, 1), Math.max(boxH - 4, 1));
+                                            page.drawImage(img, {
+                                                x: rect[0] + (boxW - dims.width) / 2,
+                                                y: rect[1] + (boxH - dims.height) / 2,
+                                                width: dims.width,
+                                                height: dims.height,
+                                            });
+                                            filledCount++;
+                                            logDebug(`🖼 签名图片已嵌入`, fieldName, 'ok');
+                                        }
+                                    }
+                                } else {
+                                    // 2) 文字签名：把文字画到页面上
+                                    const textVal = (typeof value === 'string' ? value : '').trim();
+                                    if (textVal !== '' && rect) {
+                                        if (!sigFont) sigFont = await pdfDocLib.embedFont(PDFLib.StandardFonts.Helvetica);
                                         const pages = pdfDocLib.getPages();
                                         const page = pages[info.pageIndex] || pages[0];
                                         if (page) {
@@ -1505,7 +1757,7 @@
                                     }
                                 }
                             } catch (e) {
-                                logDebug(`⚠️ 签名绘制失败 ${fieldName}`, e.message);
+                                logDebug(`⚠️ 签名处理失败 ${fieldName}`, e.message);
                             }
                         } else {
                             // 未知类型，尝试通用方法
@@ -1626,6 +1878,12 @@
                     }
                     field.checked = false;
                     field.value = '';
+                } else if (field.type === 'signature') {
+                    if (field.ctx && field.canvas) field.ctx.clearRect(0, 0, field.canvas.width, field.canvas.height);
+                    if (field.textInput) { field.textInput.value = ''; field.textInput.style.display = 'none'; }
+                    if (field.canvas) field.canvas.style.display = 'block';
+                    field.value = '';
+                    field.signatureImage = null;
                 } else if (el.tagName === 'SELECT') {
                     el.selectedIndex = 0;
                     field.value = el.value;
@@ -1653,6 +1911,14 @@
                         field.elements[0].checked = true;
                         field.value = field.elements[0].value;
                         field.checked = true;
+                    }
+                } else if (field.type === 'signature') {
+                    field.value = '张三';
+                    field.signatureImage = null;
+                    if (field.textInput) {
+                        field.textInput.value = '张三';
+                        field.textInput.style.display = 'block';
+                        if (field.canvas) field.canvas.style.display = 'none';
                     }
                 } else if (el.tagName === 'SELECT') {
                     if (el.options.length > 1) {
@@ -1684,6 +1950,12 @@
                     }
                     field.checked = false;
                     field.value = '';
+                } else if (field.type === 'signature') {
+                    if (field.ctx && field.canvas) field.ctx.clearRect(0, 0, field.canvas.width, field.canvas.height);
+                    if (field.textInput) { field.textInput.value = ''; field.textInput.style.display = 'none'; }
+                    if (field.canvas) field.canvas.style.display = 'block';
+                    field.value = '';
+                    field.signatureImage = null;
                 } else if (el.tagName === 'SELECT') {
                     el.selectedIndex = 0;
                     field.value = el.value;
