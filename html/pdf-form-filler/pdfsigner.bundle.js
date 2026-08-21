@@ -1,3 +1,4 @@
+"use strict";
 var PDFSigner = (() => {
   var __getOwnPropNames = Object.getOwnPropertyNames;
   var __commonJS = (cb, mod) => function __require() {
@@ -5871,7 +5872,7 @@ ${values.join("\n")}` : `${blockName} :`;
           let schema;
           try {
             schema = this.toSchema();
-          } catch {
+          } catch (e) {
             schema = this.toSchema(true);
           }
           return pvtsutils__namespace.Convert.ToString(schema.toBER(), encoding);
@@ -10888,7 +10889,7 @@ ${values.join("\n")}` : `${blockName} :`;
                 const publicKeyInfo = new PublicKeyInfo();
                 try {
                   publicKeyInfo.fromSchema(asn1.result);
-                } catch {
+                } catch (e) {
                   throw new ArgumentError("Incorrect keyData");
                 }
                 switch (alg.name.toUpperCase()) {
@@ -11139,7 +11140,7 @@ ${values.join("\n")}` : `${blockName} :`;
           if (this.name.toLowerCase() === "safari") {
             try {
               return this.subtle.importKey("jwk", pvutils__namespace.stringToArrayBuffer(JSON.stringify(jwk)), algorithm, extractable, keyUsages);
-            } catch {
+            } catch (e) {
               return this.subtle.importKey("jwk", jwk, algorithm, extractable, keyUsages);
             }
           }
@@ -12023,7 +12024,7 @@ ${values.join("\n")}` : `${blockName} :`;
                     }
                   } else
                     result = "SHA-1";
-                } catch {
+                } catch (e) {
                 }
               }
               break;
@@ -18917,7 +18918,7 @@ ${values.join("\n")}` : `${blockName} :`;
               }, crypto2);
               const encryptedKey = await crypto2.encrypt(publicKey.algorithm, publicKey, exportedSessionKey);
               recipientInfo.encryptedKey = new asn1js__namespace.OctetString({ valueHex: encryptedKey });
-            } catch {
+            } catch (e) {
             }
           };
           const SubKEKRecipientInfo = async (index) => {
@@ -19090,7 +19091,7 @@ ${values.join("\n")}` : `${blockName} :`;
             };
             try {
               return await unwrapSessionKey(aesKwKey);
-            } catch {
+            } catch (e) {
               const kdfResult2 = await applyKDF(true);
               const aesKwKey2 = await importAesKwKey(kdfResult2);
               return unwrapSessionKey(aesKwKey2);
@@ -24709,117 +24710,256 @@ ${values.join("\n")}` : `${blockName} :`;
     }
   });
 
-  // bundle-entry.js
-  var require_bundle_entry = __commonJS({
-    "bundle-entry.js"(exports, module) {
+  // src/cert.js
+  var require_cert = __commonJS({
+    "src/cert.js"(exports, module) {
+      "use strict";
+      var pkijs = require_build3();
+      var asn1js = require_build2();
+      function initCryptoEngine() {
+        if (typeof crypto !== "undefined" && crypto.subtle && typeof pkijs.setEngine === "function") {
+          pkijs.setEngine("webcrypto", crypto, crypto.subtle);
+        }
+      }
+      async function makeSelfSignedCert() {
+        initCryptoEngine();
+        const keyPair = await crypto.subtle.generateKey(
+          { name: "RSASSA-PKCS1-v1_5", modulusLength: 2048, publicExponent: new Uint8Array([1, 0, 1]), hash: "SHA-256" },
+          true,
+          ["sign", "verify"]
+        );
+        const cert = new pkijs.Certificate();
+        cert.version = 2;
+        cert.serialNumber = new asn1js.Integer({ valueHex: crypto.getRandomValues(new Uint8Array(16)) });
+        const name = new pkijs.RelativeDistinguishedNames();
+        name.typesAndValues = [
+          new pkijs.AttributeTypeAndValue({ type: "2.5.4.3", value: new asn1js.Utf8String({ value: "pdf-form-filler self-signed" }) })
+        ];
+        cert.subject = name;
+        cert.issuer = name;
+        const now = /* @__PURE__ */ new Date();
+        const notAfter = /* @__PURE__ */ new Date();
+        notAfter.setFullYear(notAfter.getFullYear() + 5);
+        cert.notBefore = new pkijs.Time({ type: 0, value: now });
+        cert.notAfter = new pkijs.Time({ type: 0, value: notAfter });
+        const spki = await crypto.subtle.exportKey("spki", keyPair.publicKey);
+        cert.subjectPublicKeyInfo = new pkijs.PublicKeyInfo({ schema: asn1js.fromBER(spki).result });
+        const ekuSeq = new asn1js.Sequence({ value: [new asn1js.ObjectIdentifier({ value: "1.3.6.1.5.5.7.3.4" })] });
+        cert.extensions = [
+          new pkijs.Extension({
+            extnID: "2.5.29.19",
+            critical: true,
+            extnValue: new asn1js.OctetString({ valueHex: new pkijs.BasicConstraints({ cA: false }).toSchema().toBER(false) }).valueHex
+          }),
+          new pkijs.Extension({
+            extnID: "2.5.29.37",
+            critical: false,
+            extnValue: new asn1js.OctetString({ valueHex: ekuSeq.toBER(false) }).valueHex
+          })
+        ];
+        await cert.sign(keyPair.privateKey, "SHA-256");
+        return { cert, privateKey: keyPair.privateKey };
+      }
+      module.exports = { makeSelfSignedCert, initCryptoEngine };
+    }
+  });
+
+  // src/cms.js
+  var require_cms = __commonJS({
+    "src/cms.js"(exports, module) {
+      "use strict";
+      var asn1js = require_build2();
+      var OID_SHA256 = "2.16.840.1.101.3.4.2.1";
+      var OID_RSA = "1.2.840.113549.1.1.1";
+      var OID_DATA = "1.2.840.113549.1.7.1";
+      var OID_SIGNED_DATA = "1.2.840.113549.1.7.2";
+      var OID_ATTR_CONTENT_TYPE = "1.2.840.113549.1.9.3";
+      var OID_ATTR_SIGNING_TIME = "1.2.840.113549.1.9.5";
+      var OID_ATTR_MESSAGE_DIGEST = "1.2.840.113549.1.9.4";
+      var oid = (v) => new asn1js.ObjectIdentifier({ value: v });
+      var nullAlg = (v) => new asn1js.Sequence({ value: [oid(v), new asn1js.Null()] });
+      var attribute = (typeOid, values) => new asn1js.Sequence({ value: [oid(typeOid), new asn1js.Set({ value: values })] });
+      async function buildCmsSignature(cert, privateKey, digestBytes, signingTime) {
+        const certDer = new Uint8Array(cert.toSchema(true).toBER(false));
+        const issuerName = cert.subject.toSchema().toBER(false);
+        const serialNumber = cert.serialNumber;
+        const timeAsn1 = signingTime.getUTCFullYear() >= 2050 ? new asn1js.GeneralizedTime({ valueDate: signingTime }) : new asn1js.UTCTime({ valueDate: signingTime });
+        const attrSeqs = [
+          attribute(OID_ATTR_CONTENT_TYPE, [oid(OID_DATA)]),
+          attribute(OID_ATTR_MESSAGE_DIGEST, [new asn1js.OctetString({ valueHex: digestBytes })]),
+          attribute(OID_ATTR_SIGNING_TIME, [timeAsn1])
+        ];
+        const attrsSet = new asn1js.Set({ value: attrSeqs });
+        const attrsDer = new Uint8Array(attrsSet.toBER(false));
+        const signature = new Uint8Array(await crypto.subtle.sign("RSASSA-PKCS1-v1_5", privateKey, attrsDer));
+        const signedAttrs0 = new asn1js.Constructed({ idBlock: { tagClass: 3, tagNumber: 0 }, value: attrSeqs });
+        const issuerAndSerial = new asn1js.Sequence({ value: [asn1js.fromBER(issuerName).result, serialNumber] });
+        const signerInfo = new asn1js.Sequence({
+          value: [
+            new asn1js.Integer({ value: 1 }),
+            // version
+            issuerAndSerial,
+            // sid
+            nullAlg(OID_SHA256),
+            // digestAlgorithm
+            signedAttrs0,
+            // [0] signedAttrs
+            nullAlg(OID_RSA),
+            // signatureAlgorithm
+            new asn1js.OctetString({ valueHex: signature })
+            // signature
+          ]
+        });
+        const signedData = new asn1js.Sequence({
+          value: [
+            new asn1js.Integer({ value: 1 }),
+            // version
+            new asn1js.Set({ value: [nullAlg(OID_SHA256)] }),
+            // digestAlgorithms
+            new asn1js.Sequence({ value: [oid(OID_DATA)] }),
+            // encapContentInfo (detached)
+            new asn1js.Constructed({ idBlock: { tagClass: 3, tagNumber: 0 }, value: [asn1js.fromBER(certDer).result] }),
+            // [0] certificates
+            new asn1js.Set({ value: [signerInfo] })
+            // signerInfos
+          ]
+        });
+        const contentInfo = new asn1js.Sequence({
+          value: [
+            oid(OID_SIGNED_DATA),
+            new asn1js.Constructed({ idBlock: { tagClass: 3, tagNumber: 0 }, value: [signedData] })
+            // [0] EXPLICIT SignedData
+          ]
+        });
+        return new Uint8Array(contentInfo.toBER(false));
+      }
+      module.exports = { buildCmsSignature };
+    }
+  });
+
+  // src/utils.js
+  var require_utils2 = __commonJS({
+    "src/utils.js"(exports, module) {
+      "use strict";
+      function bytesToLatin1(bytes) {
+        let s = "";
+        const CHUNK = 8192;
+        for (let i = 0; i < bytes.length; i += CHUNK) {
+          s += String.fromCharCode.apply(null, bytes.subarray(i, i + CHUNK));
+        }
+        return s;
+      }
+      function latin1ToBytes(str) {
+        const out = new Uint8Array(str.length);
+        for (let i = 0; i < str.length; i++) out[i] = str.charCodeAt(i) & 255;
+        return out;
+      }
+      function bytesToHex(bytes) {
+        let s = "";
+        for (let i = 0; i < bytes.length; i++) s += bytes[i].toString(16).padStart(2, "0");
+        return s;
+      }
+      module.exports = { bytesToLatin1, latin1ToBytes, bytesToHex };
+    }
+  });
+
+  // src/sign-pdf.js
+  var require_sign_pdf = __commonJS({
+    "src/sign-pdf.js"(exports, module) {
+      "use strict";
+      var { bytesToLatin1, latin1ToBytes, bytesToHex } = require_utils2();
+      var { makeSelfSignedCert } = require_cert();
+      var { buildCmsSignature } = require_cms();
+      var cachedSigner = null;
+      async function getOrCreateSigner() {
+        if (!cachedSigner) cachedSigner = await makeSelfSignedCert();
+        return cachedSigner;
+      }
+      async function signPdfBytes(pdfBytes, signer) {
+        const s = signer || await getOrCreateSigner();
+        let pdf = bytesToLatin1(pdfBytes);
+        const brPos = pdf.indexOf("/ByteRange");
+        if (brPos < 0) throw new Error("\u672A\u627E\u5230 /ByteRange \u5360\u4F4D\u7B26");
+        const brEnd = pdf.indexOf("]", brPos) + 1;
+        const brPlaceholderLen = brEnd - brPos;
+        const ctPos = pdf.indexOf("/Contents ", brEnd);
+        const placeholderPos = pdf.indexOf("<", ctPos);
+        const placeholderEnd = pdf.indexOf(">", placeholderPos);
+        if (placeholderPos < 0 || placeholderEnd < 0) throw new Error("\u672A\u627E\u5230 /Contents \u5360\u4F4D\u7B26");
+        const placeholderWithBrackets = placeholderEnd + 1 - placeholderPos;
+        const placeholderHexLen = placeholderWithBrackets - 2;
+        const byteRange = [0, placeholderPos, placeholderPos + placeholderWithBrackets, pdf.length - (placeholderPos + placeholderWithBrackets)];
+        const actualBR = `/ByteRange [${byteRange.join(" ")}]`;
+        const paddedBR = actualBR + " ".repeat(Math.max(0, brPlaceholderLen - actualBR.length));
+        pdf = pdf.slice(0, brPos) + paddedBR + pdf.slice(brEnd);
+        pdf = pdf.slice(0, byteRange[1]) + pdf.slice(byteRange[2]);
+        const digest = new Uint8Array(await crypto.subtle.digest("SHA-256", latin1ToBytes(pdf)));
+        const cmsDer = await buildCmsSignature(s.cert, s.privateKey, digest, /* @__PURE__ */ new Date());
+        const hex = bytesToHex(cmsDer);
+        if (hex.length > placeholderHexLen) throw new Error(`\u7B7E\u540D\u8FC7\u5927: ${hex.length} > ${placeholderHexLen}`);
+        const paddedHex = hex + "0".repeat(placeholderHexLen - hex.length);
+        pdf = pdf.slice(0, byteRange[1]) + `<${paddedHex}>` + pdf.slice(byteRange[1]);
+        return latin1ToBytes(pdf);
+      }
+      module.exports = { signPdfBytes, getOrCreateSigner };
+    }
+  });
+
+  // src/placeholder.js
+  var require_placeholder = __commonJS({
+    "src/placeholder.js"(exports, module) {
+      "use strict";
+      var PLACEHOLDER_HEX_LEN = 8192;
+      function addSignaturePlaceholder({ pdfLib, pdfDocLib, field, placeholderHexLen = PLACEHOLDER_HEX_LEN }) {
+        const fieldDict = field && field.acroField && field.acroField.dict;
+        if (!fieldDict) throw new Error("\u7B7E\u540D\u5B57\u6BB5\u6CA1\u6709\u53EF\u7528\u7684 dict");
+        const sigDictRef = pdfDocLib.context.nextRef();
+        const sigDict = pdfDocLib.context.obj({
+          Type: pdfLib.PDFName.of("Sig"),
+          ByteRange: pdfDocLib.context.obj([
+            pdfLib.PDFNumber.of(0),
+            pdfLib.PDFName.of("**********"),
+            pdfLib.PDFName.of("**********"),
+            pdfLib.PDFName.of("**********")
+          ]),
+          Contents: pdfLib.PDFHexString.of("0".repeat(placeholderHexLen)),
+          Filter: pdfLib.PDFName.of("Adobe.PPKLite"),
+          SubFilter: pdfLib.PDFName.of("adbe.pkcs7.detached")
+        });
+        pdfDocLib.context.assign(sigDictRef, sigDict);
+        fieldDict.set(pdfLib.PDFName.of("V"), sigDictRef);
+        return sigDictRef;
+      }
+      module.exports = { addSignaturePlaceholder, PLACEHOLDER_HEX_LEN };
+    }
+  });
+
+  // src/index.js
+  var require_index = __commonJS({
+    "src/index.js"(exports, module) {
+      var pkijs = require_build3();
+      var asn1js = require_build2();
+      var { initCryptoEngine } = require_cert();
+      var { makeSelfSignedCert } = require_cert();
+      var { buildCmsSignature } = require_cms();
+      var { signPdfBytes, getOrCreateSigner } = require_sign_pdf();
+      var { addSignaturePlaceholder, PLACEHOLDER_HEX_LEN } = require_placeholder();
+      var { bytesToLatin1, latin1ToBytes, bytesToHex } = require_utils2();
+      initCryptoEngine();
       module.exports = {
-        pkijs: require_build3(),
-        asn1js: require_build2()
+        pkijs,
+        asn1js,
+        PLACEHOLDER_HEX_LEN,
+        bytesToLatin1,
+        latin1ToBytes,
+        bytesToHex,
+        makeSelfSignedCert,
+        getOrCreateSigner,
+        buildCmsSignature,
+        signPdfBytes,
+        addSignaturePlaceholder
       };
     }
   });
-  return require_bundle_entry();
+  return require_index();
 })();
-/*! Bundled license information:
-
-pvtsutils/build/index.js:
-  (*!
-   * MIT License
-   * 
-   * Copyright (c) 2017-2024 Peculiar Ventures, LLC
-   * 
-   * Permission is hereby granted, free of charge, to any person obtaining a copy
-   * of this software and associated documentation files (the "Software"), to deal
-   * in the Software without restriction, including without limitation the rights
-   * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-   * copies of the Software, and to permit persons to whom the Software is
-   * furnished to do so, subject to the following conditions:
-   * 
-   * The above copyright notice and this permission notice shall be included in all
-   * copies or substantial portions of the Software.
-   * 
-   * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-   * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-   * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-   * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-   * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-   * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-   * SOFTWARE.
-   * 
-   *)
-
-pvutils/build/utils.js:
-  (*!
-   Copyright (c) Peculiar Ventures, LLC
-  *)
-
-asn1js/build/index.js:
-  (*!
-   * Copyright (c) 2014, GMO GlobalSign
-   * Copyright (c) 2015-2022, Peculiar Ventures
-   * All rights reserved.
-   * 
-   * Author 2014-2019, Yury Strozhevsky
-   * 
-   * Redistribution and use in source and binary forms, with or without modification,
-   * are permitted provided that the following conditions are met:
-   * 
-   * * Redistributions of source code must retain the above copyright notice, this
-   *   list of conditions and the following disclaimer.
-   * 
-   * * Redistributions in binary form must reproduce the above copyright notice, this
-   *   list of conditions and the following disclaimer in the documentation and/or
-   *   other materials provided with the distribution.
-   * 
-   * * Neither the name of the copyright holder nor the names of its
-   *   contributors may be used to endorse or promote products derived from
-   *   this software without specific prior written permission.
-   * 
-   * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-   * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-   * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-   * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
-   * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-   * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-   * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
-   * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-   * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-   * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-   * 
-   *)
-
-pkijs/build/index.js:
-  (*!
-   * Copyright (c) 2014, GlobalSign
-   * Copyright (c) 2015-2019, Peculiar Ventures
-   * All rights reserved.
-   * 
-   * Author 2014-2019, Yury Strozhevsky
-   * 
-   * Redistribution and use in source and binary forms, with or without modification,
-   * are permitted provided that the following conditions are met:
-   * 
-   * * Redistributions of source code must retain the above copyright notice, this
-   *   list of conditions and the following disclaimer.
-   * 
-   * * Redistributions in binary form must reproduce the above copyright notice, this
-   *   list of conditions and the following disclaimer in the documentation and/or
-   *   other materials provided with the distribution.
-   * 
-   * * Neither the name of the {organization} nor the names of its
-   *   contributors may be used to endorse or promote products derived from
-   *   this software without specific prior written permission.
-   * 
-   * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-   * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-   * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-   * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
-   * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-   * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-   * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
-   * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-   * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-   * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-   * 
-   *)
-*/

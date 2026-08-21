@@ -1565,175 +1565,10 @@
         }
 
         // ============================================================
-        // ✅ 自签名证书 + PKCS#7 分离数字签名（浏览器内完成）
-        // 依赖全局 PDFSigner（pdfsigner.bundle.js，esbuild 打包的 pkijs/asn1js）
+        // ✅ 自签名证书 + PKCS#7 分离数字签名
+        // 由 sigdev（pdf-signer 库）`npm run build` 打成 pdfsigner.bundle.js，
+        // 暴露全局 PDFSigner。这里只是薄封装，具体实现在库里。
         // ============================================================
-
-        function bytesToLatin1(bytes) {
-            let s = '';
-            const CHUNK = 8192;
-            for (let i = 0; i < bytes.length; i += CHUNK) {
-                s += String.fromCharCode.apply(null, bytes.subarray(i, i + CHUNK));
-            }
-            return s;
-        }
-        function latin1ToBytes(str) {
-            const out = new Uint8Array(str.length);
-            for (let i = 0; i < str.length; i++) out[i] = str.charCodeAt(i) & 0xff;
-            return out;
-        }
-        function bytesToHex(bytes) {
-            let s = '';
-            for (let i = 0; i < bytes.length; i++) s += bytes[i].toString(16).padStart(2, '0');
-            return s;
-        }
-
-        // 会话级缓存：同一会话多次导出复用同一自签名证书，避免每次都生成 RSA 密钥
-        let cachedDigitalSigner = null;
-
-        // 生成自签名 X.509 证书 + RSA-2048 密钥对（用浏览器 WebCrypto）
-        async function makeSelfSignedCert(pkijs, asn1js) {
-            const keyPair = await crypto.subtle.generateKey(
-                { name: 'RSASSA-PKCS1-v1_5', modulusLength: 2048, publicExponent: new Uint8Array([1, 0, 1]), hash: 'SHA-256' },
-                true, ['sign', 'verify']
-            );
-            const cert = new pkijs.Certificate();
-            cert.version = 2;
-            cert.serialNumber = new asn1js.Integer({ valueHex: crypto.getRandomValues(new Uint8Array(16)) });
-            const name = new pkijs.RelativeDistinguishedNames();
-            name.typesAndValues = [
-                new pkijs.AttributeTypeAndValue({ type: '2.5.4.3', value: new asn1js.Utf8String({ value: 'pdf-form-filler self-signed' }) }),
-            ];
-            cert.subject = name;
-            cert.issuer = name;
-            const now = new Date();
-            const notAfter = new Date();
-            notAfter.setFullYear(notAfter.getFullYear() + 5);
-            cert.notBefore = new pkijs.Time({ type: 0, value: now });
-            cert.notAfter = new pkijs.Time({ type: 0, value: notAfter });
-            const spki = await crypto.subtle.exportKey('spki', keyPair.publicKey);
-            cert.subjectPublicKeyInfo = new pkijs.PublicKeyInfo({ schema: asn1js.fromBER(spki).result });
-            const ekuSeq = new asn1js.Sequence({ value: [new asn1js.ObjectIdentifier({ value: '1.3.6.1.5.5.7.3.4' })] });
-            cert.extensions = [
-                new pkijs.Extension({
-                    extnID: '2.5.29.19', critical: true,
-                    extnValue: new asn1js.OctetString({ valueHex: new pkijs.BasicConstraints({ cA: false }).toSchema().toBER(false) }).valueHex,
-                }),
-                new pkijs.Extension({
-                    extnID: '2.5.29.37', critical: false,
-                    extnValue: new asn1js.OctetString({ valueHex: ekuSeq.toBER(false) }).valueHex,
-                }),
-            ];
-            await cert.sign(keyPair.privateKey, 'SHA-256');
-            return { cert, privateKey: keyPair.privateKey };
-        }
-
-        async function ensureDigitalSigner() {
-            if (cachedDigitalSigner) return cachedDigitalSigner;
-            const { pkijs, asn1js } = PDFSigner;
-            pkijs.setEngine('webcrypto', crypto, crypto.subtle);
-            cachedDigitalSigner = await makeSelfSignedCert(pkijs, asn1js);
-            return cachedDigitalSigner;
-        }
-
-        // 手动构造 CMS（adbe.pkcs7.detached）并签名
-        async function buildCmsSignature(cert, privateKey, digestBytes, signingTime, pkijs, asn1js) {
-            const OID_SHA256 = '2.16.840.1.101.3.4.2.1';
-            const OID_RSA = '1.2.840.113549.1.1.1';
-            const OID_DATA = '1.2.840.113549.1.7.1';
-            const OID_SIGNED_DATA = '1.2.840.113549.1.7.2';
-            const OID_ATTR_CONTENT_TYPE = '1.2.840.113549.1.9.3';
-            const OID_ATTR_SIGNING_TIME = '1.2.840.113549.1.9.5';
-            const OID_ATTR_MESSAGE_DIGEST = '1.2.840.113549.1.9.4';
-            const oid = (v) => new asn1js.ObjectIdentifier({ value: v });
-            const nullAlg = (v) => new asn1js.Sequence({ value: [oid(v), new asn1js.Null()] });
-            const attribute = (typeOid, values) => new asn1js.Sequence({ value: [oid(typeOid), new asn1js.Set({ value: values })] });
-
-            const certDer = new Uint8Array(cert.toSchema(true).toBER(false));
-            const issuerName = cert.subject.toSchema().toBER(false);
-            const serialNumber = cert.serialNumber;
-            const timeAsn1 = signingTime.getUTCFullYear() >= 2050
-                ? new asn1js.GeneralizedTime({ valueDate: signingTime })
-                : new asn1js.UTCTime({ valueDate: signingTime });
-
-            // signedAttrs 按 DER 排序：contentType < messageDigest < signingTime
-            const attrSeqs = [
-                attribute(OID_ATTR_CONTENT_TYPE, [oid(OID_DATA)]),
-                attribute(OID_ATTR_MESSAGE_DIGEST, [new asn1js.OctetString({ valueHex: digestBytes })]),
-                attribute(OID_ATTR_SIGNING_TIME, [timeAsn1]),
-            ];
-            const attrsSet = new asn1js.Set({ value: attrSeqs });
-            const attrsDer = new Uint8Array(attrsSet.toBER(false));
-            const signature = new Uint8Array(await crypto.subtle.sign('RSASSA-PKCS1-v1_5', privateKey, attrsDer));
-
-            const signedAttrs0 = new asn1js.Constructed({ idBlock: { tagClass: 3, tagNumber: 0 }, value: attrSeqs });
-            const signerInfo = new asn1js.Sequence({
-                value: [
-                    new asn1js.Integer({ value: 1 }),
-                    new asn1js.Sequence({ value: [asn1js.fromBER(issuerName).result, serialNumber] }),
-                    nullAlg(OID_SHA256),
-                    signedAttrs0,
-                    nullAlg(OID_RSA),
-                    new asn1js.OctetString({ valueHex: signature }),
-                ],
-            });
-            const signedData = new asn1js.Sequence({
-                value: [
-                    new asn1js.Integer({ value: 1 }),
-                    new asn1js.Set({ value: [nullAlg(OID_SHA256)] }),
-                    new asn1js.Sequence({ value: [oid(OID_DATA)] }),
-                    new asn1js.Constructed({ idBlock: { tagClass: 3, tagNumber: 0 }, value: [asn1js.fromBER(certDer).result] }),
-                    new asn1js.Set({ value: [signerInfo] }),
-                ],
-            });
-            const contentInfo = new asn1js.Sequence({
-                value: [
-                    oid(OID_SIGNED_DATA),
-                    new asn1js.Constructed({ idBlock: { tagClass: 3, tagNumber: 0 }, value: [signedData] }),
-                ],
-            });
-            return new Uint8Array(contentInfo.toBER(false));
-        }
-
-        // PDF ByteRange 分离签名（占位符已在字段 dict 里）
-        async function signPdfBytes(pdfBytes, signer, pkijs, asn1js) {
-            let pdf = bytesToLatin1(pdfBytes);
-            const brPos = pdf.indexOf('/ByteRange');
-            if (brPos < 0) throw new Error('未找到 /ByteRange 占位符');
-            const brEnd = pdf.indexOf(']', brPos) + 1;
-            const brPlaceholderLen = brEnd - brPos;
-            const ctPos = pdf.indexOf('/Contents ', brEnd);
-            const placeholderPos = pdf.indexOf('<', ctPos);
-            const placeholderEnd = pdf.indexOf('>', placeholderPos);
-            if (placeholderPos < 0 || placeholderEnd < 0) throw new Error('未找到 /Contents 占位符');
-            const placeholderWithBrackets = placeholderEnd + 1 - placeholderPos;
-            const placeholderHexLen = placeholderWithBrackets - 2;
-            const byteRange = [0, placeholderPos, placeholderPos + placeholderWithBrackets, pdf.length - (placeholderPos + placeholderWithBrackets)];
-
-            // 1) 替换 ByteRange 数字（等长，补空格）
-            const actualBR = `/ByteRange [${byteRange.join(' ')}]`;
-            const paddedBR = actualBR + ' '.repeat(Math.max(0, brPlaceholderLen - actualBR.length));
-            pdf = pdf.slice(0, brPos) + paddedBR + pdf.slice(brEnd);
-
-            // 2) 移除 Contents 占位符
-            pdf = pdf.slice(0, byteRange[1]) + pdf.slice(byteRange[2]);
-
-            // 3) 摘要 = sha256(整个缩短后的文件)
-            const toHash = latin1ToBytes(pdf);
-            const digest = new Uint8Array(await crypto.subtle.digest('SHA-256', toHash));
-
-            // 4) 构造 CMS 并签名
-            const cmsDer = await buildCmsSignature(signer.cert, signer.privateKey, digest, new Date(), pkijs, asn1js);
-
-            // 5) hex 化并补齐到占位符长度
-            const hex = bytesToHex(cmsDer);
-            if (hex.length > placeholderHexLen) throw new Error(`签名过大: ${hex.length} > ${placeholderHexLen}`);
-            const paddedHex = hex + '0'.repeat(placeholderHexLen - hex.length);
-
-            // 6) 回插 Contents
-            pdf = pdf.slice(0, byteRange[1]) + `<${paddedHex}>` + pdf.slice(byteRange[1]);
-            return latin1ToBytes(pdf);
-        }
 
         // 对已保存的 PDF 字节应用数字签名（若 PDFSigner 未加载则跳过）
         async function applyDigitalSignature(pdfBytes) {
@@ -1741,10 +1576,7 @@
                 logDebug('⚠️ 数字签名组件未加载，跳过', '', 'error');
                 return pdfBytes;
             }
-            const { pkijs, asn1js } = window.PDFSigner;
-            pkijs.setEngine('webcrypto', crypto, crypto.subtle);
-            const signer = await ensureDigitalSigner();
-            return await signPdfBytes(pdfBytes, signer, pkijs, asn1js);
+            return await window.PDFSigner.signPdfBytes(pdfBytes);
         }
 
         // --- 导出填充后的 PDF ---
@@ -1828,7 +1660,7 @@
                 let sigFont = null;
 
                 // 数字签名：仅对第一个有值的签名字段添加 PKCS#7 占位符（v1 单签名）
-                const SIG_PLACEHOLDER_HEX_LEN = 8192;
+                const SIG_PLACEHOLDER_HEX_LEN = (window.PDFSigner && window.PDFSigner.PLACEHOLDER_HEX_LEN) || 8192;
                 let digitalSigRequested = false;
 
                 // ✅ 遍历所有字段并填充
@@ -1949,25 +1781,15 @@
                                 // 3) 给字段 dict 添加 PKCS#7 数字签名占位符（仅第一个有值的签名字段）
                                 const hasSigValue = (imageDataUrl && rect) ||
                                     (typeof value === 'string' && value.trim() !== '' && rect);
-                                if (hasSigValue && !digitalSigRequested && field.acroField && field.acroField.dict) {
-                                    const fieldDict = field.acroField.dict;
+                                if (hasSigValue && !digitalSigRequested && field.acroField && field.acroField.dict && window.PDFSigner) {
                                     try {
                                         // 签名字典作为独立的 /V 对象（Acrobat 识别要求，参照 UPDF 的结构）
-                                        const sigDictRef = pdfDocLib.context.nextRef();
-                                        const sigDict = pdfDocLib.context.obj({
-                                            Type: PDFLib.PDFName.of('Sig'),
-                                            ByteRange: pdfDocLib.context.obj([
-                                                PDFLib.PDFNumber.of(0),
-                                                PDFLib.PDFName.of('**********'),
-                                                PDFLib.PDFName.of('**********'),
-                                                PDFLib.PDFName.of('**********'),
-                                            ]),
-                                            Contents: PDFLib.PDFHexString.of('0'.repeat(SIG_PLACEHOLDER_HEX_LEN)),
-                                            Filter: PDFLib.PDFName.of('Adobe.PPKLite'),
-                                            SubFilter: PDFLib.PDFName.of('adbe.pkcs7.detached'),
+                                        window.PDFSigner.addSignaturePlaceholder({
+                                            pdfLib: PDFLib,
+                                            pdfDocLib,
+                                            field,
+                                            placeholderHexLen: SIG_PLACEHOLDER_HEX_LEN,
                                         });
-                                        pdfDocLib.context.assign(sigDictRef, sigDict);
-                                        fieldDict.set(PDFLib.PDFName.of('V'), sigDictRef);
                                         digitalSigRequested = true;
                                         logDebug('🔐 已准备数字签名占位符', fieldName, 'ok');
                                     } catch (sigErr) {
