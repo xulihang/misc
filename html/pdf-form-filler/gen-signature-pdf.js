@@ -6,7 +6,8 @@
  *      - Patient Signature   （患者签名）
  *      - Attorney Signature  （律师签名）
  *  - 每个签名 TextField 都通过字段字典里的自定义键 /Meta 挂载一段 JSON 元数据
- *    （签名者姓名、角色、userId、email、签名时间等），不同用户的签名元数据不同。
+ *    （签名者姓名、角色、userId、email、签名时间等）。
+ *  - 多页是同一个患者 + 同一个律师签署（同一组用户元数据），只是每一页各自有一个签名实例。
  *  - 每页会随机生成一些 checkbox / radio / dropdown / multiline 等其它表单控件。
  *  - 最后一页的签名区域额外带一个 "Date of signature" 的 TextField。
  *
@@ -29,17 +30,10 @@ function mulberry32(a) {
   };
 }
 
-// 各页签名对应的用户元数据。每页一个患者 + 一个律师，元数据各不相同。
-const SIGNERS_PER_PAGE = [
-  {
-    patient:   { userId: 'P-1001', name: 'Alice Johnson', email: 'alice.johnson@example.com' },
-    attorney:  { userId: 'A-2001', name: 'Bob Smith',     email: 'bob.smith@lawfirm.example.com' },
-  },
-  {
-    patient:   { userId: 'P-1002', name: 'Carol Lee',     email: 'carol.lee@example.com' },
-    attorney:  { userId: 'A-2002', name: 'David Chen',    email: 'david.chen@lawfirm.example.com' },
-  },
-];
+// 同一份文件由同一个患者 + 同一个律师签署：多页共用同一组用户元数据。
+// （signatureId 里仍带页号，用于区分同一用户在每一页上的签名实例。）
+const PATIENT =  { userId: 'P-1001', name: 'Alice Johnson', email: 'alice.johnson@example.com' };
+const ATTORNEY = { userId: 'A-2001', name: 'Bob Smith',     email: 'bob.smith@lawfirm.example.com' };
 
 // 随机控件池。每页从中随机抽取几个（带页号后缀保证字段名全局唯一）。
 const CONTROL_POOL = [
@@ -70,14 +64,17 @@ function buildSignatureMeta(role, signer, signatureId, seed) {
 }
 
 // 把元数据挂到 acroform 字段的字典上：/Meta 放 JSON，/TU 放人类可读描述。
+// /TU 是 alternate field name（阅读器里显示为字段描述/工具提示）。
+// 签名字段的 meta 带 role（'patient' | 'attorney'），patient initials 的 meta 带 type。
 function attachMetadata(textField, meta) {
   textField.acroField.dict.set(
     PDFLib.PDFName.of('Meta'),
     PDFLib.PDFString.of(JSON.stringify(meta))
   );
+  const kind = meta.role ? `${meta.role} signature` : meta.type;
   textField.acroField.dict.set(
     PDFLib.PDFName.of('TU'),
-    PDFLib.PDFString.of(`${meta.role} signature · ${meta.name} (${meta.userId})`)
+    PDFLib.PDFString.of(`${kind} · ${meta.name} (${meta.userId})`)
   );
 }
 
@@ -152,7 +149,7 @@ function addRandomControls(page, form, font, rand, pageIndex) {
 
 // 绘制一段同意声明，段内嵌一个行内 TextField 用于填 patient initials。
 function addInitialsParagraph(page, form, font, pageIndex, seed) {
-  const signer = SIGNERS_PER_PAGE[pageIndex].patient;
+  const signer = PATIENT; // 两页是同一个患者
   const size = 10, x = 50, color = PDFLib.rgb(0.15, 0.15, 0.15);
 
   const line1 = 'I, the undersigned patient, acknowledge that I have received and understood';
@@ -195,8 +192,8 @@ function addSignatureArea(doc, page, form, font, bold, pageIndex, isLastPage, se
     return tf;
   };
 
-  place(x1, 'Patient Signature', 'patient', SIGNERS_PER_PAGE[pageIndex].patient);
-  place(x2, 'Attorney Signature', 'attorney', SIGNERS_PER_PAGE[pageIndex].attorney);
+  place(x1, 'Patient Signature', 'patient', PATIENT);
+  place(x2, 'Attorney Signature', 'attorney', ATTORNEY);
 
   // 最后一页的签名位置额外加一个 "Date of signature" 文本框。
   if (isLastPage) {
