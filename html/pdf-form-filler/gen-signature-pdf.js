@@ -128,14 +128,15 @@ function addRandomControls(page, form, font, rand, pageIndex) {
       const ml = form.createTextField(name);
       ml.enableMultiline();
       ml.addToPage(page, { x: x + 120, y: y - 36, width: 220, height: 56 });
-      y -= 64;
+      y -= 112; // 36 (box top offset) + 56 (box height) + 20 (gap)
     } else if (c.kind === 'listbox') {
       label(c.label + ':');
       const lb = form.createOptionList(name);
       lb.addOptions(c.options);
       lb.select(c.options.slice(0, 2));
-      lb.addToPage(page, { x: x + 120, y: y - 40, width: 200, height: 64 });
-      y -= 72;
+      // 框体顶部对齐标签基线下方 4pt（旧位置 y-40 会让框体向上伸进上一个控件，导致与它重叠）
+      lb.addToPage(page, { x: x + 120, y: y - 68, width: 200, height: 64 });
+      y -= 108; // 68 (box bottom offset) + 40 (box 下方净空)
     } else {
       // text
       label(c.label + ':');
