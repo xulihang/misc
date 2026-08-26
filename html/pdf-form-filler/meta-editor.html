@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PDF 表单元数据编辑器</title>
+    <!-- 与 filler.html 相同的 CDN：pdf.js 渲染预览 + pdf-lib 读写字段 dict -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js">
+    </script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f0f2f5;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container { max-width: 1500px; margin: 0 auto; }
+
+        /* ---- 顶部工具栏 ---- */
+        .toolbar {
+            background: white;
+            border-radius: 12px;
+            padding: 12px 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .toolbar .file-input-wrapper { position: relative; overflow: hidden; }
+        .toolbar .file-input-wrapper input[type="file"] {
+            position: absolute; left: 0; top: 0; opacity: 0;
+            width: 100%; height: 100%; cursor: pointer;
+        }
+        .btn {
+            padding: 6px 16px; border: none; border-radius: 6px;
+            font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s;
+        }
+        .btn-primary { background: #1a73e8; color: white; }
+        .btn-primary:hover { background: #1557b0; }
+        .btn-success { background: #34a853; color: white; }
+        .btn-success:hover { background: #2d9249; }
+        .btn-outline { background: transparent; color: #1a73e8; border: 2px solid #1a73e8; }
+        .btn-outline:hover { background: #1a73e8; color: white; }
+        .btn-danger { background: #ea4335; color: white; }
+        .btn-danger:hover { background: #d33426; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .file-name { color: #666; font-size: 13px; margin-left: 4px; }
+        .status-line { margin-left: auto; color: #888; font-size: 12px; }
+
+        /* ---- 主布局：左预览 + 右侧栏 ---- */
+        .main-layout { display: flex; gap: 16px; align-items: flex-start; }
+        .pdf-wrapper {
+            flex: 1;
+            background: white; border-radius: 12px; padding: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            min-height: 500px; position: relative; overflow: auto;
+        }
+        .pdf-wrapper .empty-tip {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            height: 60vh; color: #aaa; font-size: 14px; line-height: 2; text-align: center;
+        }
+        #pdf-container { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+        .pdf-page { position: relative; box-shadow: 0 2px 12px rgba(0,0,0,0.12); border-radius: 4px; overflow: hidden; background: white; }
+        .pdf-page canvas { display: block; }
+        .form-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+        /* 字段框（默认淡紫虚线；选中态高亮） */
+        .field-box {
+            position: absolute;
+            border: 2px solid rgba(124, 58, 237, 0.35);
+            background: rgba(124, 58, 237, 0.04);
+            border-radius: 2px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .field-box:hover { border-color: #7c3aed; background: rgba(124, 58, 237, 0.12); }
+        .field-box.has-meta { border-style: solid; }
+        .field-box.no-meta { border-style: dashed; border-color: rgba(0, 0, 0, 0.25); background: transparent; }
+        .field-box.selected {
+            border: 3px solid #7c3aed;
+            background: rgba(124, 58, 237, 0.18);
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.25);
+            z-index: 10;
+        }
+        .field-box .box-label {
+            position: absolute; top: -16px; left: 0;
+            font-size: 9px; color: white; background: #7c3aed;
+            padding: 1px 5px; border-radius: 3px; white-space: nowrap;
+            max-width: 180px; overflow: hidden; text-overflow: ellipsis;
+        }
+
+        /* ---- 右侧栏 ---- */
+        .sidebar {
+            width: 400px; min-width: 400px;
+            background: white; border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            max-height: calc(100vh - 40px);
+            display: flex; flex-direction: column; position: sticky; top: 20px;
+            overflow: hidden;
+        }
+        .side-header {
+            padding: 12px 16px; border-bottom: 1px solid #e9ecef;
+            font-weight: 600; color: #333;
+            display: flex; justify-content: space-between; align-items: center;
+            flex-shrink: 0; font-size: 13px;
+        }
+        .side-header .count { background: #7c3aed; color: white; padding: 1px 10px; border-radius: 12px; font-size: 11px; }
+
+        /* 字段列表 */
+        .field-list { overflow-y: auto; padding: 4px 0; flex: 1; min-height: 120px; border-bottom: 1px solid #e9ecef; }
+        .field-item {
+            padding: 4px 12px; display: flex; align-items: center; gap: 8px;
+            font-size: 12px; border-bottom: 1px solid #f1f3f5; cursor: pointer;
+        }
+        .field-item:hover { background: #f5f0ff; }
+        .field-item.selected { background: #ede9fe; }
+        .field-item .name { color: #333; font-weight: 500; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .field-item .type { color: #888; font-size: 10px; background: #f1f3f5; padding: 1px 6px; border-radius: 10px; flex-shrink: 0; }
+        .field-item .meta-badge { font-size: 10px; padding: 1px 6px; border-radius: 10px; flex-shrink: 0; }
+        .field-item .meta-badge.yes { background: #ede9fe; color: #6d28d9; }
+        .field-item .meta-badge.no { background: #f1f3f5; color: #999; }
+        .field-item .dirty { color: #ea4335; font-size: 10px; flex-shrink: 0; }
+        .field-list .empty-msg { padding: 24px 20px; text-align: center; color: #aaa; font-size: 13px; }
+
+        /* 元数据编辑器 */
+        .editor { padding: 14px 16px; overflow-y: auto; flex-shrink: 0; max-height: 55%; display: flex; flex-direction: column; gap: 10px; }
+        .editor .ed-title { font-weight: 600; color: #333; font-size: 13px; }
+        .editor .ed-field-name { font-size: 12px; color: #555; word-break: break-all; }
+        .editor .ed-row { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #666; flex-wrap: wrap; }
+        .editor label { flex-shrink: 0; }
+        .editor select, .editor input[type="text"] {
+            padding: 4px 8px; border: 1px solid #ced4da; border-radius: 6px; font-size: 12px;
+        }
+        .editor textarea {
+            width: 100%; min-height: 150px; resize: vertical;
+            font-family: Consolas, Monaco, 'Courier New', monospace;
+            font-size: 12px; padding: 8px; border: 1px solid #ced4da; border-radius: 6px;
+            line-height: 1.5;
+        }
+        .editor textarea.invalid { border-color: #ea4335; box-shadow: 0 0 0 3px rgba(234,67,53,0.15); }
+        .editor .hint { font-size: 11px; color: #999; }
+        .editor .valid-msg { font-size: 11px; min-height: 16px; }
+        .editor .valid-msg.ok { color: #34a853; }
+        .editor .valid-msg.err { color: #ea4335; }
+        .editor .ed-actions { display: flex; gap: 8px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- 工具栏 -->
+    <div class="toolbar">
+        <div class="file-input-wrapper">
+            <button class="btn btn-primary" type="button">📂 选择 PDF</button>
+            <input type="file" id="fileInput" accept="application/pdf,.pdf" />
+        </div>
+        <span class="file-name" id="fileName">未选择文件</span>
+        <button class="btn btn-outline" id="resetBtn" type="button" disabled>↺ 重新加载</button>
+        <button class="btn btn-success" id="exportBtn" type="button" disabled>⬇ 下载修改后的 PDF</button>
+        <span class="status-line" id="statusLine"></span>
+    </div>
+
+    <div class="main-layout">
+        <!-- PDF 预览 -->
+        <div class="pdf-wrapper">
+            <div class="empty-tip" id="emptyTip">
+                <div>选择一份 PDF 后在此预览，紫色框是表单字段。</div>
+                <div style="font-size:12px;color:#bbb">
+                    可先用 <code>node gen-signature-pdf.js</code> 生成带 /Meta 元数据的示例 PDF
+                </div>
+            </div>
+            <div id="pdf-container" style="display:none"></div>
+        </div>
+
+        <!-- 右侧栏：字段列表 + 元数据编辑器 -->
+        <div class="sidebar">
+            <div class="side-header">
+                <span>表单字段</span>
+                <span class="count" id="sidebarCount">0</span>
+            </div>
+            <div class="field-list" id="fieldList"></div>
+            <div class="editor" id="editor" style="display:none">
+                <div class="ed-title">字段元数据 <span class="ed-field-name" id="edName"></span></div>
+                <div class="ed-row" id="edBadges"></div>
+
+                <!-- /Meta JSON：纯手动编辑，不做任何自动推导 -->
+                <div class="ed-row"><label for="edJson">/Meta JSON</label><span class="hint">改完点“应用修改”才写回 PDF</span></div>
+                <textarea id="edJson" spellcheck="false" placeholder="{}"></textarea>
+                <div class="valid-msg" id="edValid"></div>
+
+                <!-- /TU：纯手动输入，写什么就是什么，不做自动推导 -->
+                <div class="ed-row"><label for="edTu">/TU 描述</label><span class="hint">手动输入，原样写入；留空则不写 /TU</span></div>
+                <input type="text" id="edTu" placeholder="例如：patient initials · Alice Johnson (P-1001)" />
+
+                <div class="ed-actions">
+                    <button class="btn btn-primary" id="applyBtn" type="button">✓ 应用修改</button>
+                    <button class="btn btn-danger" id="removeBtn" type="button">🗑 移除元数据</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 版本标记：改完代码若浏览器还显示旧行为，多半是缓存，请 Ctrl+F5 强刷后看控制台版本号。
+    const VERSION = 'v4-manual-only';
+    console.log('meta-editor ' + VERSION);
+
+    // ============================================================
+    // 初始化 pdf.js worker（与 filler.html 相同）
+    // ============================================================
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+        'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+    // ============================================================
+    // 全局状态
+    // ============================================================
+    let originalBytes = null;      // 原始 PDF 字节（用于重新加载）
+    let pdfLibDoc = null;          // pdf-lib 文档（读写字段 dict 的权威对象）
+    let pdfjsDoc = null;           // pdf.js 文档（渲染预览）
+    let fields = [];               // [{ name, type, meta, tu, rects, dirty }]
+    let selectedName = null;
+    let editorLocked = false;      // 防止 JSON 解析事件递归
+
+    // 常用 DOM
+    const fileInput = document.getElementById('fileInput');
+    const fileName = document.getElementById('fileName');
+    const resetBtn = document.getElementById('resetBtn');
+    const exportBtn = document.getElementById('exportBtn');
+    const statusLine = document.getElementById('statusLine');
+    const emptyTip = document.getElementById('emptyTip');
+    const container = document.getElementById('pdf-container');
+    const fieldList = document.getElementById('fieldList');
+    const sidebarCount = document.getElementById('sidebarCount');
+    const editor = document.getElementById('editor');
+    const edName = document.getElementById('edName');
+    const edBadges = document.getElementById('edBadges');
+    const edJson = document.getElementById('edJson');
+    const edValid = document.getElementById('edValid');
+    const edTu = document.getElementById('edTu');
+    const applyBtn = document.getElementById('applyBtn');
+    const removeBtn = document.getElementById('removeBtn');
+
+    // ============================================================
+    // 工具函数
+    // ============================================================
+
+    // 压缩版 pdf-lib 里构造函数名不可靠，只按方法判断类型（与 filler.html 一致）
+    function isCheckBox(f) {
+        return typeof f.check === 'function' && typeof f.uncheck === 'function' && typeof f.getOptions !== 'function';
+    }
+    function isTextField(f) { return typeof f.setText === 'function'; }
+    function isRadioGroup(f) {
+        return typeof f.getOptions === 'function' && typeof f.select === 'function' && typeof f.addOptions !== 'function';
+    }
+    function isDropdown(f) {
+        return typeof f.select === 'function' && typeof f.getOptions === 'function' && typeof f.getSelected === 'function';
+    }
+    // 可靠的签名判定：查 acroField 字典的 /FT 标志是否为 /Sig。
+    // 不能用 needsAppearancesUpdate —— 该方法在基类 PDFField 上就有，文本/复选框等
+    // 所有字段都返回 true（filler.html 里那条“PDFSignature 独有”的注释是错的）。
+    function isSignature(f) {
+        const ft = f.acroField.dict.get(PDFLib.PDFName.of('FT'));
+        return !!(ft && ft.toString() === '/Sig');
+    }
+    function getFieldTypeName(f) {
+        if (isCheckBox(f)) return 'PDFCheckBox';
+        if (isTextField(f)) return 'PDFTextField';
+        if (isRadioGroup(f)) return 'PDFRadioGroup';
+        if (isDropdown(f)) return 'PDFDropdown';
+        if (isSignature(f)) return 'PDFSignature';
+        return 'unknown';
+    }
+    const SHORT_TYPE = {
+        PDFCheckBox: 'checkbox', PDFTextField: 'text', PDFRadioGroup: 'radio',
+        PDFDropdown: 'dropdown', PDFSignature: 'signature', unknown: '?',
+    };
+
+    // 读取字段 dict 上的 /Meta（JSON 对象）；没有或解析失败返回 null
+    function readMeta(field) {
+        const v = field.acroField.dict.get(PDFLib.PDFName.of('Meta'));
+        if (!v) return null;
+        try { return JSON.parse(v.decodeText()); }
+        catch (e) { return null; }
+    }
+    function readTu(field) {
+        const v = field.acroField.dict.get(PDFLib.PDFName.of('TU'));
+        return v ? v.decodeText() : '';
+    }
+
+    // 往字段 dict 写一个字符串。纯 ASCII 用字面量 PDFString（与既有文件兼容）；
+    // 含非 ASCII（中文等）时用 PDFHexString.fromText（UTF-16BE + BOM），否则
+    // PDFString 会把 charCodeAt >255 的字符截断成乱码（pdf-lib 1.17.1 的已知行为）。
+    function setDictString(dict, key, value) {
+        // 仅对 charCode > 0xFF 的字符（中文等）升级为 UTF-16；拉丁增补（如 · = 0xB7）
+        // pdfDocEncoding 可表示，仍用字面量，避免无谓改变既有文件的字节表示。
+        if (/[^\x00-\xff]/.test(value)) {
+            dict.set(key, PDFLib.PDFHexString.fromText(value));
+        } else {
+            dict.set(key, PDFLib.PDFString.of(value));
+        }
+    }
+
+    // PDF 坐标(左下原点, 单位 pt) -> CSS 坐标。
+    // viewportHeight 是【缩放后】的总高（= 原始页高 * scale），因此 top 直接
+    // 用 viewportHeight - y2*scale，不能再乘 scale（否则会双重缩放导致偏位）。
+    function pdfToCssRect(pdfRect, viewportHeight, scale) {
+        const x1 = pdfRect[0], y1 = pdfRect[1], x2 = pdfRect[2], y2 = pdfRect[3];
+        return {
+            left: Math.max(x1 * scale, 0),
+            top: Math.max(viewportHeight - y2 * scale, 0),
+            width: Math.max((x2 - x1) * scale, 8),
+            height: Math.max((y2 - y1) * scale, 8),
+        };
+    }
+
+    // ============================================================
+    // 渲染：pdf.js 预览 + 字段框叠加
+    // ============================================================
+    async function renderPages() {
+        container.innerHTML = '';
+        container.style.display = 'flex';
+        emptyTip.style.display = 'none';
+        const scale = 1.5;
+
+        // 先把 pdf.js 的 Widget 注释按字段名收集成 rect 列表（单选组一个字段多个 rect）
+        const rectMap = {}; // name -> [{pageIndex, rect}]
+        for (let i = 1; i <= pdfjsDoc.numPages; i++) {
+            const page = await pdfjsDoc.getPage(i);
+            let anns = [];
+            try { anns = await page.getAnnotations(); } catch (e) {}
+            for (const ann of anns) {
+                const name = ann.fieldName || ann.name;
+                if (!name || !ann.rect || ann.rect.length !== 4) continue;
+                if (ann.rect.some(v => !isFinite(v) || v < 0)) continue;
+                if (!rectMap[name]) rectMap[name] = [];
+                rectMap[name].push({ pageIndex: i - 1, rect: ann.rect });
+            }
+        }
+
+        for (let i = 1; i <= pdfjsDoc.numPages; i++) {
+            const page = await pdfjsDoc.getPage(i);
+            const viewport = page.getViewport({ scale });
+
+            const pageDiv = document.createElement('div');
+            pageDiv.className = 'pdf-page';
+            const canvas = document.createElement('canvas');
+            canvas.width = viewport.width;
+            canvas.height = viewport.height;
+            canvas.style.width = viewport.width + 'px';
+            canvas.style.height = viewport.height + 'px';
+            await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
+
+            const overlay = document.createElement('div');
+            overlay.className = 'form-overlay';
+            overlay.style.width = viewport.width + 'px';
+            overlay.style.height = viewport.height + 'px';
+
+            // 本页所有字段的叠加框
+            for (const f of fields) {
+                const rects = (rectMap[f.name] || []).filter(r => r.pageIndex === i - 1);
+                rects.forEach((r, idx) => {
+                    const css = pdfToCssRect(r.rect, viewport.height, scale);
+                    const box = document.createElement('div');
+                    box.className = 'field-box ' + (f.meta ? 'has-meta' : 'no-meta');
+                    if (f.name === selectedName) box.classList.add('selected');
+                    box.style.left = css.left + 'px';
+                    box.style.top = css.top + 'px';
+                    box.style.width = css.width + 'px';
+                    box.style.height = css.height + 'px';
+                    box.dataset.name = f.name;
+                    if (idx === 0) {
+                        const lab = document.createElement('div');
+                        lab.className = 'box-label';
+                        lab.textContent = f.name + (f.meta ? '' : ' (无元数据)');
+                        box.appendChild(lab);
+                    }
+                    box.addEventListener('click', () => selectField(f.name));
+                    overlay.appendChild(box);
+                });
+            }
+
+            pageDiv.appendChild(canvas);
+            pageDiv.appendChild(overlay);
+            container.appendChild(pageDiv);
+        }
+    }
+
+    // ============================================================
+    // 字段列表 + 编辑器
+    // ============================================================
+    function renderFieldList() {
+        fieldList.innerHTML = '';
+        sidebarCount.textContent = fields.length;
+        if (fields.length === 0) {
+            const div = document.createElement('div');
+            div.className = 'empty-msg';
+            div.textContent = '该 PDF 没有可编辑的表单字段';
+            fieldList.appendChild(div);
+            return;
+        }
+        for (const f of fields) {
+            const item = document.createElement('div');
+            item.className = 'field-item' + (f.name === selectedName ? ' selected' : '');
+            item.dataset.name = f.name;
+
+            const nameEl = document.createElement('span');
+            nameEl.className = 'name';
+            nameEl.textContent = f.name;
+
+            const typeEl = document.createElement('span');
+            typeEl.className = 'type';
+            typeEl.textContent = SHORT_TYPE[f.type] || '?';
+
+            const badge = document.createElement('span');
+            badge.className = 'meta-badge ' + (f.meta ? 'yes' : 'no');
+            badge.textContent = f.meta ? '有元数据' : '无';
+
+            item.appendChild(nameEl);
+            item.appendChild(badge);
+            item.appendChild(typeEl);
+
+            if (f.dirty) {
+                const dirtyEl = document.createElement('span');
+                dirtyEl.className = 'dirty';
+                dirtyEl.textContent = '已改';
+                item.appendChild(dirtyEl);
+            }
+
+            item.addEventListener('click', () => selectField(f.name));
+            fieldList.appendChild(item);
+        }
+    }
+
+    function selectField(name) {
+        selectedName = name;
+        const f = fields.find(x => x.name === name);
+        if (!f) return;
+
+        // 编辑器填充
+        editor.style.display = 'flex';
+        edName.textContent = name;
+        edBadges.innerHTML = '';
+        const mk = (txt, cls) => {
+            const s = document.createElement('span');
+            s.className = 'meta-badge ' + cls;
+            s.textContent = txt;
+            edBadges.appendChild(s);
+        };
+        mk(SHORT_TYPE[f.type] || f.type, 'no');
+        mk(f.meta ? '有元数据' : '无元数据', f.meta ? 'yes' : 'no');
+        if (f.dirty) mk('已修改未下载', 'no');
+
+        edJson.value = f.meta ? JSON.stringify(f.meta, null, 2) : '{}';
+        edTu.value = f.tu || ''; // /TU 预填当前值，用户可手动改
+        validateJson();
+
+        renderFieldList();
+        renderPages(); // 重画叠加框，高亮选中字段
+    }
+
+    // 编辑区输入时实时校验 JSON 语法（不做任何自动推导，只检查合法性）
+    function validateJson() {
+        const raw = edJson.value.trim();
+        let err = '';
+        try {
+            const meta = raw ? JSON.parse(raw) : {};
+            if (typeof meta !== 'object' || Array.isArray(meta)) throw new Error('需要 JSON 对象');
+        } catch (e) {
+            err = e.message;
+        }
+        if (err) {
+            edJson.classList.add('invalid');
+            edValid.className = 'valid-msg err';
+            edValid.textContent = '⚠ JSON 无效：' + err;
+            return;
+        }
+        edJson.classList.remove('invalid');
+        edValid.className = 'valid-msg ok';
+        edValid.textContent = '✓ JSON 合法';
+    }
+
+    edJson.addEventListener('input', validateJson);
+
+    // 应用修改：/Meta 写 JSON，/TU 完全按输入框内容原样写入（留空则删除 /TU 键）
+    applyBtn.addEventListener('click', () => {
+        const f = fields.find(x => x.name === selectedName);
+        if (!f) return;
+        let meta;
+        try { meta = edJson.value.trim() ? JSON.parse(edJson.value.trim()) : {}; } catch (e) { return; }
+
+        const dict = f.libField.acroField.dict;
+        setDictString(dict, PDFLib.PDFName.of('Meta'), JSON.stringify(meta));
+
+        const tu = edTu.value;
+        if (tu.trim() === '') dict.delete(PDFLib.PDFName.of('TU'));
+        else setDictString(dict, PDFLib.PDFName.of('TU'), tu);
+
+        f.meta = meta;
+        f.tu = tu.trim() === '' ? '' : tu;
+        f.dirty = true;
+        edValid.className = 'valid-msg ok';
+        edValid.textContent = '✓ 已写回 PDF（记得下载保存）';
+        statusLine.textContent = '已修改字段，点击“下载修改后的 PDF”保存';
+        renderFieldList();
+        renderPages();
+    });
+
+    // 移除元数据：删除 /Meta 和 /TU
+    removeBtn.addEventListener('click', () => {
+        const f = fields.find(x => x.name === selectedName);
+        if (!f || !confirm(`确定移除字段 "${f.name}" 的 /Meta 与 /TU 吗？`)) return;
+        const dict = f.libField.acroField.dict;
+        dict.delete(PDFLib.PDFName.of('Meta'));
+        dict.delete(PDFLib.PDFName.of('TU'));
+        f.meta = null;
+        f.tu = '';
+        f.dirty = true;
+        edJson.value = '{}';
+        edTu.value = '';
+        validateJson();
+        statusLine.textContent = '已移除元数据，点击“下载修改后的 PDF”保存';
+        renderFieldList();
+        renderPages();
+    });
+
+    // ============================================================
+    // 加载 / 导出 / 重置
+    // ============================================================
+    async function loadFile(file) {
+        try {
+            let bytes = new Uint8Array(await file.arrayBuffer());
+
+            // 处理非 %PDF 开头的文件（前面可能粘了其它内容），与 filler.html 一致
+            const header = new TextDecoder().decode(bytes.slice(0, 8));
+            if (!header.startsWith('%PDF')) {
+                const idx = bytes.indexOf('%PDF');
+                if (idx > 0) bytes = new Uint8Array(bytes.slice(idx));
+            }
+
+            originalBytes = bytes.slice(0);
+            pdfLibDoc = await PDFLib.PDFDocument.load(bytes.slice(0), { ignoreEncryption: true });
+            pdfjsDoc = await pdfjsLib.getDocument({ data: bytes.slice(0) }).promise;
+
+            // 从 pdf-lib 构建字段表（权威），读 /Meta、/TU
+            fields = [];
+            const libForm = pdfLibDoc.getForm();
+            for (const f of libForm.getFields()) {
+                let name = '';
+                try { name = f.getName(); } catch (e) { continue; }
+                if (!name) continue;
+                fields.push({
+                    name,
+                    type: getFieldTypeName(f),
+                    libField: f,
+                    meta: readMeta(f),
+                    tu: readTu(f),
+                    rects: [],
+                    dirty: false,
+                });
+            }
+
+            selectedName = null;
+            editor.style.display = 'none';
+            fileName.textContent = file.name;
+            resetBtn.disabled = false;
+            exportBtn.disabled = false;
+            const withMeta = fields.filter(f => f.meta).length;
+            statusLine.textContent = `已加载 ${file.name}：${fields.length} 个字段，其中 ${withMeta} 个带元数据`;
+            if (fields.length === 0) {
+                emptyTip.style.display = 'flex';
+                emptyTip.innerHTML = '<div>该 PDF 没有可编辑的表单字段</div>';
+                container.style.display = 'none';
+            } else {
+                renderFieldList();
+                await renderPages();
+            }
+        } catch (e) {
+            alert('加载 PDF 失败：' + e.message);
+            console.error(e);
+        }
+    }
+
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files[0]) loadFile(e.target.files[0]);
+        e.target.value = ''; // 允许重复选择同一文件
+    });
+
+    // 重新加载：丢弃所有修改
+    resetBtn.addEventListener('click', () => {
+        if (confirm('重新加载将丢弃所有未下载的修改，确定吗？')) {
+            loadFileFromBytes();
+        }
+    });
+
+    async function loadFileFromBytes() {
+        pdfLibDoc = await PDFLib.PDFDocument.load(originalBytes.slice(0), { ignoreEncryption: true });
+        pdfjsDoc = await pdfjsLib.getDocument({ data: originalBytes.slice(0) }).promise;
+        fields = [];
+        for (const f of pdfLibDoc.getForm().getFields()) {
+            let name = '';
+            try { name = f.getName(); } catch (e) { continue; }
+            if (!name) continue;
+            fields.push({ name, type: getFieldTypeName(f), libField: f, meta: readMeta(f), tu: readTu(f), rects: [], dirty: false });
+        }
+        selectedName = null;
+        editor.style.display = 'none';
+        statusLine.textContent = '已重新加载原始文件';
+        renderFieldList();
+        await renderPages();
+    }
+
+    // 导出：pdf-lib 保存（已写回的 dict 改动会一并保存）
+    exportBtn.addEventListener('click', async () => {
+        try {
+            exportBtn.disabled = true;
+            exportBtn.textContent = '⏳ 正在保存…';
+            const bytes = await pdfLibDoc.save();
+            const base = (fileName.textContent || 'form.pdf').replace(/\.pdf$/i, '');
+            const outName = base + '_meta_updated.pdf';
+            const blob = new Blob([bytes], { type: 'application/pdf' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = outName;
+            a.click();
+            setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+            fields.forEach(f => { f.dirty = false; });
+            statusLine.textContent = `已导出 ${outName}（${(bytes.length / 1024).toFixed(1)} KB）`;
+            renderFieldList();
+        } catch (e) {
+            alert('导出失败：' + e.message);
+            console.error(e);
+        } finally {
+            exportBtn.disabled = false;
+            exportBtn.textContent = '⬇ 下载修改后的 PDF';
+        }
+    });
+</script>
+</body>
+</html>

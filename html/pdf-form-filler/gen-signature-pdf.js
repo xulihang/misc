@@ -66,16 +66,28 @@ function buildSignatureMeta(role, signer, signatureId, seed) {
 // 把元数据挂到 acroform 字段的字典上：/Meta 放 JSON，/TU 放人类可读描述。
 // /TU 是 alternate field name（阅读器里显示为字段描述/工具提示）。
 // 签名字段的 meta 带 role（'patient' | 'attorney'），patient initials 的 meta 带 type。
+// 描述规则：type 优先（initials 字段即使有 role 也叫 "patient initials"），
+// 只有 meta 只有 role、没有 type 的签名字段才命名为 "<role> signature"。
+// 与 update-form-meta.js 的 writeFieldMeta、meta-editor.html 一致。
+// 写字符串：纯 ASCII 用字面量 PDFString；含非 ASCII（中文等）用 PDFHexString
+// fromText（UTF-16BE+BOM），否则 charCodeAt>255 的字符会被截断成乱码。
+function setDictString(dict, key, value) {
+  // 仅对 charCode > 0xFF 的字符（中文等）升级为 UTF-16；拉丁增补（如 · = 0xB7）
+  // pdfDocEncoding 可表示，仍用字面量，避免无谓改变既有文件的字节表示。
+  if (/[^\x00-\xff]/.test(value)) {
+    dict.set(key, PDFLib.PDFHexString.fromText(value));
+  } else {
+    dict.set(key, PDFLib.PDFString.of(value));
+  }
+}
+
 function attachMetadata(textField, meta) {
-  textField.acroField.dict.set(
-    PDFLib.PDFName.of('Meta'),
-    PDFLib.PDFString.of(JSON.stringify(meta))
-  );
-  const kind = meta.role ? `${meta.role} signature` : meta.type;
-  textField.acroField.dict.set(
-    PDFLib.PDFName.of('TU'),
-    PDFLib.PDFString.of(`${kind} · ${meta.name} (${meta.userId})`)
-  );
+  const dict = textField.acroField.dict;
+  setDictString(dict, PDFLib.PDFName.of('Meta'), JSON.stringify(meta));
+  const kind = meta.type
+    ? meta.type
+    : (meta.role ? `${meta.role} signature` : 'field');
+  setDictString(dict, PDFLib.PDFName.of('TU'), `${kind} · ${meta.name} (${meta.userId})`);
 }
 
 // 字段名带页号后缀，保证整个表单里不重名。
