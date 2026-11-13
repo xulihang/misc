@@ -207,7 +207,9 @@ Sub DrawLayout(pane As Pane,layout As Map,area As Map,f As Font,alignment As Str
 		Dim tfPane As Pane = tf
 		tfPane.AddNode(t,0,0,-1,-1)
 		tf.RunMethod("setPrefWidth",Array(slot))
-		pane.AddNode(tfPane,area.Get("X") + lefts.Get(i),area.Get("Y") + tops.Get(i),-1,-1)
+		tf.RunMethod("setMaxWidth",Array(slot))
+		'显式给出宽度，否则 TextFlow 会缩到内容宽度，TextAlignment 无从生效
+		pane.AddNode(tfPane,area.Get("X") + lefts.Get(i),area.Get("Y") + tops.Get(i),slot,f.Size * 1.5)
 	Next
 End Sub
 
