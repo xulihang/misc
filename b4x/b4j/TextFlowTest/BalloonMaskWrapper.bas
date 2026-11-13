@@ -427,19 +427,13 @@ Private Sub AddLine(lineTexts As List,lineLefts As List,lineTops As List,lineSlo
 		End If
 	Else
 		'有掩膜：按对齐方式确定各行文字的实际左边缘
-		If alignment = 0 Then
-			'左对齐：文字从安全区间左边开始
-			left = availL
-			slot = Max(availW,tw)
-		Else If alignment = 2 Then
-			'右对齐：每行的右端都贴安全区间右边界（left + slot 相同），
-			'文字在行框内右对齐；渲染端如不再做内部对齐也仍然正确
-			left = availL + availW - Max(availW,tw)
-			slot = Max(availW,tw)
+		'渲染端每行是一个 TextFlow，宽度 = slot，内部按 alignment 对齐。
+		'RIGHT 时行框贴安全区间的右边缘，其余贴左边缘。
+		slot = Max(availW,tw)
+		If alignment = 2 Then
+			left = availL + availW - slot
 		Else
-			'居中
-			left = availL + (availW - tw) / 2
-			slot = Max(availW,tw)
+			left = availL
 		End If
 	End If
 	lineTexts.Add(lineText)

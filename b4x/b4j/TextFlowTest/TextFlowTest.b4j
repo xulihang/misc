@@ -88,6 +88,9 @@ Sub RunNewMaskDemo
 	'新实现
 	Dim layoutL As Map = BalloonMaskWrapper.WrapInMask(text,f,spans,lineSpacing,0,leftArea.Get("X"),leftArea.Get("Y"),leftArea.Get("width"),leftArea.Get("height"),1.0)
 	Dim layoutR As Map = BalloonMaskWrapper.WrapInMask(text,f,spans,lineSpacing,2,rightArea.Get("X"),rightArea.Get("Y"),rightArea.Get("width"),rightArea.Get("height"),1.0)
+	'再跑一遍居中，确认三种对齐都生效（用左气球那块区域）
+	Dim layoutC As Map = BalloonMaskWrapper.WrapInMask(text,f,spans,lineSpacing,1,leftArea.Get("X"),leftArea.Get("Y"),leftArea.Get("width"),leftArea.Get("height"),1.0)
+	LogMaskResult("NEW center",layoutC)
 	LogMaskResult("NEW left",layoutL)
 	LogMaskResult("NEW right",layoutR)
 
