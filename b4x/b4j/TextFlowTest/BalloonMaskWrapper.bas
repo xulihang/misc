@@ -158,9 +158,7 @@ Public Sub WrapInMask(Text As String,F As Font,Mask As Map,LineSpacing As Double
 	If Mask.IsInitialized = False Or Mask.ContainsKey("yMin") = False Then Return result
 	If areaWidth <= 0 Or areaHeight <= 0 Then Return result
 
-	'照旧版 LoadMaskSpans(MinX,MaxX) 的做法：只在框的横向范围 [xStart,xLimit) 里
-	'由原始掩膜重新求每行区间。不能对整行 rowMin/rowMax 再做裁剪：
-	'同一行右侧的另一段掩膜会把边界拉过去，旧版根本看不到那一段。
+	'只在框的横向范围里取掩膜（同旧版 LoadMaskSpans(MinX,MaxX)）
 	Dim xStart As Int = Max(areaLeft,0)
 	Dim xLimit As Int = Min(areaLeft + areaWidth,Mask.Get("width"))
 	Dim rowMin As List
@@ -185,26 +183,10 @@ Public Sub WrapInMask(Text As String,F As Font,Mask As Map,LineSpacing As Double
 			rowMax.Add(rightX)
 		Next
 	Else
-		'没有位图时退回整行结果（只能在整图掩膜时用）
-		Dim rowMinRaw As List = Mask.Get("rowMin")
-		Dim rowMaxRaw As List = Mask.Get("rowMax")
-		For y = 0 To rowMinRaw.Size - 1
-			Dim mn As Int = rowMinRaw.Get(y)
-			Dim mx As Int = rowMaxRaw.Get(y)
-			If mn >= 0 Then
-				mn = Max(mn,xStart)
-				mx = Min(mx,xLimit - 1)
-				If mx < mn Then
-					mn = -1
-					mx = -1
-				End If
-			End If
-			rowMin.Add(mn)
-			rowMax.Add(mx)
-		Next
+		Return result
 	End If
 
-	'和旧版 LoadMaskSpans 一样：yMin/yMax 取"框内掩膜"的上下界
+	'纵向范围：框内掩膜的上下界（同旧版 yMin/yMax）
 	Dim yMin As Int = -1
 	Dim yMax As Int = -1
 	Dim boxTop As Int = Max(areaTop,0)
@@ -220,233 +202,166 @@ Public Sub WrapInMask(Text As String,F As Font,Mask As Map,LineSpacing As Double
 		Return result
 	End If
 	Dim H As Int = yMax - yMin + 1
-
-	'文字块的水平中心：和旧版一样，取掩膜逐行中心点的平均值（所有行共用一个中心）
 	Dim CenterX As Double = (xStart + xLimit - 1) / 2.0
-	Dim sumC As Double = 0
-	Dim cntC As Int = 0
-	For y = 0 To rowMin.Size - 1
-		Dim rmn As Int = rowMin.Get(y)
-		If rmn >= 0 Then
-			sumC = sumC + (rmn + rowMax.Get(y)) / 2.0
-			cntC = cntC + 1
-		End If
-	Next
-	If cntC > 0 Then CenterX = sumC / cntC
 
-	Dim s As String = Text.Trim
 	Dim words As List
 	words.Initialize
+	Dim s As String = Text.Trim
 	If s <> "" Then
 		s = s.Replace(Chr(160)," ")
 		words = Regex.Split("\s+",s)
 	End If
-	Dim n As Int = words.Size
-	If n = 0 Then
-		result.Put("success",True)
-		result.Put("blockWidth",xLimit - xStart)
-		result.Put("wrapWidth",xLimit - xStart)
-		result.Put("blockHeight",MeasureLineHeight(F))
-		result.Put("topOffset",yMin - areaTop)
-		Return result
-	End If
-
-	Dim wordWidths(n) As Double
-	For i = 0 To n - 1
-		wordWidths(i) = MeasureTextWidth(words.Get(i),F)
-	Next
-	Dim spaceWidth As Double = MeasureTextWidth("A A",F) - 2 * MeasureTextWidth("A",F)
-	If spaceWidth <= 0 Then spaceWidth = MeasureTextWidth(" ",F)
 	Dim naturalLineHeight As Double = MeasureLineHeight(F)
 	If naturalLineHeight <= 0 Then naturalLineHeight = F.Size * 1.2
 	Dim lineStep As Double = naturalLineHeight + LineSpacing
-	Dim prefix(n + 1) As Double
-	For j = 1 To n
-		prefix(j) = prefix(j - 1) + wordWidths(j - 1)
-	Next
-	Dim totalTextWidth As Double = prefix(n) + (n - 1) * spaceWidth
-	Dim maxLines As Int = Ceil(H / lineStep)
-	If maxLines < 1 Then maxLines = 1
-	If maxLines > n Then maxLines = n
-	Dim align As String = AlignmentKey(Alignment)
-
-	'和旧版一致：目标行数 = VerticalFill * 高度 / 行距
-	Dim targetLines As Int = Round(VerticalFill * H / lineStep)
-	If targetLines < 1 Then targetLines = 1
-	If targetLines > maxLines Then targetLines = maxLines
-	Dim bestDiff As Int = 1000000
-	Dim bestFill As Double = -1
-	Dim bestLines As List
-	Dim bestCenters As List
-	Dim bestSlots As List
-	Dim bestFillOK As Boolean = False
-
-	For lineCount = 1 To maxLines
-		Dim avail(lineCount) As Double
-		Dim centers(lineCount) As Double
-		Dim slots As List
-		slots.Initialize
-		Dim centerList As List
-		centerList.Initialize
-		Dim ok As Boolean = True
-		For i = 0 To lineCount - 1
-			'只按文字实际占用的高度取掩膜宽度（行距是空白，不算进去）
-			Dim lineTopY As Double = yMin + i * lineStep
-			Dim y0 As Int = Floor(lineTopY)
-			Dim y1 As Int = Ceil(lineTopY + naturalLineHeight) - 1
-			If y0 < yMin Then y0 = yMin
-			If y1 > yMax Then y1 = yMax
-			'完全照旧版 BalloonText 的两遍结构：
-			'  第一遍求带内最宽的 span（maxSpan）
-			'  第二遍只让 span >= 0.5*maxSpan 的行参与，求它们的交集（leftLimit/rightLimit）
-			'    和其中最小的 span（minSpan）
-			'行边界用该行自己的掩膜区间；本方法拿到的掩膜已经按框横向范围限定过，
-			'所以同一高度别的气球不会混进来。
-			Dim maxSpan As Int = 0
-			For yy = y0 To y1
-				Dim mn0 As Int = rowMin.Get(yy)
-				If mn0 >= 0 Then
-					Dim span0 As Int = rowMax.Get(yy) - mn0 + 1
-					If span0 > maxSpan Then maxSpan = span0
-				End If
-			Next
-			If maxSpan <= 0 Then
-				ok = False
-				Exit
-			End If
-			Dim minSpan As Int = 1000000
-			Dim leftLimit As Int = -1
-			Dim rightLimit As Int = 1000000
-			Dim rowCount As Int = 0
-			For yy = y0 To y1
-				Dim mn2 As Int = rowMin.Get(yy)
-				If mn2 >= 0 Then
-					Dim mx2 As Int = rowMax.Get(yy)
-					Dim span As Int = mx2 - mn2 + 1
-					If span >= 0.5 * maxSpan Then
-						If span < minSpan Then minSpan = span
-						If mn2 > leftLimit Then leftLimit = mn2
-						If mx2 < rightLimit Then rightLimit = mx2
-						rowCount = rowCount + 1
-					End If
-				End If
-			Next
-			If rowCount = 0 Then
-				ok = False
-				Exit
-			End If
-			Dim slot As Double
-			Dim lineCenter As Double
-			If align = "LEFT" Or align = "RIGHT" Then
-				'左右对齐：可用宽度 = 各行区间的交集宽度，起点贴交集左/右边界
-				slot = rightLimit - leftLimit + 1
-				If align = "LEFT" Then
-					lineCenter = leftLimit + slot / 2
-				Else
-					lineCenter = rightLimit - slot / 2
-				End If
-			Else
-				'居中：可用宽度 = 最窄 span，所有行共用一个固定中心
-				slot = minSpan
-				lineCenter = CenterX
-			End If
-			If slot < 4 Then
-				ok = False
-				Exit
-			End If
-			avail(i) = slot
-			centers(i) = lineCenter
-			slots.Add(slot)
-			centerList.Add(lineCenter)
-		Next
-		If ok = False Then Continue
-		Dim solved As List = SolveMaskBreak(words,prefix,spaceWidth,avail,n)
-		If solved.IsInitialized = False Then Continue
-		Dim availSum As Double = 0
-		For i = 0 To lineCount - 1
-			availSum = availSum + avail(i)
-		Next
-		Dim fill As Double = totalTextWidth / Max(1.0,availSum)
-		'评分：优先选填充率高的方案（行数多、每行只剩一个词时填充率会很低），
-		'行数与 H/lineStep 的接近程度只作为次级参考
-		Dim diff As Int = Abs(lineCount - targetLines)
-		'和旧版一致：先比行数是否接近 targetLines（diff），再比填充率
-		If diff < bestDiff Or (diff = bestDiff And fill > bestFill) Then
-			bestDiff = diff
-			bestFill = fill
-			bestLines = solved
-			bestCenters = centerList
-			bestSlots = slots
-			bestFillOK = True
-		End If
-	Next
-
-	If bestFillOK = False Then
-		Dim ow As Double = xLimit - xStart
-		Dim rows As List = WrapWordsToWidth(Text,ow,F)
-		Dim oh As Double = naturalLineHeight + Max(0,rows.Size - 1) * lineStep
+	If words.Size = 0 Then
 		result.Put("success",True)
-		result.Put("overflow",True)
-		result.Put("blockWidth",ow)
-		result.Put("wrapWidth",ow)
-		result.Put("blockHeight",oh)
+		result.Put("blockWidth",xLimit - xStart)
+		result.Put("wrapWidth",xLimit - xStart)
+		result.Put("blockHeight",naturalLineHeight)
 		result.Put("topOffset",yMin - areaTop)
-		result.Put("leftOffset",0.0)
-		result.Put("blockLeft",0.0)
-		Log("balloonMask: overflow fallback, width=" & ow)
 		Return result
 	End If
 
+	'贪心排版：
+	'  逐词往当前行追加，先用文字估算这行的宽度；
+	'  再看这行所在的高度带在掩膜里的右边界（左边界 + 可用宽度），
+	'  超出就换行；一整行放不下（单个词就超宽）时允许这一行溢出。
+	Dim lineTexts As List
 	Dim lineLefts As List
 	Dim lineTops As List
+	Dim lineSlots As List
+	lineTexts.Initialize
 	lineLefts.Initialize
 	lineTops.Initialize
-	Dim minLeft As Double = 1000000
-	Dim maxRight As Double = -1000000
-	For i = 0 To bestLines.Size - 1
-		Dim lineText As String = bestLines.Get(i)
-		Dim lineW As Double = MeasureTextWidth(lineText,F)
-		Dim slot As Double = bestSlots.Get(i)
-		Dim center As Double = bestCenters.Get(i)
-		'每行是一个宽 slot 的 TextFlow，左边界 = 中心 - slot/2。
-		'旧版就是这样：TextFlow 用该行自己的 textAlignment 在 slot 内对齐，
-		'所以 LEFT 行贴着 slot 左边，RIGHT 行贴着右边，CENTER 在中间
-		Dim l As Double = center - slot / 2
-		Dim lineRight As Double = l + slot
-		lineLefts.Add(l - areaLeft)
-		lineTops.Add(yMin + i * lineStep - areaTop)
-		minLeft = Min(minLeft,l)
-		maxRight = Max(maxRight,lineRight)
+	lineSlots.Initialize
+	Dim curText As String = ""
+	Dim curTop As Double = yMin
+	For i = 0 To words.Size - 1
+		Dim w As String = words.Get(i)
+		Dim candidate As String
+		If curText = "" Then
+			candidate = w
+		Else
+			candidate = curText & " " & w
+		End If
+		Dim cw As Double = MeasureTextWidth(candidate,F)
+		Dim band As Map = LineBand(rowMin,rowMax,curTop,naturalLineHeight)
+		Dim availW As Double = -1
+		Dim availL As Double = -1
+		If band.Get("ok") Then
+			availL = band.Get("left")
+			Dim availR As Double = band.Get("right")
+			availW = availR - availL + 1
+		End If
+		'放不下就换行（首行即使超宽也先放，允许溢出）
+		If curText <> "" And availW >= 0 And cw > availW Then
+			AddLine(lineTexts,lineLefts,lineTops,lineSlots,curText,curTop,availL,availW,F,Alignment,CenterX,yMin,xStart,xLimit)
+			curText = w
+			curTop = curTop + lineStep
+		Else
+			curText = candidate
+		End If
 	Next
+	If curText <> "" Then
+		Dim band2 As Map = LineBand(rowMin,rowMax,curTop,naturalLineHeight)
+		Dim l2 As Double = -1
+		Dim w2 As Double = -1
+		If band2.Get("ok") Then
+			l2 = band2.Get("left")
+			w2 = band2.Get("right") - l2 + 1
+		End If
+		AddLine(lineTexts,lineLefts,lineTops,lineSlots,curText,curTop,l2,w2,F,Alignment,CenterX,yMin,xStart,xLimit)
+	End If
+
+
 	Dim sb As StringBuilder
 	sb.Initialize
-	For i = 0 To bestLines.Size - 1
+	Dim minLeft As Double = 1000000
+	Dim maxRight As Double = -1000000
+	For i = 0 To lineTexts.Size - 1
 		If i > 0 Then sb.Append(Chr(10))
-		sb.Append(bestLines.Get(i))
+		sb.Append(lineTexts.Get(i))
+		minLeft = Min(minLeft,lineLefts.Get(i))
+		maxRight = Max(maxRight,lineLefts.Get(i) + MeasureTextWidth(lineTexts.Get(i),F))
 	Next
 	result.Put("success",True)
 	result.Put("text",sb.ToString)
-	'每行的容器宽度（slot）和中心（框内坐标）：调用方按旧版方式逐行放置
-	Dim lineSlots As List
-	Dim lineCenters As List
-	lineSlots.Initialize
-	lineCenters.Initialize
-	For i = 0 To bestSlots.Size - 1
-		lineSlots.Add(bestSlots.Get(i))
-		lineCenters.Add(bestCenters.Get(i) - areaLeft)
-	Next
-	result.Put("lineSlots",lineSlots)
-	result.Put("lineCenters",lineCenters)
 	result.Put("lineLefts",lineLefts)
 	result.Put("lineTops",lineTops)
+	result.Put("lineSlots",lineSlots)
 	result.Put("topOffset",lineTops.Get(0))
 	result.Put("leftOffset",minLeft - areaLeft)
 	result.Put("blockLeft",minLeft - areaLeft)
 	result.Put("blockWidth",maxRight - minLeft)
 	result.Put("wrapWidth",xLimit - xStart)
-	result.Put("blockHeight",yMin + (bestLines.Size - 1) * lineStep + naturalLineHeight - areaTop)
-	Log("balloonMask: " & bestLines.Size & " lines, blockWidth=" & result.Get("blockWidth"))
+	result.Put("blockHeight",lineTops.Get(lineTops.Size - 1) + naturalLineHeight - areaTop)
+	Log("balloonMask: " & lineTexts.Size & " lines (greedy)")
 	Return result
+End Sub
+
+'当前行（以 topY 为顶）在掩膜里的可用区间：
+'  left  该行带里各行的左边界（取最大值，保证左边不出气泡）
+'  right 该行带里各行的右边界（取最小值，保证右边不出气泡）
+Private Sub LineBand(rowMin As List,rowMax As List,topY As Double,height As Double) As Map
+	Dim r As Map
+	r.Initialize
+	r.Put("ok",False)
+	Dim y0 As Int = Floor(topY)
+	Dim y1 As Int = Ceil(topY + height) - 1
+	If y0 < 0 Then y0 = 0
+	If y1 > rowMin.Size - 1 Then y1 = rowMin.Size - 1
+	'取带内"最宽那一行"的左右边界：气泡边缘的轻微凹凸不会把整行压窄，
+	'同时这个范围仍然完全落在掩膜里（不会超出气泡）
+	Dim bestSpan As Int = 0
+	Dim l As Int = -1
+	Dim rr As Int = -1
+	For y = y0 To y1
+		Dim mn As Int = rowMin.Get(y)
+		If mn >= 0 Then
+			Dim span As Int = rowMax.Get(y) - mn + 1
+			If span > bestSpan Then
+				bestSpan = span
+				l = mn
+				rr = rowMax.Get(y)
+			End If
+		End If
+	Next
+	If l < 0 Then Return r
+	r.Put("ok",True)
+	r.Put("left",l + 0.0)
+	r.Put("right",rr + 0.0)
+	Return r
+End Sub
+
+'把一行加入结果：按对齐方式在可用区间里定位
+Private Sub AddLine(lineTexts As List,lineLefts As List,lineTops As List,lineSlots As List,lineText As String,topY As Double,availL As Double,availW As Double,F As Font,alignment As Int,CenterX As Double,yMin As Int,xStart As Int,xLimit As Int)
+	Dim tw As Double = MeasureTextWidth(lineText,F)
+	Dim slot As Double = availW
+	Dim left As Double
+	If availW < 0 Or availW < tw Then
+		'没有掩膜信息或这一行本身就超宽：用框宽，居中放置（允许溢出）
+		slot = xLimit - xStart
+		If alignment = 0 Then
+			left = xStart
+		Else If alignment = 2 Then
+			left = xLimit - Max(slot,tw)
+		Else
+			left = CenterX - tw / 2
+		End If
+	Else
+		If alignment = 0 Then
+			left = availL
+		Else If alignment = 2 Then
+			left = availL + availW - tw
+		Else
+			left = availL + (availW - tw) / 2
+		End If
+	End If
+	lineTexts.Add(lineText)
+	lineLefts.Add(left)
+	lineTops.Add(topY - yMin)
+	lineSlots.Add(Max(slot,tw))
 End Sub
 
 '没有行可排时也给出空列表，调用方访问 .Size 不会报未初始化
