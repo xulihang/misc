@@ -1,23 +1,37 @@
 ﻿AppType=JavaFX
 Build1=Default,b4j.example
 File1=balloonmask.png
-File2=Layout1.bjl
+File2=capture002.jpg-balloonmask.png
+File3=Layout1.bjl
+File4=old_balloonmask.png
+File5=Untitled.itp
 FileGroup1=Default Group
 FileGroup2=Default Group
+FileGroup3=Default Group
+FileGroup4=Default Group
+FileGroup5=Default Group
 Group=Default Group
-Library1=javaobject
-Library2=jcore
-Library3=jfx
-Library4=jxui
-Library5=cssutils
-Module1=BalloonText
-Module2=DiamondText
-Module3=TextFlow
-NumberOfFiles=2
-NumberOfLibraries=5
-NumberOfModules=3
+Library1=cssutils
+Library2=javaobject
+Library3=jbitmapcreator
+Library4=jcore
+Library5=jfx
+Library6=jxui
+Library7=threading
+Library8=json
+Module1=BalloonMaskWrapper
+Module2=BalloonText
+Module3=cv2
+Module4=cvMat
+Module5=DiamondText
+Module6=TextFlow
+Module7=Utils
+NumberOfFiles=5
+NumberOfLibraries=8
+NumberOfModules=7
 Version=10
 @EndOfDesignText@
+#AdditionalJar: opencv-490
 #Region Project Attributes 
 	#MainFormWidth: 600
 	#MainFormHeight: 600 
@@ -30,7 +44,8 @@ Sub Process_Globals
 	Private MainForm As Form
 	Private xui As XUI 
 	Private Button1 As B4XView
-	Private tf As TextFlow
+	'Private tf As TextFlow
+	Private ImageView1 As ImageView
 End Sub
 
 Sub AppStart (Form1 As Form, Args() As String)
@@ -40,80 +55,338 @@ Sub AppStart (Form1 As Form, Args() As String)
 	MainForm.Show
 	Button1.Visible = False
 
-	'18_094.jpg：左边第一个气泡（x<180）左对齐，右边气泡（x>200）右对齐
-	Dim maskL,maskR As Map
+	'OpenCV 版：从 ImageTrans 移植的 BalloonMaskWrapper，整张掩膜 + 框坐标
+	'自动画面靠旧实现（BalloonText）会出错（渲染用的是已不存在的 resize），这里只保留新实现
 	Try
-		maskL = BalloonText.LoadMaskSpans(File.DirAssets,"balloonmask.png",0,180)
-		maskR = BalloonText.LoadMaskSpans(File.DirAssets,"balloonmask.png",200,335)
+		cv2.Initialize
+		loadOpenCV
+		RunNewMaskDemo
+		RunMaskComparison
 	Catch
-		'IDE 里从 Files 加载；直接运行 jar 时从程序目录加载
-		maskL = BalloonText.LoadMaskSpans(File.DirApp,"balloonmask.png",0,180)
-		maskR = BalloonText.LoadMaskSpans(File.DirApp,"balloonmask.png",200,335)
+		Log("new mask demo skipped: " & LastException)
 	End Try
-	Dim f As Font = fx.CreateFont("System",15,False,False)
-	Dim lineSpacing As Double = f.Size * 0.25
-	Dim text As String = "If you encounter any problems, you can contact me by email"
-	Dim resultL As Map = BalloonText.WrapInMask(text,f,maskL,lineSpacing,2,1.0,"LEFT")
-	Dim resultR As Map = BalloonText.WrapInMask(text,f,maskR,lineSpacing,2,1.0,"RIGHT")
-	Log("left success=" & resultL.Get("success"))
-	Log(resultL.Get("lines"))
-	Log("right success=" & resultR.Get("success"))
-	Log(resultR.Get("lines"))
-
-	Dim cw As Int = maskL.Get("width")
-	Dim ch As Int = maskL.Get("height")
-	Dim maskPane As Pane
-	maskPane.Initialize("")
-
-	'用半透明红色画出两个气泡的掩膜轮廓
-	Dim cvsNode As JavaObject
-	cvsNode.InitializeNewInstance("javafx.scene.canvas.Canvas",Array(cw + 0.0,ch + 0.0))
-	Dim gc As JavaObject = cvsNode.RunMethod("getGraphicsContext2D",Null)
-	gc.RunMethod("setFill",Array(fx.Colors.ARGB(65,255,0,0)))
-	DrawMaskSpans(gc,maskL)
-	DrawMaskSpans(gc,maskR)
-	Dim cv As Node = cvsNode
-	maskPane.AddNode(cv,0,0,cw,ch)
-
-	If resultL.Get("success") Then RenderMaskResult(maskPane,resultL,f,"LEFT")
-	If resultR.Get("success") Then RenderMaskResult(maskPane,resultR,f,"RIGHT")
-
-	MainForm.RootPane.AddNode(maskPane,140,120,cw,ch)
+	Sleep(2000)
+	ExitApplication
 End Sub
 
-'按掩膜逐行画出半透明红色轮廓
-Sub DrawMaskSpans(gc As JavaObject,mask As Map)
-	Dim rowMin As List = mask.Get("rowMin")
-	Dim rowMax As List = mask.Get("rowMax")
-	Dim h As Int = mask.Get("height")
-	For y = 0 To h - 1
-		Dim mn As Int = rowMin.Get(y)
-		If mn >= 0 Then
-			Dim mx As Int = rowMax.Get(y)
-			gc.RunMethod("fillRect",Array(mn + 0.0,y + 0.0,(mx-mn+1) + 0.0,1.0))
-		End If
+'用新实现（BalloonMaskWrapper）排版 capture002 的掩膜：
+'整张掩膜当背景，按 WrapInMask 返回的 lineLefts/lineTops 逐行摆放文字
+Sub RunNewMaskDemo
+	'完全照旧版 B4J\TextFlowTest：先用旧版 BalloonText 在内存里做出"标准答案"，
+	'再用同样输入跑新的 BalloonMaskWrapper，逐行对比
+	Dim mask As cvMat = Image2cvMat(File.DirAssets,"old_balloonmask.png")
+	Log("mask " & mask.Cols & "x" & mask.Rows & " channels=" & mask.Channels)
+	Dim spans As Map = BalloonMaskWrapper.LoadMaskSpans(mask)
+	Dim f As Font = fx.CreateFont("System",10,False,False)
+	Dim lineSpacing As Double = f.Size * 0.25
+	Dim text As String = "If you encounter any problems, you can contact me by email"
+
+	Dim leftArea As Map = AreaFromMask(spans,0,180)
+	Dim rightArea As Map = AreaFromMask(spans,200,335)
+
+	'旧版结果（参考）
+	Dim oldL As Map = BalloonText.LoadMaskSpans(File.DirAssets,"old_balloonmask.png",0,180)
+	Dim oldR As Map = BalloonText.LoadMaskSpans(File.DirAssets,"old_balloonmask.png",200,335)
+	LogMaskResult("OLD left",BalloonText.WrapInMask(text,f,oldL,lineSpacing,0.0,1.0,"LEFT"))
+	LogMaskResult("OLD right",BalloonText.WrapInMask(text,f,oldR,lineSpacing,0.0,1.0,"RIGHT"))
+
+	'新实现
+	Dim layoutL As Map = BalloonMaskWrapper.WrapInMask(text,f,spans,lineSpacing,0,leftArea.Get("X"),leftArea.Get("Y"),leftArea.Get("width"),leftArea.Get("height"),1.0)
+	Dim layoutR As Map = BalloonMaskWrapper.WrapInMask(text,f,spans,lineSpacing,2,rightArea.Get("X"),rightArea.Get("Y"),rightArea.Get("width"),rightArea.Get("height"),1.0)
+	LogMaskResult("NEW left",layoutL)
+	LogMaskResult("NEW right",layoutR)
+
+	Dim pane As Pane
+	pane.Initialize("")
+	Dim iv As ImageView
+	iv.Initialize("")
+	iv.SetImage(fx.LoadImage(File.DirAssets,"old_balloonmask.png"))
+	pane.AddNode(iv,0,0,mask.Cols,mask.Rows)
+	DrawLayout(pane,layoutL,leftArea,f,"LEFT")
+	DrawLayout(pane,layoutR,rightArea,f,"RIGHT")
+	Dim img As B4XBitmap = pane.Snapshot2(fx.Colors.White)
+	pane.RemoveNodeFromParent
+	ImageView1.SetImage(img)
+End Sub
+
+Sub LogMaskResult(name As String,layout As Map)
+	Log(name & " success=" & layout.GetDefault("success",False) & " overflow=" & layout.GetDefault("overflow",False))
+	If layout.ContainsKey("lines") Then
+		'旧版结果：lines / widths / centers / slots / yMin / lineStep
+		Dim lines As List = layout.Get("lines")
+		Dim centers As List = layout.Get("centers")
+		Dim slots As List = layout.Get("slots")
+		For i = 0 To lines.Size - 1
+			Dim c As Double = centers.Get(i)
+			Dim s2 As Double = slots.Get(i)
+			Dim yy As Double = layout.Get("yMin") + i * layout.Get("lineStep")
+			Log("  [" & i & "] slot=" & s2 & " left=" & (c - s2 / 2) & " y=" & yy & " : " & lines.Get(i))
+		Next
+		Return
+	End If
+	Dim texts As List = Regex.Split(Chr(10),layout.Get("text"))
+	Dim lefts As List = layout.Get("lineLefts")
+	Dim tops As List = layout.Get("lineTops")
+	Dim sl As List = layout.Get("lineSlots")
+	For i = 0 To Min(texts.Size,lefts.Size) - 1
+		Log("  [" & i & "] slot=" & sl.Get(i) & " left=" & lefts.Get(i) & " y=" & tops.Get(i) & " : " & texts.Get(i))
 	Next
 End Sub
 
-'每一行放一个 TextFlow，按掩膜时算出的位置和指定的对齐方式放置
-Sub RenderMaskResult(canvas As Pane,result As Map,f As Font,alignment As String)
-	Dim lines As List = result.Get("lines")
-	Dim centers As List = result.Get("centers")
-	Dim slots As List = result.Get("slots")
-	Dim top As Double = result.Get("top")
-	Dim yMin As Int = result.Get("yMin")
-	Dim lineStep As Double = result.Get("lineStep")
-	Dim natural As Double = result.Get("naturalLineHeight")
-	For i = 0 To lines.Size - 1
+Sub AreaFromMask(spans As Map,minX As Int,maxX As Int) As Map
+	'与旧版 LoadMaskSpans(...,minX,maxX) 等价：框就是 [minX,maxX) × 整张掩膜高度
+	Dim r2 As Map
+	r2.Initialize
+	r2.Put("X",minX)
+	r2.Put("Y",0)
+	r2.Put("width",maxX - minX)
+	r2.Put("height",spans.Get("height"))
+	Return r2
+End Sub
+
+Sub DrawLayout(pane As Pane,layout As Map,area As Map,f As Font,alignment As String)
+	If layout.GetDefault("success",False) = False Then Return
+	Dim texts As List = Regex.Split(Chr(10),layout.Get("text"))
+	Dim lefts As List = layout.Get("lineLefts")
+	Dim tops As List = layout.Get("lineTops")
+	Dim slots As List = layout.Get("lineSlots")
+	For i = 0 To Min(texts.Size,lefts.Size) - 1
+		'照旧版 RenderMaskResult：每行一个 TextFlow，宽度 = slot，位置 = (x, y)
 		Dim slot As Double = slots.Get(i)
-		Dim center As Double = centers.Get(i)
-		Dim lf As Pane = BalloonText.CreateLineFlow(lines.Get(i),f,slot,alignment)
-		Dim left As Double = center - slot / 2
-		Dim topY As Double = yMin + top + i * lineStep
-		canvas.AddNode(lf,left,topY,slot,natural)
+		Dim tf As JavaObject
+		tf.InitializeNewInstance("javafx.scene.text.TextFlow",Null)
+		Dim ta As JavaObject
+		ta.InitializeStatic("javafx.scene.text.TextAlignment")
+		tf.RunMethod("setTextAlignment",Array(ta.GetField(alignment)))
+		Dim t As JavaObject
+		t.InitializeNewInstance("javafx.scene.text.Text",Array(texts.Get(i)))
+		t.RunMethod("setFont",Array(f))
+		Dim tfPane As Pane = tf
+		tfPane.AddNode(t,0,0,-1,-1)
+		tf.RunMethod("setPrefWidth",Array(slot))
+		pane.AddNode(tfPane,area.Get("X") + lefts.Get(i),area.Get("Y") + tops.Get(i),-1,-1)
 	Next
 End Sub
 
 Sub Button1_Click
 	xui.MsgboxAsync("Hello World!", "B4X")
 End Sub
+
+'=== OpenCV 版气泡掩膜排版测试（从 ImageTrans 移植）===
+'加载 OpenCV：opencv_java490.dll 需要放在 File.DirApp（Objects 目录）下
+Sub loadOpenCV
+	Log(cv2.NATIVE_LIBRARY_NAME)
+	Dim System As JavaObject
+	System.InitializeStatic("java.lang.System")
+	System.RunMethod("load",Array(File.Combine(File.DirApp,"opencv_java490.dll")))
+End Sub
+
+Sub Image2cvMat(dirPath As String,imgPath As String) As cvMat
+	Dim srcMat As cvMat
+	Dim Bytes() As Byte = File.ReadBytes(dirPath,imgPath)
+	'保留 alpha：气泡掩膜的气泡信息只存在于 alpha 通道，按 IMREAD_COLOR 读会把气泡丢掉
+	srcMat = cv2.bytesToMat2(Bytes,"IMREAD_UNCHANGED")
+	Return srcMat
+End Sub
+
+'同一份掩膜、同一个框：比较严格掩膜断行（hardMask）和当前实现（boxWidthFallback）
+Sub RunMaskComparison
+	Dim mask As cvMat = Image2cvMat(File.DirAssets,"capture002.jpg-balloonmask.png")
+	Dim spans As Map = BalloonMaskWrapper.LoadMaskSpans(mask)
+	Dim box As Map = LoadFirstBox
+	Dim boxX As Int = box.Get("X")
+	Dim boxY As Int = box.Get("Y")
+	Dim boxW As Int = box.Get("width")
+	Dim boxH As Int = box.Get("height")
+	Dim text As String = box.Get("target")
+	Dim f As Font = fx.CreateFont(box.Get("font"),box.Get("size"),False,False)
+	Dim linespace As Double = f.Size * (box.Get("lineHeight") - 1)
+	Dim newLayout As Map = BalloonMaskWrapper.WrapInMask(text,f,spans,linespace,1,boxX,boxY,boxW,boxH,1.0)
+	LogMaskLayout("boxWidthFallback",newLayout)
+	'旧逻辑（严格掩膜断行）只做对比，取不到行时不影响 demo
+	Dim oldLayout As Map = HardLayout(text,f,spans,boxX,boxY,boxW,boxH)
+	If oldLayout.GetDefault("success",False) = False Then Log("hardMask: no strict fit (expected for this balloon)")
+	LogMaskLayout("hardMask",oldLayout)
+End Sub
+
+Sub LogMaskLayout(name As String,layout As Map)
+	Log(name & ": success=" & layout.GetDefault("success",False) & " overflow=" & layout.GetDefault("overflow",False) & " blockWidth=" & layout.GetDefault("blockWidth",0) & " blockHeight=" & layout.GetDefault("blockHeight",0))
+	Dim lefts As List = layout.Get("lineLefts")
+	If lefts.IsInitialized = False Or lefts.Size = 0 Then
+		Log("  (no line layout)")
+		Return
+	End If
+	Dim texts As List = Regex.Split(Chr(10),layout.Get("text"))
+	Dim tops As List = layout.Get("lineTops")
+	For i = 0 To Min(texts.Size,lefts.Size) - 1
+		Log("  [" & i & "] x=" & lefts.Get(i) & " y=" & tops.Get(i) & " : " & texts.Get(i))
+	Next
+End Sub
+
+'旧逻辑：每行所有词宽都必须不超过该行掩膜宽度，放不下就放弃该行数
+Sub HardLayout(text As String,f As Font,spans As Map,boxX As Int,boxY As Int,boxW As Int,boxH As Int) As Map
+	Dim r As Map
+	r.Initialize
+	r.Put("success",False)
+	r.Put("overflow",False)
+	Dim rowMin As List = spans.Get("rowMin")
+	Dim rowMax As List = spans.Get("rowMax")
+	Dim yMin As Int = Max(spans.Get("yMin"),boxY)
+	Dim yMax As Int = Min(spans.Get("yMax"),boxY + boxH - 1)
+	Dim lineHeight As Double = f.Size * 1.2
+	Dim lineStep As Double = lineHeight + f.Size * 0.25
+	Dim words As List = Regex.Split("\s+",text.Trim)
+	Dim maxLines As Int = Ceil((yMax - yMin + 1) / lineStep)
+	Dim band(Max(1,maxLines)) As Double
+	For n = 1 To maxLines
+		Dim ok As Boolean = True
+		For i = 0 To n - 1
+			Dim y0 As Int = Floor(yMin + i * lineStep)
+			Dim y1 As Int = Min(Ceil(y0 + lineHeight) - 1,yMax)
+			Dim mn As Int = -1
+			Dim mx As Int = -1
+			For yy = y0 To y1
+				Dim a As Int = rowMin.Get(yy)
+				If a >= 0 Then
+					If mn = -1 Or a > mn Then mn = a
+					If mx = -1 Or rowMax.Get(yy) < mx Then mx = rowMax.Get(yy)
+				End If
+			Next
+			If mn = -1 Or mx < mn Then
+				ok = False
+				Exit
+			End If
+			band(i) = Min(mx,boxX + boxW - 1) - Max(mn,boxX) + 1
+		Next
+		If ok = False Then Continue
+		Dim lines As List
+		lines.Initialize
+		Dim cur As String = ""
+		Dim idx As Int = 0
+		Dim fits As Boolean = True
+		For Each w As String In words
+			Dim cand As String
+			If cur = "" Then
+				cand = w
+			Else
+				cand = cur & " " & w
+			End If
+			If cur <> "" And TextWidth(cand,f) > band(idx) Then
+				lines.Add(cur)
+				idx = idx + 1
+				If idx >= n Then
+					fits = False
+					Exit
+				End If
+				cur = w
+			Else
+				cur = cand
+			End If
+		Next
+		If fits = False Then Continue
+		If cur <> "" Then lines.Add(cur)
+		If lines.Size > n Then Continue
+		r.Put("success",True)
+		r.Put("text",JoinLines(lines))
+		Dim lefts As List
+		Dim tops As List
+		lefts.Initialize
+		tops.Initialize
+		For i = 0 To lines.Size - 1
+			lefts.Add(0)
+			tops.Add(yMin + i * lineStep - boxY)
+		Next
+		r.Put("lineLefts",lefts)
+		r.Put("lineTops",tops)
+		Return r
+	Next
+	Return r
+End Sub
+
+Sub JoinLines(lines As List) As String
+	Dim sb As StringBuilder
+	sb.Initialize
+	For i = 0 To lines.Size - 1
+		If i > 0 Then sb.Append(Chr(10))
+		sb.Append(lines.Get(i))
+	Next
+	Return sb.ToString
+End Sub
+
+Sub TextWidth(s As String,f As Font) As Double
+	Dim t As JavaObject
+	t.InitializeNewInstance("javafx.scene.text.Text",Array(s))
+	t.RunMethod("setFont",Array(f))
+	Dim b As JavaObject = t.RunMethod("getLayoutBounds",Null)
+	Return b.RunMethod("getWidth",Null)
+End Sub
+
+'读取 日译英自动排版 项目的 Untitled.itp，取第一行文字的框：
+'位置用 targetGeometry（有的话），文字用 target，字体和行距用 settings.fontStyles 里的 general 样式。
+Sub LoadFirstBox As Map
+	Dim box As Map
+	box.Initialize
+	box.Put("X",37)
+	box.Put("Y",737)
+	box.Put("width",133)
+	box.Put("height",119)
+	box.Put("target","")
+	box.Put("font","System")
+	box.Put("size",12)
+	box.Put("lineHeight",1.25)
+	box.Put("alignment",0)
+	'找 Untitled.itp：IDE 运行时在 Files（File.DirAssets），运行 jar 时在程序目录
+	Dim itpDir As String = ""
+	If File.Exists(File.DirAssets,"Untitled.itp") Then
+		itpDir = File.DirAssets
+	Else If File.Exists(File.DirApp,"Untitled.itp") Then
+		itpDir = File.DirApp
+	Else If File.Exists(File.Combine(File.DirApp,"Files"),"Untitled.itp") Then
+		itpDir = File.Combine(File.DirApp,"Files")
+	End If
+	If itpDir = "" Then
+		Log("LoadFirstBox: Untitled.itp not found, using defaults")
+		Return box
+	End If
+	Log("LoadFirstBox: reading " & itpDir)
+	Dim parser As JSONParser
+	parser.Initialize(File.ReadString(itpDir,"Untitled.itp"))
+	Dim root As Map = parser.NextObject
+	'字体样式（fontStyles 里第一个）
+	Dim settings As Map = root.Get("settings")
+	If settings.ContainsKey("fontStyles") Then
+		Dim styles As List = settings.Get("fontStyles")
+		If styles.Size > 0 Then
+			Dim st As Map = styles.Get(0)
+			box.Put("font",st.GetDefault("b4jfont","System"))
+			box.Put("size",st.GetDefault("size",12) + 0)
+			box.Put("lineHeight",st.GetDefault("line-height",1.25) + 0)
+			box.Put("alignment",st.GetDefault("alignment",0) + 0)
+		End If
+	End If
+	Dim images As Map = root.Get("images")
+	For Each name As String In images.Keys
+		Dim oneImg As Map = images.Get(name)
+		If oneImg.ContainsKey("boxes") Then
+			Dim boxes As List = oneImg.Get("boxes")
+			For Each b As Map In boxes
+				Dim g As Map
+				If b.ContainsKey("targetGeometry") Then
+					g = b.Get("targetGeometry")
+				Else If b.ContainsKey("geometry") Then
+					g = b.Get("geometry")
+				End If
+				If g.IsInitialized Then
+					box.Put("X",Round(g.Get("X")))
+					box.Put("Y",Round(g.Get("Y")))
+					box.Put("width",Round(g.Get("width")))
+					box.Put("height",Round(g.Get("height")))
+					box.Put("target",b.GetDefault("target",""))
+					Return box
+				End If
+			Next
+		End If
+	Next
+	Return box
+End Sub
+
