@@ -254,9 +254,20 @@ Public Sub WrapInMask(Text As String,F As Font,Mask As Map,LineSpacing As Double
 			Dim availR As Double = band.Get("right")
 			availW = availR - availL + 1
 		End If
+		'用"安全区间"（带内所有行的交集）判断是否放得下：
+		'这样右对齐或居中的行也不会伸到气泡外面
+		Dim fits As Boolean = True
+		If band.Get("ok") And curText <> "" Then
+			If Alignment = 2 Then
+				fits = (availL + availW - cw) >= availL
+			Else
+				fits = cw <= availW
+			End If
+		End If
 		'放不下就换行（首行即使超宽也先放，允许溢出）
-		If curText <> "" And availW >= 0 And cw > availW Then
-			AddLine(lineTexts,lineLefts,lineTops,lineSlots,curText,curTop,availL,availW,F,Alignment,CenterX,yMin,xStart,xLimit)
+		If fits = False Then
+			'这一行用安全区间定位（交集），保证不出气泡
+			AddLine(lineTexts,lineLefts,lineTops,lineSlots,curText,curTop,availL,availW,F,Alignment,CenterX,areaTop,xStart,xLimit)
 			curText = w
 			curTop = curTop + lineStep
 		Else
@@ -271,9 +282,14 @@ Public Sub WrapInMask(Text As String,F As Font,Mask As Map,LineSpacing As Double
 			l2 = band2.Get("left")
 			w2 = band2.Get("right") - l2 + 1
 		End If
-		AddLine(lineTexts,lineLefts,lineTops,lineSlots,curText,curTop,l2,w2,F,Alignment,CenterX,yMin,xStart,xLimit)
+		AddLine(lineTexts,lineLefts,lineTops,lineSlots,curText,curTop,l2,w2,F,Alignment,CenterX,areaTop,xStart,xLimit)
 	End If
 
+
+	'lineLefts 目前是整图坐标，统一换成框内局部坐标（渲染端只加 area.X）
+	For i = 0 To lineLefts.Size - 1
+		lineLefts.Set(i,lineLefts.Get(i) - areaLeft)
+	Next
 
 	Dim sb As StringBuilder
 	sb.Initialize
@@ -291,8 +307,8 @@ Public Sub WrapInMask(Text As String,F As Font,Mask As Map,LineSpacing As Double
 	result.Put("lineTops",lineTops)
 	result.Put("lineSlots",lineSlots)
 	result.Put("topOffset",lineTops.Get(0))
-	result.Put("leftOffset",minLeft - areaLeft)
-	result.Put("blockLeft",minLeft - areaLeft)
+	result.Put("leftOffset",minLeft)
+	result.Put("blockLeft",minLeft)
 	result.Put("blockWidth",maxRight - minLeft)
 	result.Put("wrapWidth",xLimit - xStart)
 	result.Put("blockHeight",lineTops.Get(lineTops.Size - 1) + naturalLineHeight - areaTop)
@@ -335,32 +351,37 @@ Private Sub LineBand(rowMin As List,rowMax As List,topY As Double,height As Doub
 End Sub
 
 '把一行加入结果：按对齐方式在可用区间里定位
-Private Sub AddLine(lineTexts As List,lineLefts As List,lineTops As List,lineSlots As List,lineText As String,topY As Double,availL As Double,availW As Double,F As Font,alignment As Int,CenterX As Double,yMin As Int,xStart As Int,xLimit As Int)
+Private Sub AddLine(lineTexts As List,lineLefts As List,lineTops As List,lineSlots As List,lineText As String,topY As Double,availL As Double,availW As Double,F As Font,alignment As Int,CenterX As Double,areaTop As Int,xStart As Int,xLimit As Int)
 	Dim tw As Double = MeasureTextWidth(lineText,F)
-	Dim slot As Double = availW
+	Dim slot As Double
 	Dim left As Double
-	If availW < 0 Or availW < tw Then
-		'没有掩膜信息或这一行本身就超宽：用框宽，居中放置（允许溢出）
+	If availW < 0 Then
+		'完全没有掩膜信息：用框宽，按对齐方式摆放（允许溢出）
 		slot = xLimit - xStart
 		If alignment = 0 Then
 			left = xStart
 		Else If alignment = 2 Then
-			left = xLimit - Max(slot,tw)
+			left = xLimit - tw
 		Else
 			left = CenterX - tw / 2
 		End If
 	Else
+		'有掩膜：容器宽度就是该行的安全区间宽度，文字按对齐方式放进去
+		slot = availW
 		If alignment = 0 Then
 			left = availL
 		Else If alignment = 2 Then
-			left = availL + availW - tw
+			'右对齐：行框右边缘贴区间右边界，文字右端 = availL + availW
+			left = availL
 		Else
 			left = availL + (availW - tw) / 2
 		End If
+		'文字比区间还宽（单个词放不下）：从区间左侧开始，允许向右溢出
+		If tw > availW Then left = availL
 	End If
 	lineTexts.Add(lineText)
 	lineLefts.Add(left)
-	lineTops.Add(topY - yMin)
+	lineTops.Add(topY - areaTop)
 	lineSlots.Add(Max(slot,tw))
 End Sub
 

@@ -107,6 +107,49 @@ Sub RunNewMaskDemo
 	Dim img As B4XBitmap = pane.Snapshot2(fx.Colors.White)
 	pane.RemoveNodeFromParent
 	ImageView1.SetImage(img)
+	SaveShot(img,"new")
+	'再画一张旧版结果，方便对比
+	Dim paneOld As Pane
+	paneOld.Initialize("")
+	Dim ivOld As ImageView
+	ivOld.Initialize("")
+	ivOld.SetImage(fx.LoadImage(File.DirAssets,"old_balloonmask.png"))
+	paneOld.AddNode(ivOld,0,0,mask.Cols,mask.Rows)
+	DrawOld(paneOld,BalloonText.WrapInMask(text,f,oldL,lineSpacing,0.0,1.0,"LEFT"),leftArea,f,"LEFT")
+	DrawOld(paneOld,BalloonText.WrapInMask(text,f,oldR,lineSpacing,0.0,1.0,"RIGHT"),rightArea,f,"RIGHT")
+	Dim imgOld As B4XBitmap = paneOld.Snapshot2(fx.Colors.White)
+	paneOld.RemoveNodeFromParent
+	SaveShot(imgOld,"old")
+End Sub
+
+Sub SaveShot(img As B4XBitmap,tag As String)
+	Dim out As OutputStream = File.OpenOutput(File.DirApp,"shot_" & tag & ".png",False)
+	img.WriteToStream(out,100,"PNG")
+	out.Close
+	Log("saved shot_" & tag & ".png " & img.Width & "x" & img.Height)
+End Sub
+
+'用旧版结果画（centers 是整图坐标、slots 是宽度）
+Sub DrawOld(pane As Pane,layout As Map,area As Map,f As Font,alignment As String)
+	If layout.GetDefault("success",False) = False Then Return
+	Dim lines As List = layout.Get("lines")
+	Dim centers As List = layout.Get("centers")
+	Dim slots As List = layout.Get("slots")
+	For i = 0 To lines.Size - 1
+		Dim slot As Double = slots.Get(i)
+		Dim tf As JavaObject
+		tf.InitializeNewInstance("javafx.scene.text.TextFlow",Null)
+		Dim ta As JavaObject
+		ta.InitializeStatic("javafx.scene.text.TextAlignment")
+		tf.RunMethod("setTextAlignment",Array(ta.GetField(alignment)))
+		Dim t As JavaObject
+		t.InitializeNewInstance("javafx.scene.text.Text",Array(lines.Get(i)))
+		t.RunMethod("setFont",Array(f))
+		Dim tfPane As Pane = tf
+		tfPane.AddNode(t,0,0,-1,-1)
+		tf.RunMethod("setPrefWidth",Array(slot))
+		pane.AddNode(tfPane,centers.Get(i) - slot / 2,layout.Get("yMin") + i * layout.Get("lineStep"),-1,-1)
+	Next
 End Sub
 
 Sub LogMaskResult(name As String,layout As Map)
