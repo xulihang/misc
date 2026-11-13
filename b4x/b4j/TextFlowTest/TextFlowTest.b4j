@@ -62,6 +62,7 @@ Sub AppStart (Form1 As Form, Args() As String)
 		loadOpenCV
 		RunNewMaskDemo
 		RunMaskComparison
+		RunImageTransCase
 	Catch
 		Log("new mask demo skipped: " & LastException)
 	End Try
@@ -84,12 +85,6 @@ Sub RunNewMaskDemo
 	Dim leftArea As Map = AreaFromMask(spans,0,180)
 	Dim rightArea As Map = AreaFromMask(spans,200,335)
 
-	'旧版结果（参考）
-	Dim oldL As Map = BalloonText.LoadMaskSpans(File.DirAssets,"old_balloonmask.png",0,180)
-	Dim oldR As Map = BalloonText.LoadMaskSpans(File.DirAssets,"old_balloonmask.png",200,335)
-	LogMaskResult("OLD left",BalloonText.WrapInMask(text,f,oldL,lineSpacing,0.0,1.0,"LEFT"))
-	LogMaskResult("OLD right",BalloonText.WrapInMask(text,f,oldR,lineSpacing,0.0,1.0,"RIGHT"))
-
 	'新实现
 	Dim layoutL As Map = BalloonMaskWrapper.WrapInMask(text,f,spans,lineSpacing,0,leftArea.Get("X"),leftArea.Get("Y"),leftArea.Get("width"),leftArea.Get("height"),1.0)
 	Dim layoutR As Map = BalloonMaskWrapper.WrapInMask(text,f,spans,lineSpacing,2,rightArea.Get("X"),rightArea.Get("Y"),rightArea.Get("width"),rightArea.Get("height"),1.0)
@@ -108,18 +103,6 @@ Sub RunNewMaskDemo
 	pane.RemoveNodeFromParent
 	ImageView1.SetImage(img)
 	SaveShot(img,"new")
-	'再画一张旧版结果，方便对比
-	Dim paneOld As Pane
-	paneOld.Initialize("")
-	Dim ivOld As ImageView
-	ivOld.Initialize("")
-	ivOld.SetImage(fx.LoadImage(File.DirAssets,"old_balloonmask.png"))
-	paneOld.AddNode(ivOld,0,0,mask.Cols,mask.Rows)
-	DrawOld(paneOld,BalloonText.WrapInMask(text,f,oldL,lineSpacing,0.0,1.0,"LEFT"),leftArea,f,"LEFT")
-	DrawOld(paneOld,BalloonText.WrapInMask(text,f,oldR,lineSpacing,0.0,1.0,"RIGHT"),rightArea,f,"RIGHT")
-	Dim imgOld As B4XBitmap = paneOld.Snapshot2(fx.Colors.White)
-	paneOld.RemoveNodeFromParent
-	SaveShot(imgOld,"old")
 End Sub
 
 Sub SaveShot(img As B4XBitmap,tag As String)
@@ -154,19 +137,6 @@ End Sub
 
 Sub LogMaskResult(name As String,layout As Map)
 	Log(name & " success=" & layout.GetDefault("success",False) & " overflow=" & layout.GetDefault("overflow",False))
-	If layout.ContainsKey("lines") Then
-		'旧版结果：lines / widths / centers / slots / yMin / lineStep
-		Dim lines As List = layout.Get("lines")
-		Dim centers As List = layout.Get("centers")
-		Dim slots As List = layout.Get("slots")
-		For i = 0 To lines.Size - 1
-			Dim c As Double = centers.Get(i)
-			Dim s2 As Double = slots.Get(i)
-			Dim yy As Double = layout.Get("yMin") + i * layout.Get("lineStep")
-			Log("  [" & i & "] slot=" & s2 & " left=" & (c - s2 / 2) & " y=" & yy & " : " & lines.Get(i))
-		Next
-		Return
-	End If
 	Dim texts As List = Regex.Split(Chr(10),layout.Get("text"))
 	Dim lefts As List = layout.Get("lineLefts")
 	Dim tops As List = layout.Get("lineTops")
@@ -193,8 +163,10 @@ Sub DrawLayout(pane As Pane,layout As Map,area As Map,f As Font,alignment As Str
 	Dim lefts As List = layout.Get("lineLefts")
 	Dim tops As List = layout.Get("lineTops")
 	Dim slots As List = layout.Get("lineSlots")
+	'单独按行数计算行高，不再逐行估算
+	Dim lineH As Double = MeasureLineHeightForText("Hg",f)
+	Log("draw lines=" & Min(texts.Size,lefts.Size) & " tops=" & tops.Get(0) & ".." & tops.Get(Min(texts.Size,lefts.Size) - 1) & " lineH=" & lineH)
 	For i = 0 To Min(texts.Size,lefts.Size) - 1
-		'照旧版 RenderMaskResult：每行一个 TextFlow，宽度 = slot，位置 = (x, y)
 		Dim slot As Double = slots.Get(i)
 		Dim tf As JavaObject
 		tf.InitializeNewInstance("javafx.scene.text.TextFlow",Null)
@@ -208,9 +180,16 @@ Sub DrawLayout(pane As Pane,layout As Map,area As Map,f As Font,alignment As Str
 		tfPane.AddNode(t,0,0,-1,-1)
 		tf.RunMethod("setPrefWidth",Array(slot))
 		tf.RunMethod("setMaxWidth",Array(slot))
-		'显式给出宽度，否则 TextFlow 会缩到内容宽度，TextAlignment 无从生效
-		pane.AddNode(tfPane,area.Get("X") + lefts.Get(i),area.Get("Y") + tops.Get(i),slot,f.Size * 1.5)
+		pane.AddNode(tfPane,area.Get("X") + lefts.Get(i),area.Get("Y") + tops.Get(i),slot,lineH)
 	Next
+End Sub
+
+Sub MeasureLineHeightForText(s As String,f As Font) As Double
+	Dim t As JavaObject
+	t.InitializeNewInstance("javafx.scene.text.Text",Array(s))
+	t.RunMethod("setFont",Array(f))
+	Dim b As JavaObject = t.RunMethod("getLayoutBounds",Null)
+	Return b.RunMethod("getHeight",Null)
 End Sub
 
 Sub Button1_Click
@@ -252,6 +231,31 @@ Sub RunMaskComparison
 	Dim oldLayout As Map = HardLayout(text,f,spans,boxX,boxY,boxW,boxH)
 	If oldLayout.GetDefault("success",False) = False Then Log("hardMask: no strict fit (expected for this balloon)")
 	LogMaskLayout("hardMask",oldLayout)
+End Sub
+
+'用 ImageTrans 项目的实际数据跑一遍（capture002 + 它的框/文字/字体）
+Sub RunImageTransCase
+	'ImageTrans 实际参数：字号 13、linespace 3.25、大写
+	Dim mask As cvMat = Image2cvMat(File.DirAssets,"capture002.jpg-balloonmask.png")
+	Dim spans As Map = BalloonMaskWrapper.LoadMaskSpans(mask)
+	Dim boxX As Int = 37
+	Dim boxY As Int = 737
+	Dim boxW As Int = 133
+	Dim boxH As Int = 119
+	Dim text As String = "DOCTOR! COCO! DOCTOR! COCO! COCO! MY NEIGHBOR IS. .."
+	Dim f As Font = fx.CreateFont("System",13,False,False)
+	Dim layout As Map = BalloonMaskWrapper.WrapInMask(text,f,spans,3.25,0,boxX,boxY,boxW,boxH,1.0)
+	LogMaskResult("CASE",layout)
+	Dim pane As Pane
+	pane.Initialize("")
+	Dim iv As ImageView
+	iv.Initialize("")
+	iv.SetImage(fx.LoadImage(File.DirAssets,"capture002.jpg-balloonmask.png"))
+	pane.AddNode(iv,0,0,mask.Cols,mask.Rows)
+	DrawLayout(pane,layout,CreateMap("X":boxX,"Y":boxY,"width":boxW,"height":boxH),f,"LEFT")
+	Dim img As B4XBitmap = pane.Snapshot2(fx.Colors.White)
+	pane.RemoveNodeFromParent
+	SaveShot(img,"case")
 End Sub
 
 Sub LogMaskLayout(name As String,layout As Map)

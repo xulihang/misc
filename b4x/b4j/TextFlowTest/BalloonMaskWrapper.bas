@@ -186,7 +186,37 @@ Public Sub WrapInMask(Text As String,F As Font,Mask As Map,LineSpacing As Double
 		Return result
 	End If
 
-	'纵向范围：框内掩膜的上下界（同旧版 yMin/yMax）
+	'纵向范围：先找框中心所在的那一段掩膜（同一行可能有别的气球/拟声词），
+	'再取这段掩膜的上下界。否则框会包含同高度其他气球，行宽被它们撑大。
+	Dim centerRow As Int = Min(Max(areaTop + areaHeight / 2,0),rowMin.Size - 1)
+	Dim xMid As Int = Min(Max(areaLeft + areaWidth / 2,xStart),xLimit - 1)
+	Dim seg As Map = FindSegment(rowMin,rowMax,centerRow,xMid)
+	Dim segL As Int = -1
+	Dim segR As Int = -1
+	If seg.Get("ok") Then
+		segL = seg.Get("left")
+		segR = seg.Get("right")
+	End If
+	If segL >= 0 Then
+		'把每一行的区间裁到这段气球的左右范围内（这行没有这段就记 -1）
+		For y = 0 To rowMin.Size - 1
+			Dim mnS As Int = rowMin.Get(y)
+			Dim mxS As Int = rowMax.Get(y)
+			If mnS >= 0 Then
+				If mxS < segL Or mnS > segR Then
+					mnS = -1
+					mxS = -1
+				Else
+					mnS = Max(mnS,segL)
+					mxS = Min(mxS,segR)
+				End If
+			End If
+			rowMin.Set(y,mnS)
+			rowMax.Set(y,mxS)
+		Next
+	Else
+		Log("balloonMask: no mask segment at box center")
+	End If
 	Dim yMin As Int = -1
 	Dim yMax As Int = -1
 	Dim boxTop As Int = Max(areaTop,0)
@@ -314,6 +344,36 @@ Public Sub WrapInMask(Text As String,F As Font,Mask As Map,LineSpacing As Double
 	result.Put("blockHeight",lineTops.Get(lineTops.Size - 1) + naturalLineHeight - areaTop)
 	Log("balloonMask: " & lineTexts.Size & " lines (greedy)")
 	Return result
+End Sub
+
+'在 row row 上找包含 x 的那段连续掩膜（一段 = 同一行里连续的一段）
+'返回 Map(ok,left,right)：包含 x 的那一段掩膜
+Private Sub FindSegment(rowMin As List,rowMax As List,row As Int,x As Int) As Map
+	Dim r As Map
+	r.Initialize
+	r.Put("ok",False)
+	Dim mn As Int = rowMin.Get(row)
+	Dim mx As Int = rowMax.Get(row)
+	If mn < 0 Then Return r
+	If x < mn Or x > mx Then Return r
+	Dim left As Int = x
+	Do While left > mn And IsMaskCol(rowMin,rowMax,row,left - 1)
+		left = left - 1
+	Loop
+	Dim right As Int = x
+	Do While right < mx And IsMaskCol(rowMin,rowMax,row,right + 1)
+		right = right + 1
+	Loop
+	r.Put("ok",True)
+	r.Put("left",left)
+	r.Put("right",right)
+	Return r
+End Sub
+
+Private Sub IsMaskCol(rowMin As List,rowMax As List,row As Int,x As Int) As Boolean
+	Dim mn As Int = rowMin.Get(row)
+	Dim mx As Int = rowMax.Get(row)
+	Return mn >= 0 And x >= mn And x <= mx
 End Sub
 
 '当前行（以 topY 为顶）在掩膜里的可用区间：
