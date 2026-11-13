@@ -84,6 +84,8 @@ Public Sub LoadMaskSpans(Dir As String,FileName As String,MinX As Int,MaxX As In
 	result.Put("yMax",yMax)
 	result.Put("rowMin",rowMin)
 	result.Put("rowMax",rowMax)
+	result.Put("regionMinX",xStart)
+	result.Put("regionMaxX",xLimit - 1)
 	result.Put("centerX",centerX)
 	Return result
 End Sub
@@ -95,7 +97,9 @@ End Sub
 '- 行数允许向上取整，文本块可以略微超出掩膜高度（不压行距、不改字号）
 '返回：
 '  success, lines, widths(文字实际宽度), centers(每行中心x),
-'  slots(每行可用宽度), top(相对 yMin 的偏移), yMin, lineStep, naturalLineHeight
+'  slots(每行可用宽度), top(相对 yMin 的偏移), yMin, lineStep, naturalLineHeight,
+'  overflow(True 表示字号太大、按掩膜排不下，文本块改用 maxWidth 自动换行)
+'  blockLines / blockWidth / blockHeight / blockLeft / blockTop  溢出时整块 TextFlow 的几何
 Public Sub WrapInMask(Text As String,F As Font,Mask As Map,LineSpacing As Double,Padding As Double,VerticalFill As Double,Alignment As String) As Map
 	Dim result As Map
 	result.Initialize
@@ -110,6 +114,12 @@ Public Sub WrapInMask(Text As String,F As Font,Mask As Map,LineSpacing As Double
 	result.Put("yMin",0)
 	result.Put("lineStep",0.0)
 	result.Put("naturalLineHeight",0.0)
+	result.Put("overflow",False)
+	result.Put("blockLines",emptyList)
+	result.Put("blockWidth",0.0)
+	result.Put("blockHeight",0.0)
+	result.Put("blockLeft",0.0)
+	result.Put("blockTop",0.0)
 	Dim s As String = Text.Trim
 	If s = "" Then
 		result.Put("success",True)
@@ -263,7 +273,12 @@ Public Sub WrapInMask(Text As String,F As Font,Mask As Map,LineSpacing As Double
 		End If
 	Next
 
-	If bestFillOK = False Then Return result
+	'字号太大，按掩膜怎么排都放不下（比如某个单词比该行的可用宽度还宽，
+	'或者 maxLines 已经只剩 1 行）：不再返回空结果，改为允许溢出，
+	'整段文字放进一个宽度固定的 TextFlow，由 maxWidth 自动换行。
+	If bestFillOK = False Then
+		Return BuildOverflowResult(Text,Mask,F,Alignment,result)
+	End If
 	Dim widths As List
 	widths.Initialize
 	For Each lineText As String In bestLines
@@ -278,7 +293,124 @@ Public Sub WrapInMask(Text As String,F As Font,Mask As Map,LineSpacing As Double
 	result.Put("yMin",yMin)
 	result.Put("lineStep",lineStep)
 	result.Put("naturalLineHeight",naturalLineHeight)
+	result.Put("targetLines",targetLines)
 	Return result
+End Sub
+
+'按掩膜排不下时的兜底：允许溢出，由 TextFlow 按 maxWidth 自动换行。
+'- maxWidth 取该区域可用宽度的中位数，比最宽处窄一些，避免大字号时整行远远伸出气泡左右边缘
+'- 整块水平居中到掩膜中心，从掩膜顶部 yMin 开始向下排，超出部分向下溢出
+'- Alignment 同时影响块的位置：LEFT 左边缘贴掩膜左边缘，RIGHT 右边缘贴掩膜右边缘
+Private Sub BuildOverflowResult(Text As String,Mask As Map,F As Font,Alignment As String,result As Map) As Map
+	Dim rowMin As List = Mask.Get("rowMin")
+	Dim rowMax As List = Mask.Get("rowMax")
+	Dim yMin As Int = Mask.Get("yMin")
+	Dim yMax As Int = Mask.Get("yMax")
+	Dim CenterX As Double = Mask.Get("centerX")
+	Dim regionMinX As Int = Mask.GetDefault("regionMinX",0)
+	Dim regionMaxX As Int = Mask.GetDefault("regionMaxX",Mask.Get("width") - 1)
+	Dim spans As List
+	spans.Initialize
+	For yy = yMin To yMax
+		Dim mn As Int = rowMin.Get(yy)
+		If mn >= 0 Then spans.Add(rowMax.Get(yy) - mn + 1)
+	Next
+	If spans.Size = 0 Then Return result
+	spans.Sort(False)
+	'可用宽度取中位数：比最宽处窄一些，避免大字号时整行远远伸出气泡左右边缘；
+	'同时不超过掩膜区域本身的宽度
+	Dim blockWidth As Double = Min(spans.Get(spans.Size / 2) + 0.0,regionMaxX - regionMinX + 1.0)
+	Dim naturalLineHeight As Double = MeasureLineHeight(F)
+	If naturalLineHeight <= 0 Then naturalLineHeight = F.Size * 1.2
+	Dim lineStep As Double = naturalLineHeight + F.Size * 0.25
+	'TextFlow 的自动换行不一定和 MeasureTextWidth 完全一致，多量几行，宁可高度算大
+	Dim lineCount As Int = 0
+	For Each lineText As String In WrapWordsToWidth(Text,blockWidth,F)
+		lineCount = lineCount + 1
+	Next
+	Dim blockHeight As Double = naturalLineHeight + Max(0,lineCount - 1) * lineStep
+	Dim oneLine As List
+	oneLine.Initialize
+	oneLine.Add(Text)
+	'lines/widths/centers/slots 保持单行形式，即使调用方还没按 overflow 分支渲染，
+	'也至少能画出第一行，而不是整块空白
+	Dim widths As List
+	widths.Initialize
+	widths.Add(Min(MeasureTextWidth(Text,F),blockWidth))
+	Dim centers As List
+	centers.Initialize
+	centers.Add(CenterX)
+	Dim slots As List
+	slots.Initialize
+	slots.Add(blockWidth)
+	result.Put("success",True)
+	result.Put("overflow",True)
+	result.Put("lines",oneLine)
+	result.Put("widths",widths)
+	result.Put("centers",centers)
+	result.Put("slots",slots)
+	result.Put("top",0.0)
+	result.Put("yMin",yMin)
+	result.Put("lineStep",lineStep)
+	result.Put("naturalLineHeight",naturalLineHeight)
+	result.Put("blockWidth",blockWidth)
+	result.Put("blockHeight",blockHeight)
+	Dim align As String = Alignment.ToUpperCase
+	Dim blockLeft As Double = CenterX - blockWidth / 2
+	If align = "LEFT" Then
+		blockLeft = regionMinX
+	Else If align = "RIGHT" Then
+		blockLeft = regionMaxX - blockWidth + 1
+	End If
+	result.Put("blockLeft",blockLeft)
+	result.Put("blockTop",yMin + 0.0)
+	Return result
+End Sub
+
+'把文字按宽度断词（单词不拆），返回每行文本；和掩膜版的断行逻辑一致
+Private Sub WrapWordsToWidth(Text As String,width As Double,F As Font) As List
+	Dim lines As List
+	lines.Initialize
+	Dim words As List = Regex.Split("\s+",Text.Replace(Chr(160)," ").Trim)
+	Dim sb As StringBuilder
+	sb.Initialize
+	For Each w As String In words
+		Dim candidate As String
+		If sb.Length = 0 Then
+			candidate = w
+		Else
+			candidate = sb.ToString & " " & w
+		End If
+		If sb.Length > 0 And MeasureTextWidth(candidate,F) > width Then
+			lines.Add(sb.ToString)
+			sb.Initialize
+			sb.Append(w)
+		Else
+			sb.Initialize
+			sb.Append(candidate)
+		End If
+	Next
+	If sb.Length > 0 Then lines.Add(sb.ToString)
+	Return lines
+End Sub
+
+'创建一个按 maxWidth 自动换行的 TextFlow（用于字号过大、允许溢出时）
+Public Sub CreateOverflowFlow(Text As String,F As Font,Width As Double,Alignment As String) As Pane
+	Dim tf As JavaObject
+	tf.InitializeNewInstance("javafx.scene.text.TextFlow", Null)
+	Dim ta As JavaObject
+	ta.InitializeStatic("javafx.scene.text.TextAlignment")
+	tf.RunMethod("setTextAlignment",Array(ta.GetField(Alignment.ToUpperCase)))
+	Dim t As JavaObject
+	t.InitializeNewInstance("javafx.scene.text.Text",Array(Text))
+	t.RunMethod("setFont",Array(F))
+	Dim p As Pane = tf
+	Dim tn As Node = t
+	p.AddNode(tn,0,0,-1,-1)
+	'关键：字号比气泡还大时，TextFlow 不能再按掩膜逐行排，而是靠 maxWidth 自动换行
+	tf.RunMethod("setPrefWidth",Array(Width))
+	tf.RunMethod("setMaxWidth",Array(Width))
+	Return p
 End Sub
 
 'DP：按 avail() 给定的每行可用宽度断行，单词不能拆。无解返回 Null。
@@ -359,7 +491,7 @@ Public Sub CreateLineFlow(Line As String,F As Font,Width As Double,Alignment As 
 	Dim tn As Node = t
 	p.AddNode(tn,0,0,-1,-1)
 	tf.RunMethod("setPrefWidth",Array(Width))
-	tf.RunMethod("resize",Array(Width,MeasureLineHeight(F)))
+	p.SetSize(Width,MeasureLineHeight(F))
 	Return p
 End Sub
 

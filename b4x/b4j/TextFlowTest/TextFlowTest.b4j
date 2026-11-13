@@ -50,7 +50,7 @@ Sub AppStart (Form1 As Form, Args() As String)
 		maskL = BalloonText.LoadMaskSpans(File.DirApp,"balloonmask.png",0,180)
 		maskR = BalloonText.LoadMaskSpans(File.DirApp,"balloonmask.png",200,335)
 	End Try
-	Dim f As Font = fx.CreateFont("System",10,False,False)
+	Dim f As Font = fx.CreateFont("System",15,False,False)
 	Dim lineSpacing As Double = f.Size * 0.25
 	Dim text As String = "If you encounter any problems, you can contact me by email"
 	Dim resultL As Map = BalloonText.WrapInMask(text,f,maskL,lineSpacing,2,1.0,"LEFT")
