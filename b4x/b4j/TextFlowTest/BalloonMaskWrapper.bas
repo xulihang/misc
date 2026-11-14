@@ -1,4 +1,4 @@
-﻿B4J=true
+B4J=true
 Group=Default Group
 ModulesStructureVersion=1
 Type=StaticCode
@@ -318,38 +318,25 @@ Public Sub WrapInMask(Text As String,F As Font,Mask As Map,LineSpacing As Double
 			Loop
 			merged = (tail <> "")
 		End If
-		Dim cw As Double = MeasureTextWidth(candidate,F)
-		If merged Then candidate = candidate & tail
+		Dim cw As Double = MeasureTextWidth(candidate,F)		'每个断行单元（词或汉字）：取这一行高度带在掩膜里的左/右边界，
+		'左边界 = 带内各行的交集（文字起点不能越过它），右边界 = 带内最宽行。
+		'累加宽度超过右边界就换行；行首不到左边界就在每行开头补空格。
 		Dim band As Map = LineBand(rowMin,rowMax,curTop,naturalLineHeight)
-		Dim availW As Double = -1
-		Dim availL As Double = -1
-		If band.Get("ok") Then
-			availL = band.Get("left")
-			Dim availR As Double = band.Get("right")
-			availW = availR - availL + 1
-		End If
-		'用"安全区间"（带内所有行的交集）判断是否放得下：
-		'这样右对齐或居中的行也不会伸到气泡外面
-		Dim fits As Boolean = True
 		If band.Get("ok") And curText <> "" Then
-			If Alignment = 2 Then 'right
-				fits = (availL + availW - cw) - availL >= 0
-			Else
-				fits = (cw <= availW)
+			Dim availR As Double = band.Get("usableRight")
+			Dim availL As Double = band.Get("usableLeft")
+			Dim cw As Double = MeasureTextWidth(candidate,F)
+			Dim fits As Boolean = (availL + cw - 1 <= availR)
+			If fits = False Then
+				AddLineAligned(lineTexts,lineLefts,lineTops,lineSlots,curText,curTop,rowMin,rowMax,naturalLineHeight,F,Alignment,CenterX,areaTop,xStart,xLimit)
+				curText = w
+				curTop = curTop + lineStep
+				If merged Then i = k - 1
+				Continue
 			End If
 		End If
-		'放不下就换行（首行即使超宽也先放，允许溢出）
-		If fits = False Then
-			'这一行用安全区间定位（交集），保证不出气泡
-			AddLineAligned(lineTexts,lineLefts,lineTops,lineSlots,curText,curTop,rowMin,rowMax,naturalLineHeight,F,Alignment,CenterX,areaTop,xStart,xLimit)
-			curText = w
-			curTop = curTop + lineStep
-			'标点跟着上一行走了，这一轮不再重复计入
-			If merged Then i = k - 1
-		Else
-			curText = candidate
-			If merged Then i = k - 1
-		End If
+		curText = candidate
+		If merged Then i = k - 1
 	Next
 	If curText <> "" Then
 		Dim band2 As Map = LineBand(rowMin,rowMax,curTop,naturalLineHeight)
@@ -595,6 +582,12 @@ Private Sub LineBand(rowMin As List,rowMax As List,topY As Double,height As Doub
 		End If
 	Next
 	If l < 0 Then Return r
+	If inR >= inL Then
+		r.Put("usableLeft",inL + 0.0)
+	Else
+		r.Put("usableLeft",l + 0.0)
+	End If
+	r.Put("usableRight",rr + 0.0)
 	r.Put("ok",True)
 	r.Put("left",l + 0.0)
 	r.Put("right",rr + 0.0)
@@ -647,39 +640,43 @@ Private Sub AddLineAligned(lineTexts As List,lineLefts As List,lineTops As List,
 		Dim inL As Double = band.Get("inLeft")
 		Dim inR As Double = band.Get("inRight")
 		Dim spaceW As Double = MeasureTextWidth(" ",F)
+		Dim usableL As Double = band.Get("usableLeft")
 		If alignment = 1 Then
 			'居中：行框 = 公共区间
 			slot = Max(inR - inL + 1,tw)
 			left = inL
 		Else If alignment = 2 Then
-			'右对齐：左起，用前缀空格把右端推到该行右边界
+			'右对齐：右端贴这一行带内的右边界
 			left = ownL
 			slot = ownR - ownL + 1
-			If spaceW > 0 Then
-				Dim padR As Int = 0
-				Do While tw + spaceW * (padR + 1) <= slot
-					padR = padR + 1
-				Loop
-				If slot - (tw + spaceW * padR) >= spaceW * 0.5 Then padR = padR + 1
-				If padR > 0 Then
-					text = Spaces(padR) & text
-					tw = MeasureTextWidth(text,F)
-				End If
-			End If
-			slot = Max(slot,tw)
 		Else
-			'左对齐：从该行左边界开始；右端超出该行右边界时补最少的空格
+			'左对齐：从这一行带内的左边界开始
 			left = ownL
+			If usableL > left Then left = usableL
 			slot = ownR - ownL + 1
-			If ownL + tw - 1 > ownR And spaceW > 0 Then
-				Dim pad As Int = Ceil((ownL + tw - 1 - ownR) / spaceW)
-				If pad > 0 Then
-					text = Spaces(pad) & text
-					tw = MeasureTextWidth(text,F)
-				End If
-			End If
-			slot = Max(slot,tw)
 		End If
+		'行首不足这一行的左边界时，前面补空格把文字推到左边界之后
+		If usableL > left And spaceW > 0 Then
+			Dim padL As Int = Ceil((usableL - left) / spaceW)
+			If padL > 0 Then
+				text = Spaces(padL) & text
+				tw = MeasureTextWidth(text,F)
+				left = left + padL * spaceW
+			End If
+		End If
+		'右对齐时在行首补空格，让文字右端贴住右边界（左对齐不再补右侧空格）
+		If alignment = 2 And spaceW > 0 Then
+			Dim padR As Int = 0
+			Do While tw + spaceW * (padR + 1) <= slot
+				padR = padR + 1
+			Loop
+			If slot - (tw + spaceW * padR) >= spaceW * 0.5 Then padR = padR + 1
+			If padR > 0 Then
+				text = Spaces(padR) & text
+				tw = MeasureTextWidth(text,F)
+			End If
+		End If
+		slot = Max(slot,tw)
 	End If
 	lineTexts.Add(text)
 	lineLefts.Add(left)

@@ -472,7 +472,6 @@ Sub RunChineseCase
 	pane.AddNode(iv,0,0,mask.Cols,mask.Rows)
 	DrawLayout(pane,layout,CreateMap("X":618,"Y":32,"width":263,"height":46),f,"LEFT")
 	DrawLayout(pane,layout2,CreateMap("X":519,"Y":352,"width":309,"height":88),f,"LEFT")
-	If gCnLayout.GetDefault("success",False) Then DrawLayout(pane,gCnLayout,CreateMap("X":119,"Y":355,"width":359,"height":123),gCnFont,"LEFT")
 	If gCnLayout2.GetDefault("success",False) Then DrawLayout(pane,gCnLayout2,CreateMap("X":165,"Y":357,"width":323,"height":117),gCnFont,"LEFT")
 	Dim img As B4XBitmap = pane.Snapshot2(fx.Colors.White)
 	pane.RemoveNodeFromParent
