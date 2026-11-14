@@ -459,6 +459,13 @@ Sub RunChineseCase
 	'ImageTrans 里这个框实际用的是 targetGeometry（比 geometry 小一圈）
 	Dim gT As Map = BalloonMaskWrapper.WrapInMask(cnText,f,spans,3.75,0,173,363,320,89,1.0)
 	LogMaskResult("CN NEW target",gT)
+	'ImageTrans 日志里实际传来的框
+	Dim gT2 As Map = BalloonMaskWrapper.WrapInMask(cnText,f,spans,3.75,0,132,346,371,104,1.0)
+	LogMaskResult("CN IT box",gT2)
+	'ImageTrans 实际字号 19
+	Dim f19 As Font = fx.CreateFont("Microsoft YaHei",19,False,False)
+	Dim gT3 As Map = BalloonMaskWrapper.WrapInMask(cnText,f19,spans,4.75,0,132,346,371,104,1.0)
+	LogMaskResult("CN IT box fs19",gT3)
 	LogMaskResult("CN polish geometry",gCnLayout)
 	Dim layout As Map = BalloonMaskWrapper.WrapInMask(text,f,spans,3.75,0,618,32,263,46,1.0)
 	LogMaskResult("CN box1",layout)
@@ -472,7 +479,7 @@ Sub RunChineseCase
 	pane.AddNode(iv,0,0,mask.Cols,mask.Rows)
 	DrawLayout(pane,layout,CreateMap("X":618,"Y":32,"width":263,"height":46),f,"LEFT")
 	DrawLayout(pane,layout2,CreateMap("X":519,"Y":352,"width":309,"height":88),f,"LEFT")
-	If gCnLayout.GetDefault("success",False) Then DrawLayout(pane,gCnLayout,CreateMap("X":119,"Y":355,"width":359,"height":123),gCnFont,"LEFT")
+	If gT3.GetDefault("success",False) Then DrawLayout(pane,gT3,CreateMap("X":132,"Y":346,"width":371,"height":104),f19,"LEFT")
 	Dim img As B4XBitmap = pane.Snapshot2(fx.Colors.White)
 	pane.RemoveNodeFromParent
 	SaveShot(img,"cn")

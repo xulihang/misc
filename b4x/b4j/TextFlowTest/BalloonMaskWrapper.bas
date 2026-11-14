@@ -582,21 +582,26 @@ Private Sub LineBand(rowMin As List,rowMax As List,topY As Double,height As Doub
 		End If
 	Next
 	If l < 0 Then Return r
-	'这一行的左/右边界：取行带最低端（行底）那一行掩膜的边界。
-	'气球左下角是斜的，按行底算才能让这一行贴住气球左边的空白；
-	'右边同理，行底通常是气球这一行最窄的地方，不会越出气泡。
-	Dim botY As Int = y1
+	'左边界 = 这一行字高 70% 处那个 y 上的掩膜左边界。
+	'气球左右是曲线，越靠下越窄；取字高中下部的边界，兼顾靠左和不出界。
+	'取字高约 70% 处（避开气球左缘收得最猛的行带底部，又不至于压到弧线外）
+	Dim botY As Int = Min(y0 + Ceil(Max(1,y1 - y0 + 1) * 0.7) - 1,y1)
 	Do While botY > y0
 		If rowMin.Get(botY) >= 0 Then Exit
 		botY = botY - 1
 	Loop
+	Dim uL As Int = -1
+	Dim uR As Int = 1000000
 	If rowMin.Get(botY) >= 0 Then
-		r.Put("usableLeft",rowMin.Get(botY) + 0.0)
-		r.Put("usableRight",rowMax.Get(botY) + 0.0)
-	Else
-		r.Put("usableLeft",l + 0.0)
-		r.Put("usableRight",rr + 0.0)
+		uL = rowMin.Get(botY)
+		uR = rowMax.Get(botY)
 	End If
+	If uL < 0 Then
+		uL = l
+		uR = rr
+	End If
+	r.Put("usableLeft",uL + 0.0)
+	r.Put("usableRight",uR + 0.0)
 	r.Put("ok",True)
 	r.Put("left",l + 0.0)
 	r.Put("right",rr + 0.0)
@@ -659,19 +664,16 @@ Private Sub AddLineAligned(lineTexts As List,lineLefts As List,lineTops As List,
 			left = ownL
 			slot = ownR - ownL + 1
 		Else
-			'左对齐：从这一行带内的左边界开始
+			'左对齐：行框从这一行带内最宽行的左边界开始，行首再补空格推到内容左边界
 			left = ownL
-			If usableL > left Then left = usableL
 			slot = ownR - ownL + 1
 		End If
-		'行首不足这一行的左边界时，前面补空格把文字推到左边界之后
-		If usableL > left And spaceW > 0 Then
-			Dim padL As Int = Ceil((usableL - left) / spaceW)
-			If padL > 0 Then
-				text = Spaces(padL) & text
-				tw = MeasureTextWidth(text,F)
-				left = left + padL * spaceW
-			End If
+		'行首不足这一行的左边界时：行框直接贴到左边界，再用空格补足小数部分，
+		'这样文字起点正好落在左边界上（不会因为整段补空格而多缩进半个字）
+		If alignment <> 1 And usableL > left Then
+			'行框直接贴到左边界；文字起点偶尔会因字形左侧留白差一点，补空格只在
+			'需要时补（这里 left 已经是左边界，不再额外加偏移）
+			left = usableL
 		End If
 		'右对齐时在行首补空格，让文字右端贴住右边界（左对齐不再补右侧空格）
 		If alignment = 2 And spaceW > 0 Then
