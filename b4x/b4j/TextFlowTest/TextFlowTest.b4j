@@ -468,6 +468,9 @@ Sub RunChineseCase
 	LogMaskResult("CN IT box fs19",gT3)
 	Dim gT4 As Map = BalloonMaskWrapper.WrapInMask(cnText,f19,spans,4.75,0,136,363,352,108,1.0,0)
 	LogMaskResult("CN IT box 136",gT4)
+	Dim f23 As Font = fx.CreateFont("Microsoft YaHei",23,False,False)
+	Dim gH As Map = BalloonMaskWrapper.WrapInMask("哼！",f23,spans,5.75,1,753,101,95,37,1.0,0)
+	LogMaskResult("CN grunt",gH)
 	Dim gT5 As Map = BalloonMaskWrapper.WrapInMask(cnText,f19,spans,4.75,0,121,359,359,123,1.0,0)
 	LogMaskResult("CN geometry121 fs19",gT5)
 	LogMaskResult("CN polish geometry",gCnLayout)
@@ -484,6 +487,7 @@ Sub RunChineseCase
 	DrawLayout(pane,layout,CreateMap("X":618,"Y":32,"width":263,"height":46),f,"LEFT")
 	DrawLayout(pane,layout2,CreateMap("X":519,"Y":352,"width":309,"height":88),f,"LEFT")
 	If gT4.GetDefault("success",False) Then DrawLayout(pane,gT4,CreateMap("X":136,"Y":363,"width":352,"height":108),f19,"LEFT")
+	If gH.GetDefault("success",False) Then DrawLayout(pane,gH,CreateMap("X":753,"Y":101,"width":95,"height":37),f23,"CENTER")
 	Dim img As B4XBitmap = pane.Snapshot2(fx.Colors.White)
 	pane.RemoveNodeFromParent
 	SaveShot(img,"cn")

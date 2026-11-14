@@ -1,4 +1,4 @@
-B4J=true
+﻿B4J=true
 Group=Default Group
 ModulesStructureVersion=1
 Type=StaticCode
@@ -172,53 +172,47 @@ Public Sub WrapInMask(Text As String,F As Font,Mask As Map,LineSpacing As Double
 	Dim xStart As Int = Max(box.Get("X"),0)
 	Dim xLimit As Int = Min(box.Get("X") + box.Get("width"),Mask.Get("width"))
 	Log("balloonMask: balloon x=" & box.Get("X") & ".." & (box.Get("X") + box.Get("width") - 1) & " y=" & box.Get("Y") & ".." & (box.Get("Y") + box.Get("height") - 1))
+	Dim by0 As Int = Max(box.Get("Y"),0)
+	Dim by1 As Int = Min(box.Get("Y") + box.Get("height") - 1,Mask.Get("height") - 1)
 	Dim rowMin As List
 	Dim rowMax As List
 	rowMin.Initialize
 	rowMax.Initialize
-	Dim bc As BitmapCreator = Mask.Get("bitmap")
-	If bc.IsInitialized Then
-		Dim c As ARGBColor
-		c.Initialize
-		Dim bx0 As Int = box.Get("X")
-		Dim by0 As Int = box.Get("Y")
-		Dim bx1 As Int = bx0 + box.Get("width") - 1
-		Dim by1 As Int = by0 + box.Get("height") - 1
-		Dim boxes As List = Mask.Get("boxes")
-		Dim others As List
-		others.Initialize
-		For i = 0 To boxes.Size - 1
-			If IsSameBox(boxes.Get(i),box) = False Then others.Add(boxes.Get(i))
-		Next
-		For y = 0 To bc.mHeight - 1
-			Dim minx As Int = -1
-			Dim rightX As Int = -1
-			If y >= by0 And y <= by1 Then
-				For x = xStart To xLimit - 1
-					'外接矩形里，别的气球占的像素不算
-					Dim drop As Boolean = False
-					For i = 0 To others.Size - 1
-						Dim bm As Map = others.Get(i)
-						If x >= bm.Get("X") And x <= bm.Get("X") + bm.Get("width") - 1 And y >= bm.Get("Y") And y <= bm.Get("Y") + bm.Get("height") - 1 Then
-							drop = True
-							Exit
-						End If
-					Next
-					If drop = False Then
-						bc.GetARGB(x,y,c)
-						If c.r > 128 Then
-							If minx < 0 Then minx = x
-							rightX = x
-						End If
-					End If
-				Next
-			End If
-			rowMin.Add(minx)
-			rowMax.Add(rightX)
-		Next
-	Else
-		Return result
-	End If
+	'只保留选中气球的轮廓：画到一张同尺寸的全黑图（单通道 0/255），
+	'其它气球不在这张图里，逐行取边界时不会混进旁边的气泡
+	Dim maskW As Int = Mask.Get("width")
+	Dim maskH As Int = Mask.Get("height")
+	Dim mtype As Int = cv2.cvType("CV_8UC1")
+	Dim binary As cvMat = cv2.matZeros(Array(maskH,maskW,mtype))
+	Dim imgproc As JavaObject
+	imgproc.InitializeStatic("org.opencv.imgproc.Imgproc")
+	Dim oneContour As List
+	oneContour.Initialize
+	oneContour.Add(box.Get("contour"))
+	Dim white As JavaObject
+	white.InitializeNewInstance("org.opencv.core.Scalar",Array(255.0,255.0,255.0,0.0))
+	imgproc.RunMethod("drawContours",Array(binary.JO,oneContour,-1,white,-1))
+	Dim bc As BitmapCreator
+	bc.Initialize(maskW,maskH)
+	bc.DrawBitmap(Utils.BytesToImage(binary.mat2bytesPNG),bc.TargetRect,False)
+	binary.release
+	Dim c As ARGBColor
+	c.Initialize
+	For y = 0 To bc.mHeight - 1
+		Dim minx As Int = -1
+		Dim rightX As Int = -1
+		If y >= by0 And y <= by1 Then
+			For x = xStart To xLimit - 1
+				bc.GetARGB(x,y,c)
+				If c.r > 128 Then
+					If minx < 0 Then minx = x
+					rightX = x
+				End If
+			Next
+		End If
+		rowMin.Add(minx)
+		rowMax.Add(rightX)
+	Next
 
 	'行区间已只来自选中的这颗气球，不再按段裁剪
 
@@ -392,7 +386,9 @@ Private Sub PickBalloon(Mask As Map,areaLeft As Int,areaTop As Int,areaWidth As 
 	Dim best As Map
 	Dim boxes As List = Mask.Get("boxes")
 	If boxes.IsInitialized = False Then Return best
-	Dim bestRatio As Double = 0
+	Dim bestRatio As Double = -1
+	'重叠比例最大的那颗；比例接近时取面积更小的（更贴合框），
+	'用来区分"大气泡的外接矩形顺带包住了小气泡"的情况
 	For i = 0 To boxes.Size - 1
 		Dim b As Map = boxes.Get(i)
 		Dim ox0 As Int = Max(b.Get("X"),areaLeft)
@@ -401,9 +397,18 @@ Private Sub PickBalloon(Mask As Map,areaLeft As Int,areaTop As Int,areaWidth As 
 		Dim oy1 As Int = Min(b.Get("Y") + b.Get("height"),areaTop + areaHeight)
 		If ox1 <= ox0 Or oy1 <= oy0 Then Continue
 		Dim ov As Double = (ox1 - ox0) * (oy1 - oy0)
-		'重叠面积 / 框面积：框通常整颗落在气球里，用框面积做分母更准
+		'重叠面积 / 文本框面积
 		Dim ratio As Double = ov / Max(1,areaWidth * areaHeight)
-		If ratio > bestRatio Then
+		Dim better As Boolean = False
+		If best.IsInitialized = False Then
+			better = True
+		Else If ratio > bestRatio * 1.1 Then
+			better = True
+		Else If ratio >= bestRatio * 0.9 Then
+			'比例接近：取面积更小的那颗，更可能是框所在的气泡
+			If b.Get("area") < best.Get("area") Then better = True
+		End If
+		If better Then
 			bestRatio = ratio
 			best = b
 		End If
@@ -412,54 +417,49 @@ Private Sub PickBalloon(Mask As Map,areaLeft As Int,areaTop As Int,areaWidth As 
 	Return best
 End Sub
 
-'按"每个气球（连通域）的外接矩形"切分掩膜：
-'  boxes：每个元素 Map(X,Y,width,height,area)，已丢掉很小的碎块
+''按每个气球的轮廓（findContours）取外接矩形：
+'  boxes：元素 Map(X,Y,width,height,area,contour)，已丢掉很小的轮廓
 Private Sub FindBalloonBoxes(binary As cvMat,bc As BitmapCreator) As List
 	Dim r As List
 	r.Initialize
 	Dim W As Int = bc.mWidth
 	Dim H As Int = bc.mHeight
 	Try
-		Dim labels As cvMat
-		labels.Initialize(Null)
-		Dim stats As cvMat
-		stats.Initialize(Null)
-		Dim centroids As cvMat
-		centroids.Initialize(Null)
+		Dim contours As List
+		contours.Initialize
+		Dim hierarchy As cvMat
+		hierarchy.Initialize(Null)
 		Dim imgproc As JavaObject
 		imgproc.InitializeStatic("org.opencv.imgproc.Imgproc")
-		'8 位二值图作输入时返回连通域个数；默认 4 邻域连通
-		Dim n As Int = imgproc.RunMethod("connectedComponentsWithStats",Array(binary.JO,labels.JO,stats.JO,centroids.JO))
-		Dim minArea As Int = Max(30,W * H / 5000)
-		For i = 1 To n - 1
-			Dim idx(2) As Int
-			idx(0) = i
-			idx(1) = 0
-			Dim x As Int = stats.get(idx)(0)
-			idx(1) = 1
-			Dim y As Int = stats.get(idx)(0)
-			idx(1) = 2
-			Dim w As Int = stats.get(idx)(0)
-			idx(1) = 3
-			Dim h As Int = stats.get(idx)(0)
-			idx(1) = 4
-			Dim area As Int = stats.get(idx)(0)
+		imgproc.RunMethod("findContours",Array(binary.JO,contours,hierarchy.JO,imgproc.GetField("RETR_EXTERNAL"),imgproc.GetField("CHAIN_APPROX_SIMPLE")))
+		Dim minArea As Double = Max(30,W * H / 5000)
+		For i = 0 To contours.Size - 1
+			Dim cnt As JavaObject = contours.Get(i)
+			Dim rect As JavaObject = imgproc.RunMethod("boundingRect",Array(cnt))
+			Dim x As Int = rect.GetField("x")
+			Dim y As Int = rect.GetField("y")
+			Dim rw As Int = rect.GetField("width")
+			Dim rh As Int = rect.GetField("height")
+			Dim area As Double = imgproc.RunMethod("contourArea",Array(cnt))
 			If area < minArea Then Continue
 			Dim b As Map
 			b.Initialize
 			b.Put("X",x)
 			b.Put("Y",y)
-			b.Put("width",w)
-			b.Put("height",h)
+			b.Put("width",rw)
+			b.Put("height",rh)
 			b.Put("area",area)
+			b.Put("contour",cnt)
 			r.Add(b)
 		Next
-		labels.release
-		stats.release
-		centroids.release
+		hierarchy.release
 	Catch
-		Log("BalloonMaskWrapper: connectedComponents failed: " & LastException)
+		Log("BalloonMaskWrapper: findContours failed: " & LastException)
 	End Try
+	For i = 0 To Min(r.Size - 1,11)
+		Dim bb As Map = r.Get(i)
+		Log("bb " & i & " " & bb.Get("X") & ".." & (bb.Get("X") + bb.Get("width") - 1) & " " & bb.Get("Y") & ".." & (bb.Get("Y") + bb.Get("height") - 1) & " area=" & bb.Get("area"))
+	Next
 	Log("BalloonMaskWrapper: balloons=" & r.Size)
 	Return r
 End Sub
