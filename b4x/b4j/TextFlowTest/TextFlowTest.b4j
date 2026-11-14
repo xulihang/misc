@@ -456,6 +456,9 @@ Sub RunChineseCase
 	gCnFont = f
 	Dim cnText As String = "这种绝妙的抛光剂会让你的旧银器看起来像新的一样！而且每夸脱只有五十美分！"
 	gCnLayout = BalloonMaskWrapper.WrapInMask(cnText,f,spans,3.75,0,119,355,359,123,1.0)
+	'ImageTrans 里这个框实际用的是 targetGeometry（比 geometry 小一圈）
+	Dim gT As Map = BalloonMaskWrapper.WrapInMask(cnText,f,spans,3.75,0,173,363,320,89,1.0)
+	LogMaskResult("CN NEW target",gT)
 	LogMaskResult("CN polish geometry",gCnLayout)
 	Dim layout As Map = BalloonMaskWrapper.WrapInMask(text,f,spans,3.75,0,618,32,263,46,1.0)
 	LogMaskResult("CN box1",layout)
