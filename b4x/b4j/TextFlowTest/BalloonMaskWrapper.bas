@@ -186,11 +186,73 @@ Public Sub WrapInMask(Text As String,F As Font,Mask As Map,LineSpacing As Double
 		Return result
 	End If
 
+	'同一行可能有多颗气球（例如本框挤在两个气泡之间）：
+	'只在"包含框中心的那段"和"框内其它段"里取和框重叠最多的那一段。
+	Dim probeRow As Int = -1
+	For yy = Max(areaTop,0) To Min(areaTop + areaHeight - 1,rowMin.Size - 1)
+		If rowMin.Get(yy) >= 0 Then
+			probeRow = yy
+			Exit
+		End If
+	Next
+	If probeRow >= 0 Then
+		Dim bestSegL As Int = -1
+		Dim bestSegR As Int = -1
+		Dim bestOverlap As Int = 0
+		'候选段：框内出现的每段掩膜的左端点
+		For yy = Max(areaTop,0) To Min(areaTop + areaHeight - 1,rowMin.Size - 1)
+			Dim candL As Int = rowMin.Get(yy)
+			Dim candR As Int = rowMax.Get(yy)
+			If candL >= 0 Then
+				Dim lnC As Int = Max(candL,xStart)
+				Dim rxC As Int = Min(candR,xLimit - 1)
+				If rxC >= lnC Then
+					Dim ov As Int = rxC - lnC + 1
+					If ov > bestOverlap Then
+						bestOverlap = ov
+						bestSegL = lnC
+						bestSegR = rxC
+					End If
+				End If
+			End If
+		Next
+		If bestSegL >= 0 Then
+			For y = 0 To rowMin.Size - 1
+				Dim mnS As Int = rowMin.Get(y)
+				Dim mxS As Int = rowMax.Get(y)
+				If mnS >= 0 Then
+					If mxS < bestSegL Or mnS > bestSegR Then
+						mnS = -1
+						mxS = -1
+					Else
+						mnS = Max(mnS,bestSegL)
+						mxS = Min(mxS,bestSegR)
+					End If
+				End If
+				rowMin.Set(y,mnS)
+				rowMax.Set(y,mxS)
+			Next
+		End If
+	End If
+
 	'纵向范围：先找框中心所在的那一段掩膜（同一行可能有别的气球/拟声词），
 	'再取这段掩膜的上下界。否则框会包含同高度其他气球，行宽被它们撑大。
+	'框中心不在掩膜里时（框比气球大、或框偏出气球），从框顶到底逐行找第一段掩膜。
 	Dim centerRow As Int = Min(Max(areaTop + areaHeight / 2,0),rowMin.Size - 1)
 	Dim xMid As Int = Min(Max(areaLeft + areaWidth / 2,xStart),xLimit - 1)
 	Dim seg As Map = FindSegment(rowMin,rowMax,centerRow,xMid)
+	If seg.Get("ok") = False Then
+		Dim probeY As Int = -1
+		Dim probeX As Int = -1
+		For yy = Max(areaTop,0) To Min(areaTop + areaHeight - 1,rowMin.Size - 1)
+			If rowMin.Get(yy) >= 0 Then
+				probeY = yy
+				probeX = rowMin.Get(yy) + 5
+				Exit
+			End If
+		Next
+		If probeY >= 0 Then seg = FindSegment(rowMin,rowMax,probeY,probeX)
+	End If
 	Dim segL As Int = -1
 	Dim segR As Int = -1
 	If seg.Get("ok") Then
@@ -294,10 +356,10 @@ Public Sub WrapInMask(Text As String,F As Font,Mask As Map,LineSpacing As Double
 		'这样右对齐或居中的行也不会伸到气泡外面
 		Dim fits As Boolean = True
 		If band.Get("ok") And curText <> "" Then
-			If Alignment = 2 Then
-				fits = (availL + availW - cw) >= availL
+			If Alignment = 2 Then 'right
+				fits = (availL + availW - cw) - availL >= 0
 			Else
-				fits = cw <= availW
+				fits = (cw <= availW)
 			End If
 		End If
 		'放不下就换行（首行即使超宽也先放，允许溢出）
@@ -436,9 +498,19 @@ Private Sub LineBand(rowMin As List,rowMax As List,topY As Double,height As Doub
 	Dim bestSpan As Int = 0
 	Dim l As Int = -1
 	Dim rr As Int = -1
-	'带内所有行都包含的范围（交集）：文字一定要落在里面，左右都不出气泡
+	'带内所有行都包含的范围（交集）：文字一定要落在里面，左右都不出气泡。
+	'只让"够宽"的行参与（像气球边缘的小凸起、同高度别的碎块不参与），
+	'否则交集会被压成一个极窄的缝。
 	Dim inL As Int = -1
 	Dim inR As Int = 1000000
+	Dim refSpan As Int = 0
+	For y = y0 To y1
+		Dim mnR As Int = rowMin.Get(y)
+		If mnR >= 0 Then
+			Dim spanR As Int = rowMax.Get(y) - mnR + 1
+			If spanR > refSpan Then refSpan = spanR
+		End If
+	Next
 	For y = y0 To y1
 		Dim mn As Int = rowMin.Get(y)
 		If mn >= 0 Then
@@ -448,8 +520,11 @@ Private Sub LineBand(rowMin As List,rowMax As List,topY As Double,height As Doub
 				l = mn
 				rr = rowMax.Get(y)
 			End If
-			If mn > inL Then inL = mn
-			If rowMax.Get(y) < inR Then inR = rowMax.Get(y)
+			'只有足够宽的行参与交集（>= 40% 最宽行），边缘凸起/碎块不参与
+			If span >= 0.4 * refSpan Then
+				If mn > inL Then inL = mn
+				If rowMax.Get(y) < inR Then inR = rowMax.Get(y)
+			End If
 		End If
 	Next
 	If l < 0 Then Return r
@@ -473,49 +548,70 @@ End Sub
 '  LEFT  ：文字从 inL 开始；放不下时用空格前缀把文字往里推（LEFT 是唯一可能需要补空格的）
 '  RIGHT ：行框贴 inR，文字在行框内右对齐
 '  CENTER：行框贴 inL，宽度=公共区间，文字在行框内居中
+'按掩膜给这一行定位（写入 lineLefts / lineTops / lineSlots，框内局部坐标）。
+'左右都不出气泡：文字必须落在该行带内所有"足够宽的行"的交集 [inL, inR] 里。
+'  LEFT  ：文字从 inL 开始；放不下时用前缀空格把整行往右推（仍然 ≤ inR）
+'  RIGHT ：用前缀空格把文字推到 inR 附近
+'  CENTER：行框 = 交集，文字在行框内居中
+'按掩膜给这一行定位（写入 lineLefts / lineTops / lineSlots，框内局部坐标）。
+'左右都受约束：尽量让文字落在该行带里所有"足够宽的行"的交集 [inL, inR] 内。
+'  LEFT  ：文字从 inL 开始；只有右端会超过 inR 时才补前缀空格
+'  RIGHT ：补前缀空格，让文字右端贴近 inR
+'  CENTER：行框 = 交集，文字在行框内居中
+'按掩膜给这一行定位（写入 lineLefts / lineTops / lineSlots，框内局部坐标）。
+'  LEFT  ：起点 = 这一行自己的掩膜左边界（该高度带内的左边界），右端不得超过该行右边界；
+'          放不下时用前缀空格把整行往右推，直到刚好放下为止
+'  RIGHT ：补前缀空格让文字右端贴近这一行的右边界
+'  CENTER：所有行共用同一中轴（带内公共区间），在交集内居中
 Private Sub AddLineAligned(lineTexts As List,lineLefts As List,lineTops As List,lineSlots As List,lineText As String,topY As Double,rowMin As List,rowMax As List,lineH As Double,F As Font,alignment As Int,CenterX As Double,areaTop As Int,xStart As Int,xLimit As Int)
 	Dim band As Map = LineBand(rowMin,rowMax,topY,lineH)
-	Dim tw As Double = MeasureTextWidth(lineText,F)
 	Dim text As String = lineText
+	Dim tw As Double = MeasureTextWidth(lineText,F)
 	Dim slot As Double
 	Dim left As Double
 	If band.Get("ok") = False Then
 		slot = xLimit - xStart
 		left = xStart
-		If alignment = 2 Then left = xStart
-		If alignment = 1 Then left = xStart
-		left = xStart
 	Else
+		'该行自己的左右边界（最宽的那一行）
+		Dim ownL As Double = band.Get("left")
+		Dim ownR As Double = band.Get("right")
+		'所有行的公共区间（居中时用）
 		Dim inL As Double = band.Get("inLeft")
 		Dim inR As Double = band.Get("inRight")
-		Dim bandW As Double = inR - inL + 1
-		slot = Max(bandW,tw)
+		Dim spaceW As Double = MeasureTextWidth(" ",F)
 		If alignment = 1 Then
-			'居中：行框 = 公共区间，文字在行框内居中
+			'居中：行框 = 公共区间
+			slot = Max(inR - inL + 1,tw)
 			left = inL
-		Else
-			'LEFT / RIGHT：文字从公共区间左边开始，按实际宽度向右排；
-			'放不下时补前缀空格（RIGHT 补得更多，视觉上靠右；LEFT 只补到刚好放下）
-			left = inL
-			Dim spaceW As Double = MeasureTextWidth(" ",F)
-			If spaceW > 0 And tw <= bandW Then
-				Dim pad As Int = 0
-				Do While tw + spaceW * (pad + 1) <= bandW
-					pad = pad + 1
+		Else If alignment = 2 Then
+			'右对齐：左起，用前缀空格把右端推到该行右边界
+			left = ownL
+			slot = ownR - ownL + 1
+			If spaceW > 0 Then
+				Dim padR As Int = 0
+				Do While tw + spaceW * (padR + 1) <= slot
+					padR = padR + 1
 				Loop
-				If alignment = 2 Then
-					'右对齐：尽可能多补（右边贴齐）
-					If bandW - (tw + spaceW * pad) >= spaceW * 0.5 Then pad = pad + 1
-				Else
-					'左对齐：只有在会右溢出时才需要补（这里 tw<=bandW，不需要）
-					pad = 0
+				If slot - (tw + spaceW * padR) >= spaceW * 0.5 Then padR = padR + 1
+				If padR > 0 Then
+					text = Spaces(padR) & text
+					tw = MeasureTextWidth(text,F)
 				End If
+			End If
+			slot = Max(slot,tw)
+		Else
+			'左对齐：从该行左边界开始；右端超出该行右边界时补最少的空格
+			left = ownL
+			slot = ownR - ownL + 1
+			If ownL + tw - 1 > ownR And spaceW > 0 Then
+				Dim pad As Int = Ceil((ownL + tw - 1 - ownR) / spaceW)
 				If pad > 0 Then
 					text = Spaces(pad) & text
 					tw = MeasureTextWidth(text,F)
-					slot = Max(bandW,tw)
 				End If
 			End If
+			slot = Max(slot,tw)
 		End If
 	End If
 	lineTexts.Add(text)

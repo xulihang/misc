@@ -47,6 +47,10 @@ Sub Process_Globals
 	Private Button1 As B4XView
 	'Private tf As TextFlow
 	Private ImageView1 As ImageView
+	'抛光剂那段中文的排版结果，RunChineseCase 计算、绘制时复用
+	Private gCnLayout As Map
+	Private gCnLayout2 As Map
+	Private gCnFont As Font
 End Sub
 
 Sub AppStart (Form1 As Form, Args() As String)
@@ -435,7 +439,7 @@ Sub LoadFirstBox As Map
 					box.Put("Y",Round(g.Get("Y")))
 					box.Put("width",Round(g.Get("width")))
 					box.Put("height",Round(g.Get("height")))
-					box.Put("target",b.GetDefault("target",""))
+					box.Put("target","")
 					Return box
 				End If
 			Next
@@ -450,6 +454,12 @@ Sub RunChineseCase
 	Dim spans As Map = BalloonMaskWrapper.LoadMaskSpans(mask)
 	Dim text As String = "真的不想要这个家伙，他老是惹麻烦，而且总喜欢打架"
 	Dim f As Font = fx.CreateFont("Microsoft YaHei",15,False,False)
+	gCnFont = f
+	Dim cnText As String = "这种绝妙的抛光剂会让你的旧银器看起来像新的一样！而且每夸脱只有五十美分！"
+	gCnLayout = BalloonMaskWrapper.WrapInMask(cnText,f,spans,3.75,0,119,355,359,123,1.0)
+	LogMaskResult("CN polish geometry",gCnLayout)
+	gCnLayout2 = BalloonMaskWrapper.WrapInMask(cnText,f,spans,3.75,0,165,357,323,117,1.0)
+	LogMaskResult("CN polish target",gCnLayout2)
 	Dim layout As Map = BalloonMaskWrapper.WrapInMask(text,f,spans,3.75,0,618,32,263,46,1.0)
 	LogMaskResult("CN box1",layout)
 	Dim layout2 As Map = BalloonMaskWrapper.WrapInMask(text,f,spans,3.75,0,519,352,309,88,1.0)
@@ -462,6 +472,8 @@ Sub RunChineseCase
 	pane.AddNode(iv,0,0,mask.Cols,mask.Rows)
 	DrawLayout(pane,layout,CreateMap("X":618,"Y":32,"width":263,"height":46),f,"LEFT")
 	DrawLayout(pane,layout2,CreateMap("X":519,"Y":352,"width":309,"height":88),f,"LEFT")
+	If gCnLayout.GetDefault("success",False) Then DrawLayout(pane,gCnLayout,CreateMap("X":119,"Y":355,"width":359,"height":123),gCnFont,"LEFT")
+	If gCnLayout2.GetDefault("success",False) Then DrawLayout(pane,gCnLayout2,CreateMap("X":165,"Y":357,"width":323,"height":117),gCnFont,"LEFT")
 	Dim img As B4XBitmap = pane.Snapshot2(fx.Colors.White)
 	pane.RemoveNodeFromParent
 	SaveShot(img,"cn")
