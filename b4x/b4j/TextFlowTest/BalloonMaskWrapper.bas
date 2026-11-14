@@ -303,7 +303,7 @@ Public Sub WrapInMask(Text As String,F As Font,Mask As Map,LineSpacing As Double
 		'放不下就换行（首行即使超宽也先放，允许溢出）
 		If fits = False Then
 			'这一行用安全区间定位（交集），保证不出气泡
-			AddLine(lineTexts,lineLefts,lineTops,lineSlots,curText,curTop,availL,availW,F,Alignment,CenterX,areaTop,xStart,xLimit)
+			AddLineAligned(lineTexts,lineLefts,lineTops,lineSlots,curText,curTop,rowMin,rowMax,naturalLineHeight,F,Alignment,CenterX,areaTop,xStart,xLimit)
 			curText = w
 			curTop = curTop + lineStep
 		Else
@@ -318,7 +318,7 @@ Public Sub WrapInMask(Text As String,F As Font,Mask As Map,LineSpacing As Double
 			l2 = band2.Get("left")
 			w2 = band2.Get("right") - l2 + 1
 		End If
-		AddLine(lineTexts,lineLefts,lineTops,lineSlots,curText,curTop,l2,w2,F,Alignment,CenterX,areaTop,xStart,xLimit)
+		AddLineAligned(lineTexts,lineLefts,lineTops,lineSlots,curText,curTop,rowMin,rowMax,naturalLineHeight,F,Alignment,CenterX,areaTop,xStart,xLimit)
 	End If
 
 
@@ -382,22 +382,19 @@ Private Sub IsMaskCol(rowMin As List,rowMax As List,row As Int,x As Int) As Bool
 	Return mn >= 0 And x >= mn And x <= mx
 End Sub
 
-'当前行（以 topY 为顶）在掩膜里的可用区间：
-'  left  该行带里各行的左边界（取最大值，保证左边不出气泡）
-'  right 该行带里各行的右边界（取最小值，保证右边不出气泡）
 '把词拆成断行单元：有空格的语言按词，中文/日文按单字
 Private Sub BreakUnits(words As List,units As List,joiner As List)
 	units.Initialize
 	joiner.Clear
 	joiner.Add(" ")
-	Dim spaces As Int = 0
+	Dim spaceCount As Int = 0
 	Dim cjkChars As Int = 0
 	Dim otherChars As Int = 0
 	For Each w As String In words
 		For i = 0 To w.Length - 1
 			Dim ch As String = w.SubString2(i,i + 1)
 			If ch = " " Then
-				spaces = spaces + 1
+				spaceCount = spaceCount + 1
 			Else If IsCJK(ch) Then
 				cjkChars = cjkChars + 1
 			Else
@@ -405,7 +402,7 @@ Private Sub BreakUnits(words As List,units As List,joiner As List)
 			End If
 		Next
 	Next
-	If spaces > 0 Or cjkChars <= otherChars Then
+	If spaceCount > 0 Or cjkChars <= otherChars Then
 		For Each w As String In words
 			units.Add(w)
 		Next
@@ -439,6 +436,9 @@ Private Sub LineBand(rowMin As List,rowMax As List,topY As Double,height As Doub
 	Dim bestSpan As Int = 0
 	Dim l As Int = -1
 	Dim rr As Int = -1
+	'带内所有行都包含的范围（交集）：文字一定要落在里面，左右都不出气泡
+	Dim inL As Int = -1
+	Dim inR As Int = 1000000
 	For y = y0 To y1
 		Dim mn As Int = rowMin.Get(y)
 		If mn >= 0 Then
@@ -448,45 +448,89 @@ Private Sub LineBand(rowMin As List,rowMax As List,topY As Double,height As Doub
 				l = mn
 				rr = rowMax.Get(y)
 			End If
+			If mn > inL Then inL = mn
+			If rowMax.Get(y) < inR Then inR = rowMax.Get(y)
 		End If
 	Next
 	If l < 0 Then Return r
 	r.Put("ok",True)
 	r.Put("left",l + 0.0)
 	r.Put("right",rr + 0.0)
+	If inR >= inL Then
+		r.Put("inLeft",inL + 0.0)
+		r.Put("inRight",inR + 0.0)
+	Else
+		'带内各行的公共区间为空（气球左右边缘错开）：退化为最宽行的范围
+		r.Put("inLeft",l + 0.0)
+		r.Put("inRight",rr + 0.0)
+	End If
 	Return r
 End Sub
 
 '把一行加入结果：按对齐方式在可用区间里定位
-Private Sub AddLine(lineTexts As List,lineLefts As List,lineTops As List,lineSlots As List,lineText As String,topY As Double,availL As Double,availW As Double,F As Font,alignment As Int,CenterX As Double,areaTop As Int,xStart As Int,xLimit As Int)
+'按掩膜给这一行定位（写入 lineLefts / lineTops / lineSlots，框内局部坐标）。
+'  容器 = 该行带内所有行的公共区间 inL..inR：左右都不出气泡
+'  LEFT  ：文字从 inL 开始；放不下时用空格前缀把文字往里推（LEFT 是唯一可能需要补空格的）
+'  RIGHT ：行框贴 inR，文字在行框内右对齐
+'  CENTER：行框贴 inL，宽度=公共区间，文字在行框内居中
+Private Sub AddLineAligned(lineTexts As List,lineLefts As List,lineTops As List,lineSlots As List,lineText As String,topY As Double,rowMin As List,rowMax As List,lineH As Double,F As Font,alignment As Int,CenterX As Double,areaTop As Int,xStart As Int,xLimit As Int)
+	Dim band As Map = LineBand(rowMin,rowMax,topY,lineH)
 	Dim tw As Double = MeasureTextWidth(lineText,F)
+	Dim text As String = lineText
 	Dim slot As Double
 	Dim left As Double
-	If availW < 0 Then
-		'完全没有掩膜信息：用框宽，按对齐方式摆放（允许溢出）
+	If band.Get("ok") = False Then
 		slot = xLimit - xStart
-		If alignment = 0 Then
-			left = xStart
-		Else If alignment = 2 Then
-			left = xLimit - tw
-		Else
-			left = CenterX - tw / 2
-		End If
+		left = xStart
+		If alignment = 2 Then left = xStart
+		If alignment = 1 Then left = xStart
+		left = xStart
 	Else
-		'有掩膜：按对齐方式确定各行文字的实际左边缘
-		'渲染端每行是一个 TextFlow，宽度 = slot，内部按 alignment 对齐。
-		'RIGHT 时行框贴安全区间的右边缘，其余贴左边缘。
-		slot = Max(availW,tw)
-		If alignment = 2 Then
-			left = availL + availW - slot
+		Dim inL As Double = band.Get("inLeft")
+		Dim inR As Double = band.Get("inRight")
+		Dim bandW As Double = inR - inL + 1
+		slot = Max(bandW,tw)
+		If alignment = 1 Then
+			'居中：行框 = 公共区间，文字在行框内居中
+			left = inL
 		Else
-			left = availL
+			'LEFT / RIGHT：文字从公共区间左边开始，按实际宽度向右排；
+			'放不下时补前缀空格（RIGHT 补得更多，视觉上靠右；LEFT 只补到刚好放下）
+			left = inL
+			Dim spaceW As Double = MeasureTextWidth(" ",F)
+			If spaceW > 0 And tw <= bandW Then
+				Dim pad As Int = 0
+				Do While tw + spaceW * (pad + 1) <= bandW
+					pad = pad + 1
+				Loop
+				If alignment = 2 Then
+					'右对齐：尽可能多补（右边贴齐）
+					If bandW - (tw + spaceW * pad) >= spaceW * 0.5 Then pad = pad + 1
+				Else
+					'左对齐：只有在会右溢出时才需要补（这里 tw<=bandW，不需要）
+					pad = 0
+				End If
+				If pad > 0 Then
+					text = Spaces(pad) & text
+					tw = MeasureTextWidth(text,F)
+					slot = Max(bandW,tw)
+				End If
+			End If
 		End If
 	End If
-	lineTexts.Add(lineText)
+	lineTexts.Add(text)
 	lineLefts.Add(left)
 	lineTops.Add(topY - areaTop)
 	lineSlots.Add(Max(slot,tw))
+End Sub
+
+Private Sub Spaces(n As Int) As String
+	Dim sb As StringBuilder
+	sb.Initialize
+	For i = 1 To n
+		sb.Append(" ")
+	Next
+	Return sb.ToString
 End Sub
 
 '没有行可排时也给出空列表，调用方访问 .Size 不会报未初始化
