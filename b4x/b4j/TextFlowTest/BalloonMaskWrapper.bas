@@ -589,6 +589,19 @@ Private Sub LineBand(rowMin As List,rowMax As List,topY As Double,height As Doub
 		End If
 	Next
 	If l < 0 Then Return r
+	'这一行带的中轴：各行掩膜中点按行数平均。
+	'居中时用中轴定位，比用交集框更稳——气球顶部/底部的行左右不对称，
+	'交集框会偏到一侧，导致居中的行看起来偏右
+	Dim sumC As Double = 0
+	Dim cntC As Int = 0
+	For y = y0 To y1
+		Dim mc As Int = rowMin.Get(y)
+		If mc >= 0 Then
+			sumC = sumC + (mc + rowMax.Get(y)) / 2.0
+			cntC = cntC + 1
+		End If
+	Next
+	If cntC > 0 Then r.Put("axis",sumC / cntC) Else r.Put("axis",(l + rr) / 2.0)
 	'左边界 = 这一行字高 70% 处那个 y 上的掩膜左边界。
 	'气球左右是曲线，越靠下越窄；取字高中下部的边界，兼顾靠左和不出界。
 	'取字高约 70% 处（避开气球左缘收得最猛的行带底部，又不至于压到弧线外）
@@ -663,9 +676,13 @@ Private Sub AddLineAligned(lineTexts As List,lineLefts As List,lineTops As List,
 		Dim spaceW As Double = MeasureTextWidth(" ",F)
 		Dim usableL As Double = band.Get("usableLeft")
 		If alignment = 1 Then
-			'居中：行框 = 公共区间
+			'居中：以这一行带的中轴为中心摆放
+			Dim axis As Double = band.Get("axis")
 			slot = Max(inR - inL + 1,tw)
-			left = inL
+			left = axis - tw / 2
+			'不要超出气球这一行的左右边界
+			If left < ownL Then left = ownL
+			If left + tw - 1 > ownR Then left = ownR - tw + 1
 		Else If alignment = 2 Then
 			'右对齐：右端贴这一行带内的右边界
 			left = ownL
