@@ -582,12 +582,21 @@ Private Sub LineBand(rowMin As List,rowMax As List,topY As Double,height As Doub
 		End If
 	Next
 	If l < 0 Then Return r
-	If inR >= inL Then
-		r.Put("usableLeft",inL + 0.0)
+	'这一行的左/右边界：取行带最低端（行底）那一行掩膜的边界。
+	'气球左下角是斜的，按行底算才能让这一行贴住气球左边的空白；
+	'右边同理，行底通常是气球这一行最窄的地方，不会越出气泡。
+	Dim botY As Int = y1
+	Do While botY > y0
+		If rowMin.Get(botY) >= 0 Then Exit
+		botY = botY - 1
+	Loop
+	If rowMin.Get(botY) >= 0 Then
+		r.Put("usableLeft",rowMin.Get(botY) + 0.0)
+		r.Put("usableRight",rowMax.Get(botY) + 0.0)
 	Else
 		r.Put("usableLeft",l + 0.0)
+		r.Put("usableRight",rr + 0.0)
 	End If
-	r.Put("usableRight",rr + 0.0)
 	r.Put("ok",True)
 	r.Put("left",l + 0.0)
 	r.Put("right",rr + 0.0)
