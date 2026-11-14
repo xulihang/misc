@@ -68,6 +68,7 @@ Sub AppStart (Form1 As Form, Args() As String)
 		RunMaskComparison
 		RunImageTransCase
 		RunChineseCase
+		RunEffectTest
 	Catch
 		Log("new mask demo skipped: " & LastException)
 	End Try
@@ -111,6 +112,73 @@ Sub RunNewMaskDemo
 	pane.RemoveNodeFromParent
 	ImageView1.SetImage(img)
 	SaveShot(img,"new")
+End Sub
+
+Sub RunEffectTest
+	'按 ImageTrans 掩膜排版的结构复刻：外层 Pane（黑底）+ 每行一个 TextFlow + 行内 Text。
+	'逐个变体放在同一张图里对比，看 -fx-effect（描边/阴影）在哪一层设置才生效
+	Dim style As String = "-fx-effect: dropshadow( three-pass-box , rgba(255,255,255,1) , 2 , 1 , 0 , 0 );"
+	Dim variants As List
+	variants.Initialize
+	For Each vv As String In Array("off_effect_lineflow","off_effect_text")
+		variants.Add(vv)
+	Next
+	Dim f As Font = fx.CreateFont("Microsoft YaHei",24,False,False)
+	Dim y As Double = 0
+	For Each v As String In variants
+		'外层 Pane，相当于 HorizontalTextEngine 里的 host
+		Dim host As Pane
+		host.Initialize("host_" & v)
+		host.Style = "-fx-background-color: black;"
+		Dim offscreen As Boolean = v.StartsWith("off_")
+		If offscreen = False Then MainForm.RootPane.AddNode(host,0,y,360,60)
+		'每行一个 TextFlow
+		Dim lineFlow As JavaObject
+		lineFlow.InitializeNewInstance("javafx.scene.text.TextFlow",Null)
+		Dim linePane As Pane = lineFlow
+		host.AddNode(linePane,0,0,360,60)
+		'行内的 Text（和 formatedText 一样，用 AddNode 加进去）
+		Dim t As JavaObject
+		t.InitializeNewInstance("javafx.scene.text.Text",Array(v & " ab 文字"))
+		t.RunMethod("setFont",Array(f))
+		t.RunMethod("setFill",Array(fx.Colors.White))
+		linePane.AddNode(t,10,10,-1,-1)
+		Select Case v.Replace("off_","")
+			Case "css_host"
+				host.Style = host.Style & " " & style
+			Case "css_lineflow"
+				linePane.Style = style
+			Case "css_text_b4x"
+				Dim tn As Node = t
+				tn.Style = style
+			Case "css_text_jo"
+				t.RunMethod("setStyle",Array(style))
+			Case "effect_lineflow"
+				lineFlow.RunMethod("setEffect",Array(MakeDropShadow(fx.Colors.White,2)))
+			Case "effect_text"
+				t.RunMethod("setEffect",Array(MakeDropShadow(fx.Colors.White,2)))
+		End Select
+		Log("effect variant " & v & " textStyle=[" & t.RunMethod("getStyle",Null) & "]")
+		If offscreen Then
+			'离屏快照：和 ImageTrans 里 host 没有加入窗口的情况一致
+			Dim dimg As B4XBitmap = host.Snapshot2(fx.Colors.Black)
+			SaveShot(dimg,"effect_" & v)
+			host.RemoveNodeFromParent
+		End If
+		y = y + 70
+	Next
+	Sleep(1000)
+	Dim img As B4XBitmap = MainForm.RootPane.Snapshot2(fx.Colors.Black)
+	SaveShot(img,"effect")
+End Sub
+
+Private Sub MakeDropShadow(c As Object, radius As Double) As JavaObject
+	Dim e As JavaObject
+	e.InitializeNewInstance("javafx.scene.effect.DropShadow",Null)
+	e.RunMethod("setColor",Array(c))
+	e.RunMethod("setRadius",Array(radius))
+	e.RunMethod("setSpread",Array(1.0))
+	Return e
 End Sub
 
 Sub SaveShot(img As B4XBitmap,tag As String)
@@ -471,6 +539,9 @@ Sub RunChineseCase
 	Dim f23 As Font = fx.CreateFont("Microsoft YaHei",23,False,False)
 	Dim gH As Map = BalloonMaskWrapper.WrapInMask("哼！",f23,spans,5.75,1,753,101,95,37,1.0,0)
 	LogMaskResult("CN grunt",gH)
+	'银币那段：ImageTrans 里框 167,677,346x94，居中
+	Dim gS As Map = BalloonMaskWrapper.WrapInMask("你手头肯定有一些银币：我很乐意把它们抛光给你看效果！",f19,spans,4.75,1,167,677,346,94,1.0,4)
+	LogMaskResult("CN silver",gS)
 	Dim gT5 As Map = BalloonMaskWrapper.WrapInMask(cnText,f19,spans,4.75,0,121,359,359,123,1.0,0)
 	LogMaskResult("CN geometry121 fs19",gT5)
 	LogMaskResult("CN polish geometry",gCnLayout)
@@ -487,6 +558,7 @@ Sub RunChineseCase
 	DrawLayout(pane,layout,CreateMap("X":618,"Y":32,"width":263,"height":46),f,"LEFT")
 	DrawLayout(pane,layout2,CreateMap("X":519,"Y":352,"width":309,"height":88),f,"LEFT")
 	If gT4.GetDefault("success",False) Then DrawLayout(pane,gT4,CreateMap("X":136,"Y":363,"width":352,"height":108),f19,"LEFT")
+	If gS.GetDefault("success",False) Then DrawLayout(pane,gS,CreateMap("X":167,"Y":677,"width":346,"height":94),f19,"CENTER")
 	If gH.GetDefault("success",False) Then DrawLayout(pane,gH,CreateMap("X":753,"Y":101,"width":95,"height":37),f23,"CENTER")
 	Dim img As B4XBitmap = pane.Snapshot2(fx.Colors.White)
 	pane.RemoveNodeFromParent
