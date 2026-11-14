@@ -5,6 +5,7 @@ File2=capture002.jpg-balloonmask.png
 File3=Layout1.bjl
 File4=old_balloonmask.png
 File5=Untitled.itp
+File6=02.webp-balloonmask.png
 FileGroup1=Default Group
 FileGroup2=Default Group
 FileGroup3=Default Group
@@ -26,7 +27,7 @@ Module4=cvMat
 Module5=DiamondText
 Module6=TextFlow
 Module7=Utils
-NumberOfFiles=5
+NumberOfFiles=6
 NumberOfLibraries=8
 NumberOfModules=7
 Version=10
@@ -63,6 +64,7 @@ Sub AppStart (Form1 As Form, Args() As String)
 		RunNewMaskDemo
 		RunMaskComparison
 		RunImageTransCase
+		RunChineseCase
 	Catch
 		Log("new mask demo skipped: " & LastException)
 	End Try
@@ -442,3 +444,25 @@ Sub LoadFirstBox As Map
 	Return box
 End Sub
 
+'英译中项目的用例：中文没有空格，应该按字断行
+Sub RunChineseCase
+	Dim mask As cvMat = Image2cvMat(File.DirAssets,"02.webp-balloonmask.png")
+	Dim spans As Map = BalloonMaskWrapper.LoadMaskSpans(mask)
+	Dim text As String = "真的不想要这个家伙，他老是惹麻烦，而且总喜欢打架"
+	Dim f As Font = fx.CreateFont("Microsoft YaHei",15,False,False)
+	Dim layout As Map = BalloonMaskWrapper.WrapInMask(text,f,spans,3.75,0,618,32,263,46,1.0)
+	LogMaskResult("CN box1",layout)
+	Dim layout2 As Map = BalloonMaskWrapper.WrapInMask(text,f,spans,3.75,0,519,352,309,88,1.0)
+	LogMaskResult("CN box3",layout2)
+	Dim pane As Pane
+	pane.Initialize("")
+	Dim iv As ImageView
+	iv.Initialize("")
+	iv.SetImage(fx.LoadImage(File.DirAssets,"02.webp-balloonmask.png"))
+	pane.AddNode(iv,0,0,mask.Cols,mask.Rows)
+	DrawLayout(pane,layout,CreateMap("X":618,"Y":32,"width":263,"height":46),f,"LEFT")
+	DrawLayout(pane,layout2,CreateMap("X":519,"Y":352,"width":309,"height":88),f,"LEFT")
+	Dim img As B4XBitmap = pane.Snapshot2(fx.Colors.White)
+	pane.RemoveNodeFromParent
+	SaveShot(img,"cn")
+End Sub

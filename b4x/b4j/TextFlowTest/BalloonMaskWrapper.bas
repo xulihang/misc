@@ -265,15 +265,21 @@ Public Sub WrapInMask(Text As String,F As Font,Mask As Map,LineSpacing As Double
 	lineLefts.Initialize
 	lineTops.Initialize
 	lineSlots.Initialize
+	'中文等无空格语言按字断行，英文按词
+	Dim units As List
+	Dim joinerList As List
+	joinerList.Initialize
+	BreakUnits(words,units,joinerList)
+	Dim joiner As String = joinerList.Get(0)
 	Dim curText As String = ""
 	Dim curTop As Double = yMin
-	For i = 0 To words.Size - 1
-		Dim w As String = words.Get(i)
+	For i = 0 To units.Size - 1
+		Dim w As String = units.Get(i)
 		Dim candidate As String
 		If curText = "" Then
 			candidate = w
 		Else
-			candidate = curText & " " & w
+			candidate = curText & joiner & w
 		End If
 		Dim cw As Double = MeasureTextWidth(candidate,F)
 		Dim band As Map = LineBand(rowMin,rowMax,curTop,naturalLineHeight)
@@ -379,6 +385,47 @@ End Sub
 '当前行（以 topY 为顶）在掩膜里的可用区间：
 '  left  该行带里各行的左边界（取最大值，保证左边不出气泡）
 '  right 该行带里各行的右边界（取最小值，保证右边不出气泡）
+'把词拆成断行单元：有空格的语言按词，中文/日文按单字
+Private Sub BreakUnits(words As List,units As List,joiner As List)
+	units.Initialize
+	joiner.Clear
+	joiner.Add(" ")
+	Dim spaces As Int = 0
+	Dim cjkChars As Int = 0
+	Dim otherChars As Int = 0
+	For Each w As String In words
+		For i = 0 To w.Length - 1
+			Dim ch As String = w.SubString2(i,i + 1)
+			If ch = " " Then
+				spaces = spaces + 1
+			Else If IsCJK(ch) Then
+				cjkChars = cjkChars + 1
+			Else
+				otherChars = otherChars + 1
+			End If
+		Next
+	Next
+	If spaces > 0 Or cjkChars <= otherChars Then
+		For Each w As String In words
+			units.Add(w)
+		Next
+		Return
+	End If
+	joiner.Clear
+	joiner.Add("")
+	For Each w As String In words
+		For i = 0 To w.Length - 1
+			units.Add(w.SubString2(i,i + 1))
+		Next
+	Next
+End Sub
+
+Private Sub IsCJK(s As String) As Boolean
+	If s = "" Then Return False
+	Dim code As Int = Asc(s.SubString2(0,1))
+	Return (code >= 19968 And code <= 40959) Or (code >= 12288 And code <= 12543)
+End Sub
+
 Private Sub LineBand(rowMin As List,rowMax As List,topY As Double,height As Double) As Map
 	Dim r As Map
 	r.Initialize
