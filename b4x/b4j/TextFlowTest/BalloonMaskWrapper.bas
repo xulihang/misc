@@ -145,7 +145,7 @@ End Sub
 '  3. 缺口部分用 DP 断行，按"行数接近 H/lineStep、填充率高"排序选最优；
 '  4. 每行按中心 + 可用宽度摆放。
 '全部行数都放不下时返回 overflow=True，由调用方整段按 maxWidth 显示。
-Public Sub WrapInMask(Text As String,F As Font,Mask As Map,LineSpacing As Double,Alignment As Int,areaLeft As Int,areaTop As Int,areaWidth As Int,areaHeight As Int,VerticalFill As Double) As Map
+Public Sub WrapInMask(Text As String,F As Font,Mask As Map,LineSpacing As Double,Alignment As Int,areaLeft As Int,areaTop As Int,areaWidth As Int,areaHeight As Int,VerticalFill As Double,Shrink As Int) As Map
 	Dim result As Map
 	result.Initialize
 	result.Put("success",False)
@@ -240,9 +240,11 @@ Public Sub WrapInMask(Text As String,F As Font,Mask As Map,LineSpacing As Double
 	Dim CenterX As Double = (xStart + xLimit - 1) / 2.0
 
 	'气球比框宽时，框外的气球部分只用来扩展行宽，文字本身不能越出框：
-	'把每行的左右边界夹到 [areaLeft, areaLeft+areaWidth-1]
+	'把每行的左右边界夹到 [areaLeft, areaLeft+areaWidth-1]，
+	'再按 Shrink 往里收，让文字和气泡边缘留出一点距离
 	Dim frameL As Int = areaLeft
 	Dim frameR As Int = areaLeft + areaWidth - 1
+	Dim shrinkV As Int = Max(0,Shrink)
 	For y = 0 To rowMin.Size - 1
 		Dim mnF As Int = rowMin.Get(y)
 		Dim mxF As Int = rowMax.Get(y)
@@ -251,8 +253,12 @@ Public Sub WrapInMask(Text As String,F As Font,Mask As Map,LineSpacing As Double
 				mnF = -1
 				mxF = -1
 			Else
-				mnF = Max(mnF,frameL)
-				mxF = Min(mxF,frameR)
+				mnF = Max(mnF,frameL) + shrinkV
+				mxF = Min(mxF,frameR) - shrinkV
+				If mxF < mnF Then
+					mnF = -1
+					mxF = -1
+				End If
 			End If
 		End If
 		rowMin.Set(y,mnF)
@@ -375,7 +381,8 @@ Public Sub WrapInMask(Text As String,F As Font,Mask As Map,LineSpacing As Double
 	result.Put("blockLeft",minLeft)
 	result.Put("blockWidth",maxRight - minLeft)
 	result.Put("wrapWidth",xLimit - xStart)
-	result.Put("blockHeight",lineTops.Get(lineTops.Size - 1) + naturalLineHeight - areaTop)
+	'lineTops 已经是框内局部坐标（AddLineAligned 里减过 areaTop），这里不能再减一次
+	result.Put("blockHeight",lineTops.Get(lineTops.Size - 1) + naturalLineHeight)
 	Log("balloonMask: " & lineTexts.Size & " lines (greedy)")
 	Return result
 End Sub
