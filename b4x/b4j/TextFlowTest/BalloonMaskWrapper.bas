@@ -71,6 +71,8 @@ Private Sub LoadMaskSpansInternal(mask As cvMat) As Map
 		If gray.JO <> mask.JO Then gray.release
 		Return result
 	End Try
+	'每颗气球（连通域）的外接矩形：WrapInMask 用它挑出框所在的那颗气球
+	Dim boxes As List = FindBalloonBoxes(binary,bc)
 	binary.release
 	If gray.JO <> mask.JO Then gray.release
 
@@ -124,6 +126,7 @@ Private Sub LoadMaskSpansInternal(mask As cvMat) As Map
 	result.Put("whiteRatio",100.0 * centerRows / Max(1,h))
 	'WrapInMask 需要按框的横向范围重新扫描每行区间，这里保留二值位图
 	result.Put("bitmap",bc)
+	result.Put("boxes",boxes)
 	Log("BalloonMaskWrapper: mask " & w & "x" & h & " channels=" & mask.Channels & " usedAlpha=" & usedAlpha & " yMin=" & yMin & " yMax=" & yMax & " medianSpan=" & medianSpan & " rowsWithWhite=" & (100.0 * centerRows / Max(1,h)) & "%")
 	Return result
 End Sub
@@ -158,9 +161,17 @@ Public Sub WrapInMask(Text As String,F As Font,Mask As Map,LineSpacing As Double
 	If Mask.IsInitialized = False Or Mask.ContainsKey("yMin") = False Then Return result
 	If areaWidth <= 0 Or areaHeight <= 0 Then Return result
 
-	'只在框的横向范围里取掩膜（同旧版 LoadMaskSpans(MinX,MaxX)）
-	Dim xStart As Int = Max(areaLeft,0)
-	Dim xLimit As Int = Min(areaLeft + areaWidth,Mask.Get("width"))
+	'2. 选气球：每个气球（连通域）的外接矩形和框算重叠比例，取最大的那颗，
+	'   框外的部分（气球比框大）照样保留，别的气球全部抹掉
+	Dim box As Map = PickBalloon(Mask,areaLeft,areaTop,areaWidth,areaHeight)
+	If box.IsInitialized = False Then
+		Log("balloonMask: no balloon overlaps the box, fallback")
+		Return result
+	End If
+	'扫描范围：气球的左右边界（气球比框大时，框外的气球部分也能用）
+	Dim xStart As Int = Max(box.Get("X"),0)
+	Dim xLimit As Int = Min(box.Get("X") + box.Get("width"),Mask.Get("width"))
+	Log("balloonMask: balloon x=" & box.Get("X") & ".." & (box.Get("X") + box.Get("width") - 1) & " y=" & box.Get("Y") & ".." & (box.Get("Y") + box.Get("height") - 1))
 	Dim rowMin As List
 	Dim rowMax As List
 	rowMin.Initialize
@@ -169,16 +180,39 @@ Public Sub WrapInMask(Text As String,F As Font,Mask As Map,LineSpacing As Double
 	If bc.IsInitialized Then
 		Dim c As ARGBColor
 		c.Initialize
+		Dim bx0 As Int = box.Get("X")
+		Dim by0 As Int = box.Get("Y")
+		Dim bx1 As Int = bx0 + box.Get("width") - 1
+		Dim by1 As Int = by0 + box.Get("height") - 1
+		Dim boxes As List = Mask.Get("boxes")
+		Dim others As List
+		others.Initialize
+		For i = 0 To boxes.Size - 1
+			If IsSameBox(boxes.Get(i),box) = False Then others.Add(boxes.Get(i))
+		Next
 		For y = 0 To bc.mHeight - 1
 			Dim minx As Int = -1
 			Dim rightX As Int = -1
-			For x = xStart To xLimit - 1
-				bc.GetARGB(x,y,c)
-				If c.r > 128 Then
-					If minx < 0 Then minx = x
-					rightX = x
-				End If
-			Next
+			If y >= by0 And y <= by1 Then
+				For x = xStart To xLimit - 1
+					'外接矩形里，别的气球占的像素不算
+					Dim drop As Boolean = False
+					For i = 0 To others.Size - 1
+						Dim bm As Map = others.Get(i)
+						If x >= bm.Get("X") And x <= bm.Get("X") + bm.Get("width") - 1 And y >= bm.Get("Y") And y <= bm.Get("Y") + bm.Get("height") - 1 Then
+							drop = True
+							Exit
+						End If
+					Next
+					If drop = False Then
+						bc.GetARGB(x,y,c)
+						If c.r > 128 Then
+							If minx < 0 Then minx = x
+							rightX = x
+						End If
+					End If
+				Next
+			End If
 			rowMin.Add(minx)
 			rowMax.Add(rightX)
 		Next
@@ -186,99 +220,8 @@ Public Sub WrapInMask(Text As String,F As Font,Mask As Map,LineSpacing As Double
 		Return result
 	End If
 
-	'同一行可能有多颗气球（例如本框挤在两个气泡之间）：
-	'只在"包含框中心的那段"和"框内其它段"里取和框重叠最多的那一段。
-	Dim probeRow As Int = -1
-	For yy = Max(areaTop,0) To Min(areaTop + areaHeight - 1,rowMin.Size - 1)
-		If rowMin.Get(yy) >= 0 Then
-			probeRow = yy
-			Exit
-		End If
-	Next
-	If probeRow >= 0 Then
-		Dim bestSegL As Int = -1
-		Dim bestSegR As Int = -1
-		Dim bestOverlap As Int = 0
-		'候选段：框内出现的每段掩膜的左端点
-		For yy = Max(areaTop,0) To Min(areaTop + areaHeight - 1,rowMin.Size - 1)
-			Dim candL As Int = rowMin.Get(yy)
-			Dim candR As Int = rowMax.Get(yy)
-			If candL >= 0 Then
-				Dim lnC As Int = Max(candL,xStart)
-				Dim rxC As Int = Min(candR,xLimit - 1)
-				If rxC >= lnC Then
-					Dim ov As Int = rxC - lnC + 1
-					If ov > bestOverlap Then
-						bestOverlap = ov
-						bestSegL = lnC
-						bestSegR = rxC
-					End If
-				End If
-			End If
-		Next
-		If bestSegL >= 0 Then
-			For y = 0 To rowMin.Size - 1
-				Dim mnS As Int = rowMin.Get(y)
-				Dim mxS As Int = rowMax.Get(y)
-				If mnS >= 0 Then
-					If mxS < bestSegL Or mnS > bestSegR Then
-						mnS = -1
-						mxS = -1
-					Else
-						mnS = Max(mnS,bestSegL)
-						mxS = Min(mxS,bestSegR)
-					End If
-				End If
-				rowMin.Set(y,mnS)
-				rowMax.Set(y,mxS)
-			Next
-		End If
-	End If
+	'行区间已只来自选中的这颗气球，不再按段裁剪
 
-	'纵向范围：先找框中心所在的那一段掩膜（同一行可能有别的气球/拟声词），
-	'再取这段掩膜的上下界。否则框会包含同高度其他气球，行宽被它们撑大。
-	'框中心不在掩膜里时（框比气球大、或框偏出气球），从框顶到底逐行找第一段掩膜。
-	Dim centerRow As Int = Min(Max(areaTop + areaHeight / 2,0),rowMin.Size - 1)
-	Dim xMid As Int = Min(Max(areaLeft + areaWidth / 2,xStart),xLimit - 1)
-	Dim seg As Map = FindSegment(rowMin,rowMax,centerRow,xMid)
-	If seg.Get("ok") = False Then
-		Dim probeY As Int = -1
-		Dim probeX As Int = -1
-		For yy = Max(areaTop,0) To Min(areaTop + areaHeight - 1,rowMin.Size - 1)
-			If rowMin.Get(yy) >= 0 Then
-				probeY = yy
-				probeX = rowMin.Get(yy) + 5
-				Exit
-			End If
-		Next
-		If probeY >= 0 Then seg = FindSegment(rowMin,rowMax,probeY,probeX)
-	End If
-	Dim segL As Int = -1
-	Dim segR As Int = -1
-	If seg.Get("ok") Then
-		segL = seg.Get("left")
-		segR = seg.Get("right")
-	End If
-	If segL >= 0 Then
-		'把每一行的区间裁到这段气球的左右范围内（这行没有这段就记 -1）
-		For y = 0 To rowMin.Size - 1
-			Dim mnS As Int = rowMin.Get(y)
-			Dim mxS As Int = rowMax.Get(y)
-			If mnS >= 0 Then
-				If mxS < segL Or mnS > segR Then
-					mnS = -1
-					mxS = -1
-				Else
-					mnS = Max(mnS,segL)
-					mxS = Min(mxS,segR)
-				End If
-			End If
-			rowMin.Set(y,mnS)
-			rowMax.Set(y,mxS)
-		Next
-	Else
-		Log("balloonMask: no mask segment at box center")
-	End If
 	Dim yMin As Int = -1
 	Dim yMax As Int = -1
 	Dim boxTop As Int = Max(areaTop,0)
@@ -295,6 +238,26 @@ Public Sub WrapInMask(Text As String,F As Font,Mask As Map,LineSpacing As Double
 	End If
 	Dim H As Int = yMax - yMin + 1
 	Dim CenterX As Double = (xStart + xLimit - 1) / 2.0
+
+	'气球比框宽时，框外的气球部分只用来扩展行宽，文字本身不能越出框：
+	'把每行的左右边界夹到 [areaLeft, areaLeft+areaWidth-1]
+	Dim frameL As Int = areaLeft
+	Dim frameR As Int = areaLeft + areaWidth - 1
+	For y = 0 To rowMin.Size - 1
+		Dim mnF As Int = rowMin.Get(y)
+		Dim mxF As Int = rowMax.Get(y)
+		If mnF >= 0 Then
+			If mxF < frameL Or mnF > frameR Then
+				mnF = -1
+				mxF = -1
+			Else
+				mnF = Max(mnF,frameL)
+				mxF = Min(mxF,frameR)
+			End If
+		End If
+		rowMin.Set(y,mnF)
+		rowMax.Set(y,mxF)
+	Next
 
 	Dim words As List
 	words.Initialize
@@ -343,7 +306,20 @@ Public Sub WrapInMask(Text As String,F As Font,Mask As Map,LineSpacing As Double
 		Else
 			candidate = curText & joiner & w
 		End If
+		'后面紧跟的标点/闭合括号不能单独留在下一行行首：算宽度时先带上，
+		'但换行与否只看文字本身，标点始终挂在上一行末尾（允许略超出边界）
+		Dim tail As String = ""
+		Dim merged As Boolean = False
+		If joiner = "" And i + 1 < units.Size Then
+			Dim k As Int = i + 1
+			Do While k < units.Size And IsNoLineStart(units.Get(k))
+				tail = tail & units.Get(k)
+				k = k + 1
+			Loop
+			merged = (tail <> "")
+		End If
 		Dim cw As Double = MeasureTextWidth(candidate,F)
+		If merged Then candidate = candidate & tail
 		Dim band As Map = LineBand(rowMin,rowMax,curTop,naturalLineHeight)
 		Dim availW As Double = -1
 		Dim availL As Double = -1
@@ -368,8 +344,11 @@ Public Sub WrapInMask(Text As String,F As Font,Mask As Map,LineSpacing As Double
 			AddLineAligned(lineTexts,lineLefts,lineTops,lineSlots,curText,curTop,rowMin,rowMax,naturalLineHeight,F,Alignment,CenterX,areaTop,xStart,xLimit)
 			curText = w
 			curTop = curTop + lineStep
+			'标点跟着上一行走了，这一轮不再重复计入
+			If merged Then i = k - 1
 		Else
 			curText = candidate
+			If merged Then i = k - 1
 		End If
 	Next
 	If curText <> "" Then
@@ -412,6 +391,88 @@ Public Sub WrapInMask(Text As String,F As Font,Mask As Map,LineSpacing As Double
 	result.Put("blockHeight",lineTops.Get(lineTops.Size - 1) + naturalLineHeight - areaTop)
 	Log("balloonMask: " & lineTexts.Size & " lines (greedy)")
 	Return result
+End Sub
+
+'选气球：每个气球（连通域）的外接矩形和框算重叠比例，取重叠最多的那颗
+Private Sub PickBalloon(Mask As Map,areaLeft As Int,areaTop As Int,areaWidth As Int,areaHeight As Int) As Map
+	Dim best As Map
+	Dim boxes As List = Mask.Get("boxes")
+	If boxes.IsInitialized = False Then Return best
+	Dim bestRatio As Double = 0
+	For i = 0 To boxes.Size - 1
+		Dim b As Map = boxes.Get(i)
+		Dim ox0 As Int = Max(b.Get("X"),areaLeft)
+		Dim ox1 As Int = Min(b.Get("X") + b.Get("width"),areaLeft + areaWidth)
+		Dim oy0 As Int = Max(b.Get("Y"),areaTop)
+		Dim oy1 As Int = Min(b.Get("Y") + b.Get("height"),areaTop + areaHeight)
+		If ox1 <= ox0 Or oy1 <= oy0 Then Continue
+		Dim ov As Double = (ox1 - ox0) * (oy1 - oy0)
+		'重叠面积 / 框面积：框通常整颗落在气球里，用框面积做分母更准
+		Dim ratio As Double = ov / Max(1,areaWidth * areaHeight)
+		If ratio > bestRatio Then
+			bestRatio = ratio
+			best = b
+		End If
+	Next
+	If best.IsInitialized Then Log("balloonMask: pick balloon overlap=" & bestRatio)
+	Return best
+End Sub
+
+'按"每个气球（连通域）的外接矩形"切分掩膜：
+'  boxes：每个元素 Map(X,Y,width,height,area)，已丢掉很小的碎块
+Private Sub FindBalloonBoxes(binary As cvMat,bc As BitmapCreator) As List
+	Dim r As List
+	r.Initialize
+	Dim W As Int = bc.mWidth
+	Dim H As Int = bc.mHeight
+	Try
+		Dim labels As cvMat
+		labels.Initialize(Null)
+		Dim stats As cvMat
+		stats.Initialize(Null)
+		Dim centroids As cvMat
+		centroids.Initialize(Null)
+		Dim imgproc As JavaObject
+		imgproc.InitializeStatic("org.opencv.imgproc.Imgproc")
+		'8 位二值图作输入时返回连通域个数；默认 4 邻域连通
+		Dim n As Int = imgproc.RunMethod("connectedComponentsWithStats",Array(binary.JO,labels.JO,stats.JO,centroids.JO))
+		Dim minArea As Int = Max(30,W * H / 5000)
+		For i = 1 To n - 1
+			Dim idx(2) As Int
+			idx(0) = i
+			idx(1) = 0
+			Dim x As Int = stats.get(idx)(0)
+			idx(1) = 1
+			Dim y As Int = stats.get(idx)(0)
+			idx(1) = 2
+			Dim w As Int = stats.get(idx)(0)
+			idx(1) = 3
+			Dim h As Int = stats.get(idx)(0)
+			idx(1) = 4
+			Dim area As Int = stats.get(idx)(0)
+			If area < minArea Then Continue
+			Dim b As Map
+			b.Initialize
+			b.Put("X",x)
+			b.Put("Y",y)
+			b.Put("width",w)
+			b.Put("height",h)
+			b.Put("area",area)
+			r.Add(b)
+		Next
+		labels.release
+		stats.release
+		centroids.release
+	Catch
+		Log("BalloonMaskWrapper: connectedComponents failed: " & LastException)
+	End Try
+	Log("BalloonMaskWrapper: balloons=" & r.Size)
+	Return r
+End Sub
+
+'两个外接矩形是否同一个气球
+Private Sub IsSameBox(a As Map,b As Map) As Boolean
+	Return a.Get("X") = b.Get("X") And a.Get("Y") = b.Get("Y") And a.Get("width") = b.Get("width") And a.Get("height") = b.Get("height")
 End Sub
 
 '在 row row 上找包含 x 的那段连续掩膜（一段 = 同一行里连续的一段）
@@ -477,6 +538,12 @@ Private Sub BreakUnits(words As List,units As List,joiner As List)
 			units.Add(w.SubString2(i,i + 1))
 		Next
 	Next
+End Sub
+
+'这些标点不能出现在行首（中文排版惯例）：换行时挂到上一行末尾
+Private Sub IsNoLineStart(s As String) As Boolean
+	Dim bad As String = "！？，。、；：）」』】》〉…—·!?,.;:)]}"
+	Return s <> "" And bad.IndexOf(s.SubString2(0,1)) >= 0
 End Sub
 
 Private Sub IsCJK(s As String) As Boolean
